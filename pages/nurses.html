@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2878B5">
+  <meta name="description" content="دليل الكوادر التمريضية للرعاية والتمريض المنزلي في محافظات مصر - منصة رعايه CareNest">
+  <title>دليل الممرضين في مصر | رعايه CareNest</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏥%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .filter-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 32px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      align-items: flex-end;
+      border: 1px solid var(--gray-100);
+    }
+
+    .filter-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .filter-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--gray-700);
+    }
+
+    .nurse-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .nurse-card-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .nurse-detail-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .nurse-detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .nurse-detail-label {
+      color: var(--gray-500);
+    }
+
+    .nurse-detail-val {
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════ -->
+<nav class="navbar" role="navigation" aria-label="التنقل الرئيسي">
+  <div class="container">
+    <div class="navbar-inner">
+      <!-- Brand -->
+      <a href="../index.html" class="navbar-brand" aria-label="CareNest - الصفحة الرئيسية">
+        <div class="logo-icon" aria-hidden="true">🏥</div>
+        <div class="brand-text">
+          <span class="brand-ar">رعايه</span>
+          <span class="brand-en">CareNest</span>
+        </div>
+      </a>
+
+      <!-- Nav Links -->
+      <ul class="navbar-nav" id="main-nav" role="menubar">
+        <li role="none"><a href="../index.html" class="nav-link" role="menuitem" data-i18n="nav_home">الرئيسية</a></li>
+        <li role="none"><a href="nurses.html" class="nav-link active" role="menuitem" data-i18n="nav_nurses">الممرضون</a></li>
+        <li role="none"><a href="book.html" class="nav-link" role="menuitem" data-i18n="hero_book_nurse">احجز زيارة</a></li>
+        <li role="none"><a href="faq.html" class="nav-link" role="menuitem" data-i18n="nav_faq">الأسئلة الشائعة</a></li>
+        <!-- Mobile auth options -->
+        <li class="mobile-auth-links" role="none">
+          <a href="login.html" class="btn btn-ghost btn-sm" id="mobile-login-link" data-i18n="nav_login">تسجيل الدخول</a>
+          <a href="register.html" class="btn btn-primary btn-sm" id="mobile-register-link" data-i18n="nav_register">إنشاء حساب</a>
+          <a href="#" class="btn btn-outline btn-sm hidden" id="mobile-dash-link" data-i18n="nav_dashboard">لوحة التحكم</a>
+        </li>
+      </ul>
+
+      <!-- Actions (Desktop) -->
+      <div class="navbar-actions">
+        <button class="lang-toggle" id="lang-toggle-btn" aria-label="تغيير اللغة">English</button>
+        <a href="login.html" class="btn btn-ghost btn-sm" id="nav-login-btn" data-i18n="nav_login">تسجيل الدخول</a>
+        <a href="register.html" class="btn btn-primary btn-sm" id="nav-register-btn" data-i18n="nav_register">إنشاء حساب</a>
+        <!-- Shown only when logged in -->
+        <a href="#" class="btn btn-outline btn-sm hidden" id="nav-dash-btn" data-i18n="nav_dashboard">لوحة التحكم</a>
+        <a href="profile.html" class="btn btn-ghost btn-sm hidden" id="nav-profile-btn" data-i18n="nav_profile">الملف الشخصي</a>
+        <button class="btn btn-ghost btn-sm hidden" id="nav-logout-btn" style="color:var(--error);" data-i18n="nav_logout">تسجيل الخروج</button>
+      </div>
+
+      <!-- Hamburger (Mobile) -->
+      <button class="hamburger" id="hamburger" aria-label="فتح القائمة" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════
+     PAGE HEADER
+══════════════════════════════════════ -->
+<header style="background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; padding: 60px 0 50px; text-align: center; margin-top: 70px;">
+  <div class="container">
+    <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.18); padding: 6px 16px; border-radius: var(--radius-full); margin-bottom: 16px; font-size: 0.9rem;">
+      <span aria-hidden="true">🇪🇬</span> خدمات التمريض والرعاية المنزلية بجمهورية مصر العربية
+    </div>
+    <h1 style="font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 800; margin-bottom: 12px;" data-i18n="nurses_header_title">
+      اعثر على الممرض المناسب لرعايتك المنزلية
+    </h1>
+    <p style="opacity: 0.95; max-width: 650px; margin: 0 auto; font-size: 1.05rem; line-height: 1.7;" data-i18n="nurses_header_subtitle">
+      تصفح الكوادر التمريضية المتاحة للزيارات المنزلية والرعاية التمريضية المتخصصة في محافظتك
+    </p>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════ -->
+<main class="container" style="padding: 40px 20px;">
+  
+  <!-- Filter & Search Bar -->
+  <section class="filter-card" aria-label="خيارات البحث والتصفية">
+    <!-- Search by Name -->
+    <div class="filter-item" style="grid-column: span 2;">
+      <label class="filter-label" for="nurse-search" data-i18n="filter_search_label">بحث سريع</label>
+      <input type="text" id="nurse-search" class="form-control" data-i18n-placeholder="filter_search_placeholder" placeholder="🔍 ابحث باسم الممرض أو التخصص أو المدينة...">
+    </div>
+
+    <!-- Governorate Filter -->
+    <div class="filter-item">
+      <label class="filter-label" for="governorate-filter" data-i18n="filter_gov_label">المحافظة</label>
+      <select id="governorate-filter" class="form-control">
+        <option value="" data-i18n="filter_gov_all">جميع محافظات مصر</option>
+      </select>
+    </div>
+
+    <!-- City / Area Filter (Dependent) -->
+    <div class="filter-item">
+      <label class="filter-label" for="city-filter" data-i18n="filter_city_label">المدينة / المنطقة</label>
+      <select id="city-filter" class="form-control" disabled>
+        <option value="" data-i18n="filter_city_placeholder">اختر المحافظة أولاً</option>
+      </select>
+    </div>
+
+    <!-- Specialty Filter -->
+    <div class="filter-item">
+      <label class="filter-label" for="specialty-filter" data-i18n="filter_specialty_label">التخصص</label>
+      <select id="specialty-filter" class="form-control">
+        <option value="" data-i18n="filter_specialty_all">جميع التخصصات</option>
+        <option value="رعاية كبار السن">رعاية كبار السن</option>
+        <option value="العناية بالجروح">العناية بالجروح</option>
+        <option value="إعطاء الحقن والمحاليل">إعطاء الحقن والمحاليل</option>
+        <option value="رعاية ما بعد العمليات">رعاية ما بعد العمليات</option>
+        <option value="متابعة العلامات الحيوية">متابعة السكر والضغط</option>
+        <option value="رعاية الأم وحديثي الولادة">رعاية الأم وحديثي الولادة</option>
+        <option value="العلاج الطبيعي">العلاج الطبيعي</option>
+      </select>
+    </div>
+
+    <!-- Max Price Filter -->
+    <div class="filter-item">
+      <label class="filter-label" for="price-filter" data-i18n="filter_price_label">الحد الأقصى لسعر الزيارة</label>
+      <select id="price-filter" class="form-control">
+        <option value="" data-i18n="filter_price_any">أي سعر</option>
+        <option value="150">حتى 150 ج.م</option>
+        <option value="200">حتى 200 ج.م</option>
+        <option value="250">حتى 250 ج.م</option>
+        <option value="350">حتى 350 ج.م</option>
+        <option value="500">حتى 500 ج.م</option>
+      </select>
+    </div>
+
+    <!-- Reset Filter -->
+    <div class="filter-item">
+      <button type="button" id="reset-filters-btn" class="btn btn-outline" style="height: 44px; width: 100%;" data-i18n="filter_reset_btn">
+        إعادة ضبط الفلاتر
+      </button>
+    </div>
+  </section>
+
+  <!-- Results Count -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+    <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--gray-800);" id="results-count-title" data-i18n="nurses_available_title">
+      الممرضون المتاحون
+    </h2>
+    <span style="font-size: 0.9rem; color: var(--gray-600); background: var(--gray-100); padding: 5px 14px; border-radius: var(--radius-full); font-weight: 600;" id="results-count-badge">
+      جاري الفحص...
+    </span>
+  </div>
+
+  <!-- Nurses Grid -->
+  <section class="nurses-grid" id="nurses-grid" aria-label="بطاقات الممرضين">
+    <!-- Populated dynamically via safe DOM construction -->
+    <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--gray-500);">
+      <div class="spinner spinner-primary" style="margin: 0 auto 16px; width: 36px; height: 36px;"></div>
+      <p style="font-size: 1.05rem; font-weight: 600;" data-i18n="loading">جاري تحميل بيانات الممرضين...</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════════════════════════════════════
+     NURSE DETAILS MODAL (Safe Dialog)
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="nurse-details-modal" role="dialog" aria-modal="true" aria-labelledby="modal-nurse-name">
+  <div class="modal-dialog">
+    <button type="button" class="modal-close-btn" id="modal-close-btn" aria-label="إغلاق النافذة">✕</button>
+    
+    <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 32px 24px; text-align: center; color: white;">
+      <div class="nurse-avatar" id="modal-nurse-avatar" style="width: 80px; height: 80px; margin: 0 auto 12px; overflow: hidden; background: rgba(255,255,255,0.2);">
+        <span style="font-size: 2.5rem;">👩‍⚕️</span>
+      </div>
+      <h3 id="modal-nurse-name" style="font-size: 1.3rem; margin-bottom: 6px;">اسم الممرض</h3>
+      <div id="modal-nurse-badge-wrap" style="margin-top: 4px;"></div>
+    </div>
+
+    <div style="padding: 24px;">
+      <div style="margin-bottom: 20px;">
+        <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--gray-500); margin-bottom: 6px;" data-i18n="nurse_modal_bio">نبذة تعريفية</h4>
+        <p id="modal-nurse-bio" style="color: var(--gray-700); line-height: 1.7; font-size: 0.95rem; margin: 0;">لم تتوفر نبذة بعد.</p>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--gray-500); margin-bottom: 6px;" data-i18n="nurse_modal_qualifications">المؤهلات والاعتمادات</h4>
+        <p id="modal-nurse-qualifications" style="color: var(--gray-700); font-size: 0.95rem; margin: 0;">لم تحدد بعد.</p>
+      </div>
+
+      <div style="background: var(--gray-50); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 24px;">
+        <div class="nurse-detail-row">
+          <span class="nurse-detail-label" data-i18n="filter_specialty_label">التخصص:</span>
+          <span class="nurse-detail-val" id="modal-nurse-spec">—</span>
+        </div>
+        <div class="nurse-detail-row">
+          <span class="nurse-detail-label" data-i18n="nurse_modal_location">منطقة الخدمة:</span>
+          <span class="nurse-detail-val" id="modal-nurse-loc">—</span>
+        </div>
+        <div class="nurse-detail-row">
+          <span class="nurse-detail-label" data-i18n="nurse_exp_label">سنوات الخبرة:</span>
+          <span class="nurse-detail-val" id="modal-nurse-exp">—</span>
+        </div>
+        <div class="nurse-detail-row">
+          <span class="nurse-detail-label" data-i18n="nurse_price_label">سعر الزيارة:</span>
+          <span class="nurse-detail-val" id="modal-nurse-price" style="color: var(--primary);">—</span>
+        </div>
+      </div>
+
+      <a href="#" class="btn btn-primary w-full" id="modal-book-btn" style="display: block; text-align: center;" data-i18n="btn_book_visit">
+        📅 احجز زيارة مع هذا الممرض
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     FOOTER
+══════════════════════════════════════ -->
+<footer class="footer" role="contentinfo" style="margin-top: 60px;">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="logo-icon" aria-hidden="true">🏥</div>
+          <span class="brand-text">CareNest</span>
+        </div>
+        <p class="footer-desc" data-i18n="footer_desc">
+          منصة رعايه CareNest تربط المرضى بالكوادر التمريضية المؤهلة لتقديم خدمات الرعاية الصحية والتمريض المنزلي بأعلى معايير الجودة والأمان في مصر.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-i18n="footer_services">الخدمات التمريضية</h4>
+        <nav class="footer-links" aria-label="روابط الخدمات">
+          <a href="nurses.html?specialty=العناية+بالجروح" class="footer-link" data-i18n="service_wound">رعاية الجروح</a>
+          <a href="nurses.html?specialty=إعطاء+الحقن+والمحاليل" class="footer-link" data-i18n="service_injection">الحقن والأدوية</a>
+          <a href="nurses.html?specialty=رعاية+كبار+السن" class="footer-link" data-i18n="service_elderly">رعاية كبار السن</a>
+          <a href="nurses.html?specialty=رعاية+ما+بعد+العمليات" class="footer-link" data-i18n="service_postop">ما بعد العمليات</a>
+          <a href="nurses.html?specialty=رعاية+الأم+وحديثي+الولادة" class="footer-link" data-i18n="service_baby">رعاية الأطفال</a>
+        </nav>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-i18n="footer_useful_links">روابط هامة</h4>
+        <nav class="footer-links" aria-label="روابط هامة">
+          <a href="../index.html" class="footer-link" data-i18n="nav_home">الرئيسية</a>
+          <a href="nurses.html" class="footer-link" data-i18n="nav_nurses">الممرضون</a>
+          <a href="faq.html" class="footer-link" data-i18n="nav_faq">الأسئلة الشائعة</a>
+          <a href="../index.html#contact" class="footer-link" data-i18n="nav_contact">تواصل معنا</a>
+          <a href="book.html" class="footer-link" data-i18n="hero_book_nurse">احجز زيارة</a>
+        </nav>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-i18n="footer_account">الحساب</h4>
+        <nav class="footer-links" aria-label="روابط الحساب">
+          <a href="login.html" class="footer-link" data-i18n="nav_login">تسجيل الدخول</a>
+          <a href="register.html" class="footer-link" data-i18n="nav_register">إنشاء حساب</a>
+          <a href="patient-dashboard.html" class="footer-link" data-i18n="patient_dashboard">لوحة المريض</a>
+          <a href="nurse-dashboard.html" class="footer-link" data-i18n="nurse_dashboard">لوحة الممرض</a>
+          <a href="privacy.html" class="footer-link" data-i18n="footer_privacy">سياسة الخصوصية</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-bottom-left">
+        © <span id="footer-year">2026</span> رعايه | CareNest. <span data-i18n="footer_rights">جميع الحقوق محفوظة.</span>
+      </div>
+      <div class="footer-bottom-right">
+        <a href="privacy.html" data-i18n="footer_privacy">سياسة الخصوصية</a>
+        <a href="terms.html" data-i18n="footer_terms">الشروط والأحكام</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script src="../js/egypt-locations.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/i18n.js"></script>
+<script src="../js/utils.js"></script>
+<script>
+  const Auth = window.Auth;
+  const DB = window.DB;
+  const EgyptLoc = window.EgyptLocations;
+  let allNurses = [];
+
+  // ── Year ──
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+  // ── Auth & Role-Based Navigation ──
+  async function initAuthNavigation() {
+    if (!Auth || typeof Auth.getUserProfile !== 'function') return;
+    try {
+      const profile = await Auth.getUserProfile();
+      if (profile) {
+        // Hide login and register buttons
+        document.getElementById('nav-login-btn')?.classList.add('hidden');
+        document.getElementById('nav-register-btn')?.classList.add('hidden');
+        document.getElementById('mobile-login-link')?.classList.add('hidden');
+        document.getElementById('mobile-register-link')?.classList.add('hidden');
+
+        // Target dashboard based on user role
+        const targetDashboard = profile.role === 'nurse' ? 'nurse-dashboard.html' : 'patient-dashboard.html';
+
+        const dashBtn = document.getElementById('nav-dash-btn');
+        if (dashBtn) {
+          dashBtn.classList.remove('hidden');
+          dashBtn.href = targetDashboard;
+        }
+
+        const mobileDash = document.getElementById('mobile-dash-link');
+        if (mobileDash) {
+          mobileDash.classList.remove('hidden');
+          mobileDash.href = targetDashboard;
+        }
+
+        const profileBtn = document.getElementById('nav-profile-btn');
+        if (profileBtn) {
+          profileBtn.classList.remove('hidden');
+          profileBtn.href = 'profile.html';
+        }
+
+        const logoutBtn = document.getElementById('nav-logout-btn');
+        if (logoutBtn) {
+          logoutBtn.classList.remove('hidden');
+          logoutBtn.addEventListener('click', async () => {
+            await Auth.signOut();
+            window.location.reload();
+          });
+        }
+      }
+    } catch (err) {
+      // Unauthenticated visitor - normal state preserved
+    }
+  }
+
+  // ── Governorates & Dependent City Dropdown ──
+  const govSelect = document.getElementById('governorate-filter');
+  const citySelect = document.getElementById('city-filter');
+
+  function initLocationDropdowns() {
+    if (EgyptLoc && govSelect) {
+      EgyptLoc.populateGovernorateSelect(govSelect, '', 'جميع محافظات مصر');
+    }
+
+    govSelect?.addEventListener('change', () => {
+      const selectedGov = govSelect.value;
+      if (selectedGov && EgyptLoc && citySelect) {
+        EgyptLoc.populateCitySelect(citySelect, selectedGov, '', 'جميع المدن / المناطق');
+      } else if (citySelect) {
+        citySelect.innerHTML = `<option value="">${i18n ? i18n.t('filter_city_placeholder') : 'اختر المحافظة أولاً'}</option>`;
+        citySelect.disabled = true;
+      }
+      applyFilter();
+    });
+
+    citySelect?.addEventListener('change', applyFilter);
+  }
+
+  // ── Pre-fill filters from URL Query Params ──
+  function checkUrlFilters() {
+    const params = new URLSearchParams(window.location.search);
+    const spec = params.get('specialty');
+    const gov = params.get('governorate');
+    const q = params.get('search');
+
+    if (spec && document.getElementById('specialty-filter')) {
+      document.getElementById('specialty-filter').value = spec;
+    }
+    if (gov && govSelect) {
+      govSelect.value = gov;
+      if (EgyptLoc && citySelect) {
+        EgyptLoc.populateCitySelect(citySelect, gov, '', 'جميع المدن / المناطق');
+      }
+    }
+    if (q && document.getElementById('nurse-search')) {
+      document.getElementById('nurse-search').value = q;
+    }
+  }
+
+  // ── Load Real Nurses from Supabase ──
+  async function loadNurses() {
+    const grid = document.getElementById('nurses-grid');
+    if (!grid) return;
+
+    // Show loading spinner
+    grid.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--gray-500);">
+        <div class="spinner spinner-primary" style="margin: 0 auto 16px; width: 36px; height: 36px;"></div>
+        <p style="font-size: 1.05rem; font-weight: 600;">${i18n ? i18n.t('loading') : 'جاري تحميل بيانات الممرضين...'}</p>
+      </div>
+    `;
+
+    try {
+      if (!DB || typeof DB.getVerifiedNurses !== 'function') {
+        throw new Error('Supabase DB service not available');
+      }
+
+      allNurses = await DB.getVerifiedNurses();
+      applyFilter();
+    } catch (err) {
+      console.error('Failed to load nurses:', err);
+      grid.innerHTML = '';
+
+      const errBox = document.createElement('div');
+      errBox.className = 'empty-state';
+      errBox.style.cssText = 'grid-column: 1/-1; text-align: center; padding: 50px 20px; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--gray-200);';
+
+      const icon = document.createElement('div');
+      icon.style.cssText = 'font-size: 3rem; margin-bottom: 12px;';
+      icon.textContent = '⚠️';
+      errBox.appendChild(icon);
+
+      const h3 = document.createElement('h3');
+      h3.style.cssText = 'color: var(--error); margin-bottom: 8px; font-size: 1.25rem; font-weight: 700;';
+      h3.textContent = i18n ? i18n.t('error_fetch_nurses') : 'تعذّر تحميل بيانات الممرضين من قاعدة البيانات';
+      errBox.appendChild(h3);
+
+      const p = document.createElement('p');
+      p.style.cssText = 'color: var(--gray-600); max-width: 460px; margin: 0 auto 20px; font-size: 0.95rem; line-height: 1.6;';
+      p.textContent = err.message || (i18n && i18n.currentLang === 'en' ? 'Please check your internet connection and Supabase service.' : 'يرجى التأكد من اتصال الإنترنت وقاعدة البيانات.');
+      errBox.appendChild(p);
+
+      const retryBtn = document.createElement('button');
+      retryBtn.className = 'btn btn-outline btn-sm';
+      retryBtn.textContent = i18n ? i18n.t('btn_retry') : 'إعادة المحاولة 🔄';
+      retryBtn.addEventListener('click', loadNurses);
+      errBox.appendChild(retryBtn);
+
+      grid.appendChild(errBox);
+      updateResultsBadge(0);
+    }
+  }
+
+  // ── Results Badge Helper ──
+  function updateResultsBadge(count) {
+    const badge = document.getElementById('results-count-badge');
+    if (!badge) return;
+    const isAr = !i18n || i18n.currentLang === 'ar';
+    if (count === 0) {
+      badge.textContent = isAr ? 'لا توجد نتائج' : 'No results';
+    } else if (count === 1) {
+      badge.textContent = isAr ? 'ممرض واحد متاح' : '1 nurse available';
+    } else if (count === 2) {
+      badge.textContent = isAr ? 'ممرضان متاحان' : '2 nurses available';
+    } else {
+      badge.textContent = `${count} ${isAr ? 'ممرضين متاحين' : 'nurses available'}`;
+    }
+  }
+
+  // ── Helper: Safe Text Helper ──
+  function getSafeString(val, fallback) {
+    if (val === null || val === undefined) return fallback;
+    const str = String(val).trim();
+    return str.length > 0 ? str : fallback;
+  }
+
+  // ── Render Nurse Cards (Pure Safe DOM Construction - Zero Unescaped innerHTML) ──
+  function renderNurses(list) {
+    const grid = document.getElementById('nurses-grid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+    updateResultsBadge(list ? list.length : 0);
+
+    const isAr = !i18n || i18n.currentLang === 'ar';
+    const notSpecText = isAr ? 'لم يحدد بعد' : 'Not specified yet';
+
+    // 1. Empty State
+    if (!list || list.length === 0) {
+      const emptyBox = document.createElement('div');
+      emptyBox.className = 'empty-state';
+      emptyBox.style.cssText = 'grid-column: 1/-1; text-align: center; padding: 60px 20px; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--gray-200);';
+
+      const icon = document.createElement('div');
+      icon.style.cssText = 'font-size: 3.5rem; margin-bottom: 14px;';
+      icon.textContent = '👩‍⚕️';
+      emptyBox.appendChild(icon);
+
+      const h3 = document.createElement('h3');
+      h3.style.cssText = 'font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; color: var(--gray-800);';
+
+      const isFiltered = allNurses && allNurses.length > 0;
+      h3.textContent = isFiltered
+        ? (i18n ? i18n.t('empty_no_matches') : 'لا يوجد ممرضون مطابقون لمعايير البحث المحددة')
+        : (i18n ? i18n.t('empty_no_nurses') : 'لا يوجد ممرضون متاحون حالياً في قاعدة البيانات');
+      emptyBox.appendChild(h3);
+
+      const p = document.createElement('p');
+      p.style.cssText = 'color: var(--gray-500); max-width: 480px; margin: 0 auto 20px; font-size: 0.95rem; line-height: 1.7;';
+      p.textContent = isFiltered
+        ? (i18n ? i18n.t('empty_no_matches_desc') : 'يمكنك الانضمام إلى شبكة رعايه والتسجيل ككادر تمريضي معتمد.')
+        : (isAr ? 'لم يتم العثور على ممرضين مسجلين في النظام. إذا كنت كادراً تمريضياً مؤهلاً، يسعدنا انضمامك.' : 'No registered nurses found yet.');
+      emptyBox.appendChild(p);
+
+      if (isFiltered) {
+        const resetBtn = document.createElement('button');
+        resetBtn.className = 'btn btn-outline btn-sm';
+        resetBtn.textContent = i18n ? i18n.t('filter_reset_btn') : 'إعادة ضبط الفلاتر';
+        resetBtn.addEventListener('click', resetFilters);
+        emptyBox.appendChild(resetBtn);
+      } else {
+        const joinLink = document.createElement('a');
+        joinLink.href = 'register.html?type=nurse';
+        joinLink.className = 'btn btn-primary btn-sm';
+        joinLink.textContent = isAr ? 'انضم ككادر تمريضي الآن' : 'Join as Nurse Now';
+        emptyBox.appendChild(joinLink);
+      }
+
+      grid.appendChild(emptyBox);
+      return;
+    }
+
+    // 2. Render Cards
+    list.forEach(nurse => {
+      const card = document.createElement('article');
+      card.className = 'nurse-card card reveal visible';
+      card.setAttribute('aria-label', `بطاقة الممرض ${nurse.full_name || nurse.profiles?.full_name || ''}`);
+
+      // ── Header ──
+      const header = document.createElement('div');
+      header.className = 'nurse-card-header';
+
+      // Avatar
+      const avatarWrap = document.createElement('div');
+      avatarWrap.className = 'nurse-avatar';
+
+      const avatarUrl = nurse.avatar_url || nurse.profiles?.avatar_url;
+      if (avatarUrl && typeof avatarUrl === 'string' && (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://') || avatarUrl.startsWith('data:image/'))) {
+        const img = document.createElement('img');
+        img.src = avatarUrl;
+        img.alt = nurse.full_name || nurse.profiles?.full_name || 'صورة الممرض';
+        img.loading = 'lazy';
+        img.onerror = () => {
+          avatarWrap.textContent = '👩‍⚕️';
+        };
+        avatarWrap.appendChild(img);
+      } else {
+        avatarWrap.textContent = '👩‍⚕️';
+      }
+      header.appendChild(avatarWrap);
+
+      // Name
+      const nameEl = document.createElement('h3');
+      nameEl.style.cssText = 'color: white; font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;';
+      nameEl.textContent = getSafeString(nurse.full_name || nurse.profiles?.full_name, isAr ? 'ممرض مسجل' : 'Registered Nurse');
+      header.appendChild(nameEl);
+
+      // Verification Badge (Real DB check: true / false / null)
+      const badge = document.createElement('div');
+      if (nurse.verified === true) {
+        badge.className = 'nurse-verified-badge badge-verified';
+        badge.textContent = isAr ? '✓ معتمد وموثق' : '✓ Verified';
+      } else if (nurse.verified === false) {
+        badge.className = 'nurse-verified-badge badge-pending';
+        badge.textContent = isAr ? '⏳ قيد المراجعة' : '⏳ Under Review';
+      } else {
+        badge.className = 'nurse-verified-badge badge-unknown';
+        badge.textContent = isAr ? 'حالة التوثيق غير متاحة' : 'Status Unavailable';
+      }
+      header.appendChild(badge);
+
+      card.appendChild(header);
+
+      // ── Body ──
+      const body = document.createElement('div');
+      body.className = 'nurse-card-body';
+
+      // Info Details Container
+      const infoList = document.createElement('div');
+      infoList.style.marginBottom = '16px';
+
+      // Location
+      const loc = nurse.governorate ? (nurse.city ? `${nurse.governorate} - ${nurse.city}` : nurse.governorate) : (nurse.profiles?.governorate || 'مصر');
+      const locRow = document.createElement('div');
+      locRow.style.cssText = 'font-size: 0.875rem; color: var(--gray-700); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;';
+      const locIcon = document.createElement('span');
+      locIcon.textContent = '📍';
+      locRow.appendChild(locIcon);
+      const locText = document.createElement('strong');
+      locText.textContent = loc;
+      locRow.appendChild(locText);
+      infoList.appendChild(locRow);
+
+      // Specialty (Truthful: "لم يحدد بعد" if missing/empty)
+      const specRow = document.createElement('div');
+      specRow.style.marginBottom = '12px';
+      const specBadge = document.createElement('span');
+      specBadge.className = 'badge badge-primary';
+      specBadge.style.cssText = 'font-size: 0.85rem; padding: 5px 12px;';
+      const specVal = getSafeString(nurse.specialization, notSpecText);
+      specBadge.textContent = specVal;
+      specRow.appendChild(specBadge);
+      infoList.appendChild(specRow);
+
+      // Experience (Truthful: "لم يحدد بعد" if 0 or missing)
+      const expRow = document.createElement('div');
+      expRow.className = 'nurse-detail-row';
+      const expLabel = document.createElement('span');
+      expLabel.className = 'nurse-detail-label';
+      expLabel.textContent = isAr ? '⏳ سنوات الخبرة:' : '⏳ Experience:';
+      expRow.appendChild(expLabel);
+
+      const expValEl = document.createElement('span');
+      expValEl.className = 'nurse-detail-val';
+      const expNum = Number(nurse.experience_years);
+      if (nurse.experience_years !== null && nurse.experience_years !== undefined && !isNaN(expNum) && expNum > 0) {
+        expValEl.textContent = `${expNum} ${isAr ? 'سنوات' : 'years'}`;
+      } else {
+        expValEl.textContent = notSpecText;
+        expValEl.style.color = 'var(--gray-500)';
+      }
+      expRow.appendChild(expValEl);
+      infoList.appendChild(expRow);
+
+      // Price (Truthful: "لم يحدد بعد" if 0 or missing)
+      const priceRow = document.createElement('div');
+      priceRow.className = 'nurse-detail-row';
+      const priceLabel = document.createElement('span');
+      priceLabel.className = 'nurse-detail-label';
+      priceLabel.textContent = isAr ? '💵 سعر الزيارة:' : '💵 Visit Price:';
+      priceRow.appendChild(priceLabel);
+
+      const priceValEl = document.createElement('span');
+      priceValEl.className = 'nurse-detail-val';
+      const priceNum = Number(nurse.visit_price);
+      if (nurse.visit_price !== null && nurse.visit_price !== undefined && !isNaN(priceNum) && priceNum > 0) {
+        priceValEl.style.color = 'var(--primary)';
+        priceValEl.style.fontWeight = '800';
+        priceValEl.textContent = window.EgyptLocations
+          ? window.EgyptLocations.formatEGP(priceNum, isAr ? 'ar' : 'en') + (isAr ? ' / زيارة' : ' / visit')
+          : `${priceNum} ج.م / زيارة`;
+      } else {
+        priceValEl.textContent = notSpecText;
+        priceValEl.style.color = 'var(--gray-500)';
+      }
+      priceRow.appendChild(priceValEl);
+      infoList.appendChild(priceRow);
+
+      body.appendChild(infoList);
+
+      // ── Actions: 2 buttons (View Profile & Book Visit) ──
+      const actions = document.createElement('div');
+      actions.className = 'nurse-card-actions';
+
+      // 1. View Profile Button
+      const viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.className = 'btn btn-outline btn-sm';
+      viewBtn.textContent = isAr ? 'عرض الملف' : 'View Profile';
+      viewBtn.setAttribute('aria-label', `عرض ملف الممرض ${nurse.full_name || ''}`);
+      viewBtn.addEventListener('click', () => openNurseModal(nurse));
+      actions.appendChild(viewBtn);
+
+      // 2. Book Visit Button
+      const bookLink = document.createElement('a');
+      const nurseIdentifier = encodeURIComponent(nurse.user_id || nurse.id || '');
+      bookLink.href = `book.html?nurse=${nurseIdentifier}`;
+      bookLink.className = 'btn btn-primary btn-sm';
+      bookLink.textContent = isAr ? '📅 احجز زيارة' : '📅 Book';
+      bookLink.setAttribute('aria-label', `حجز زيارة مع الممرض ${nurse.full_name || ''}`);
+      actions.appendChild(bookLink);
+
+      body.appendChild(actions);
+      card.appendChild(body);
+
+      grid.appendChild(card);
+    });
+  }
+
+  // ── Open Nurse Profile Modal ──
+  function openNurseModal(nurse) {
+    const modal = document.getElementById('nurse-details-modal');
+    if (!modal) return;
+
+    const isAr = !i18n || i18n.currentLang === 'ar';
+    const notSpecText = isAr ? 'لم يحدد بعد' : 'Not specified yet';
+
+    // Avatar
+    const avatarWrap = document.getElementById('modal-nurse-avatar');
+    if (avatarWrap) {
+      avatarWrap.innerHTML = '';
+      const avatarUrl = nurse.avatar_url || nurse.profiles?.avatar_url;
+      if (avatarUrl && (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://') || avatarUrl.startsWith('data:image/'))) {
+        const img = document.createElement('img');
+        img.src = avatarUrl;
+        img.alt = nurse.full_name || '';
+        img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+        img.onerror = () => { avatarWrap.textContent = '👩‍⚕️'; };
+        avatarWrap.appendChild(img);
+      } else {
+        avatarWrap.textContent = '👩‍⚕️';
+      }
+    }
+
+    // Name
+    document.getElementById('modal-nurse-name').textContent = getSafeString(nurse.full_name || nurse.profiles?.full_name, isAr ? 'ممرض مسجل' : 'Registered Nurse');
+
+    // Badge
+    const badgeWrap = document.getElementById('modal-nurse-badge-wrap');
+    if (badgeWrap) {
+      badgeWrap.innerHTML = '';
+      const badge = document.createElement('span');
+      if (nurse.verified === true) {
+        badge.className = 'nurse-verified-badge badge-verified';
+        badge.textContent = isAr ? '✓ معتمد وموثق' : '✓ Verified';
+      } else if (nurse.verified === false) {
+        badge.className = 'nurse-verified-badge badge-pending';
+        badge.textContent = isAr ? '⏳ قيد المراجعة' : '⏳ Under Review';
+      } else {
+        badge.className = 'nurse-verified-badge badge-unknown';
+        badge.textContent = isAr ? 'حالة التوثيق غير متاحة' : 'Status Unavailable';
+      }
+      badgeWrap.appendChild(badge);
+    }
+
+    // Bio & Qualifications
+    document.getElementById('modal-nurse-bio').textContent = getSafeString(nurse.bio, isAr ? 'لم تتوفر نبذة تعريفية بعد.' : 'No professional bio provided yet.');
+    document.getElementById('modal-nurse-qualifications').textContent = getSafeString(nurse.qualifications, notSpecText);
+
+    // Specialty & Location
+    document.getElementById('modal-nurse-spec').textContent = getSafeString(nurse.specialization, notSpecText);
+    const loc = nurse.governorate ? (nurse.city ? `${nurse.governorate} - ${nurse.city}` : nurse.governorate) : 'مصر';
+    document.getElementById('modal-nurse-loc').textContent = loc;
+
+    // Experience
+    const expNum = Number(nurse.experience_years);
+    document.getElementById('modal-nurse-exp').textContent = (nurse.experience_years !== null && nurse.experience_years !== undefined && !isNaN(expNum) && expNum > 0)
+      ? `${expNum} ${isAr ? 'سنوات' : 'years'}`
+      : notSpecText;
+
+    // Price
+    const priceNum = Number(nurse.visit_price);
+    document.getElementById('modal-nurse-price').textContent = (nurse.visit_price !== null && nurse.visit_price !== undefined && !isNaN(priceNum) && priceNum > 0)
+      ? (window.EgyptLocations ? window.EgyptLocations.formatEGP(priceNum, isAr ? 'ar' : 'en') + (isAr ? ' / زيارة' : ' / visit') : `${priceNum} ج.م`)
+      : notSpecText;
+
+    // Booking link
+    const bookBtn = document.getElementById('modal-book-btn');
+    if (bookBtn) {
+      const nurseIdentifier = encodeURIComponent(nurse.user_id || nurse.id || '');
+      bookBtn.href = `book.html?nurse=${nurseIdentifier}`;
+    }
+
+    modal.classList.add('open');
+  }
+
+  function closeNurseModal() {
+    document.getElementById('nurse-details-modal')?.classList.remove('open');
+  }
+
+  document.getElementById('modal-close-btn')?.addEventListener('click', closeNurseModal);
+  document.getElementById('nurse-details-modal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'nurse-details-modal') closeNurseModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeNurseModal();
+  });
+
+  // ── Unified Search and Filter Listeners ──
+  function applyFilter() {
+    const q = (document.getElementById('nurse-search')?.value || '').toLowerCase().trim();
+    const gov = (document.getElementById('governorate-filter')?.value || '').trim();
+    const city = (document.getElementById('city-filter')?.value || '').trim();
+    const spec = (document.getElementById('specialty-filter')?.value || '').trim();
+    const maxPrice = Number(document.getElementById('price-filter')?.value) || 0;
+
+    const filtered = allNurses.filter(n => {
+      const name = (n.full_name || n.profiles?.full_name || '').toLowerCase();
+      const specialization = (n.specialization || '').toLowerCase();
+      const nGov = (n.governorate || n.profiles?.governorate || '').toLowerCase();
+      const nCity = (n.city || n.profiles?.city || '').toLowerCase();
+      const bio = (n.bio || '').toLowerCase();
+
+      // 1. Text search query
+      const matchesQuery = !q || name.includes(q) || specialization.includes(q) || nGov.includes(q) || nCity.includes(q) || bio.includes(q);
+
+      // 2. Governorate match
+      const matchesGov = !gov || nGov === gov.toLowerCase() || nGov.includes(gov.toLowerCase());
+
+      // 3. City match
+      const matchesCity = !city || nCity === city.toLowerCase() || nCity.includes(city.toLowerCase());
+
+      // 4. Specialty match
+      const matchesSpec = !spec || specialization.includes(spec.toLowerCase());
+
+      // 5. Price match
+      const rate = Number(n.visit_price || 0);
+      const matchesPrice = !maxPrice || (rate > 0 && rate <= maxPrice);
+
+      // Strict verification & active filter: unverified nurses must never appear in public directory
+      const isApproved = n.verified === true && n.is_active !== false;
+
+      return isApproved && matchesQuery && matchesGov && matchesCity && matchesSpec && matchesPrice;
+    });
+
+    renderNurses(filtered);
+  }
+
+  // ── Reset Filters ──
+  function resetFilters() {
+    const searchInput = document.getElementById('nurse-search');
+    if (searchInput) searchInput.value = '';
+
+    if (govSelect) govSelect.value = '';
+
+    if (citySelect) {
+      citySelect.innerHTML = `<option value="">${i18n ? i18n.t('filter_city_placeholder') : 'اختر المحافظة أولاً'}</option>`;
+      citySelect.disabled = true;
+    }
+
+    const specSelect = document.getElementById('specialty-filter');
+    if (specSelect) specSelect.value = '';
+
+    const priceSelect = document.getElementById('price-filter');
+    if (priceSelect) priceSelect.value = '';
+
+    renderNurses(allNurses);
+  }
+
+  document.getElementById('nurse-search')?.addEventListener('input', applyFilter);
+  document.getElementById('specialty-filter')?.addEventListener('change', applyFilter);
+  document.getElementById('price-filter')?.addEventListener('change', applyFilter);
+  document.getElementById('reset-filters-btn')?.addEventListener('click', resetFilters);
+
+  // ── Language Toggle Handling ──
+  // i18n.init() already binds the click on .lang-toggle; the duplicate handler
+  // that used to be here toggled the language twice per click.
+
+  document.addEventListener('langChanged', () => {
+    applyFilter();
+  });
+
+  // ── Mobile Menu Integration ──
+  const hamburger = document.getElementById('hamburger');
+  const mainNav = document.getElementById('main-nav');
+  if (hamburger && mainNav) {
+    hamburger.addEventListener('click', () => {
+      const open = mainNav.classList.toggle('open');
+      hamburger.classList.toggle('active', open);
+      hamburger.setAttribute('aria-expanded', String(open));
+    });
+  }
+
+  // ── Initialize Page ──
+  initLocationDropdowns();
+  initAuthNavigation();
+  checkUrlFilters();
+  loadNurses();
+</script>
+<script src="../js/whatsapp.js"></script>
+</body>
+</html>

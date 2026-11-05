@@ -1,0 +1,12 @@
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(self), camera=(), microphone=()
+
+/sql/*
+  X-Robots-Tag: noindex, nofollow
+
+/.pre_launch_backup/*
+  X-Robots-Tag: noindex, nofollow
+

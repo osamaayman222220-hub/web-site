@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="الملف الشخصي - CareNest">
+<meta name="robots" content="noindex,nofollow">
+<title>الملف الشخصي | CareNest</title>
+<link rel="stylesheet" href="../css/main.css">
+
+<style>
+.profile-container{max-width:900px;margin:35px auto;padding:0 16px}
+.profile-card{background:var(--card-bg);border:1px solid var(--gray-200);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);overflow:hidden;margin-bottom:28px}
+.profile-banner{padding:32px 24px 55px;color:white;background:linear-gradient(135deg,var(--primary-dark),var(--primary),var(--secondary))}
+.profile-banner h1{color:white;margin:8px 0}
+.profile-avatar{width:112px;height:112px;margin:-52px 24px 0;border:4px solid white;border-radius:50%;overflow:hidden;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:3rem;box-shadow:var(--shadow-md)}
+.profile-avatar img{width:100%;height:100%;object-fit:cover}
+.avatar-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 24px}
+.profile-body{padding:24px}
+.profile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.field{padding:13px 15px;border:1px solid var(--gray-200);border-radius:var(--radius);background:var(--gray-50);min-width:0}
+.label{font-size:.82rem;color:var(--gray-500);font-weight:700;margin-bottom:5px}
+.value{font-weight:600;color:var(--gray-800);overflow-wrap:anywhere}
+.nurse-section{border-top:2px dashed var(--gray-200);padding-top:22px;margin-top:25px}
+.completion{height:9px;background:var(--gray-200);border-radius:99px;overflow:hidden;margin-top:8px}
+.completion>div{height:100%;background:var(--primary);width:0}
+.actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:20px}
+.readonly{background:var(--gray-100)!important}
+.status{display:inline-block;font-size:.8rem;margin-inline-start:6px}
+.loading-error{padding:24px;text-align:center}
+[hidden]{display:none!important}
+@media(max-width:600px){
+.profile-body{padding:16px}
+.profile-grid{grid-template-columns:1fr}
+.profile-banner{padding:24px 16px 52px}
+}
+</style>
+</head>
+
+<body>
+<nav class="navbar" role="navigation">
+  <div class="container"><div class="navbar-inner">
+    <a href="../index.html" class="navbar-brand">
+      <div class="logo-icon">🏥</div>
+      <div class="brand-text"><span class="brand-ar">رعايه</span><span class="brand-en">CareNest</span></div>
+    </a>
+    <ul class="navbar-nav">
+      <li><a href="../index.html" class="nav-link" data-i18n="nav_home">الرئيسية</a></li>
+      <li><a href="nurses.html" class="nav-link" data-i18n="nav_nurses">الممرضون</a></li>
+      <li><a href="book.html" class="nav-link">احجز زيارة</a></li>
+    </ul>
+    <div class="navbar-actions">
+      <button class="lang-toggle" id="lang-toggle-btn" data-i18n="lang_toggle" aria-label="تغيير اللغة">English</button>
+      <a href="#" class="btn btn-outline btn-sm" id="nav-dash-link">لوحة التحكم</a>
+      <button id="nav-logout-btn" class="btn btn-ghost btn-sm">خروج</button>
+    </div>
+  </div></div>
+</nav>
+
+<main class="profile-container">
+  <div id="profile-loading" class="loading-error">
+    <div class="spinner spinner-primary" style="width:38px;height:38px;margin:0 auto 15px"></div>
+    <h3>جاري تحميل الملف الشخصي...</h3>
+  </div>
+
+  <div id="profile-content" class="hidden">
+    <section class="profile-card">
+      <header class="profile-banner">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:15px;flex-wrap:wrap">
+          <div>
+            <span class="badge" id="account-role-badge">حساب مستخدم</span>
+            <h1 id="banner-user-name">مستخدم</h1>
+            <p id="banner-user-role-text">الملف الشخصي في CareNest</p>
+          </div>
+          <button id="edit-profile-btn" class="btn btn-outline-white btn-sm" type="button">✏️ تعديل الملف الشخصي</button>
+        </div>
+      </header>
+
+      <div id="avatar-container" class="profile-avatar">👤</div>
+      <div class="avatar-actions">
+        <input type="file" id="avatar-file-input" accept="image/jpeg,image/png,image/webp" class="hidden">
+        <button id="change-avatar-btn" class="btn btn-outline btn-sm" type="button">📷 تغيير الصورة</button>
+        <button id="delete-avatar-btn" class="btn btn-ghost btn-sm" type="button">🗑️ إزالة الصورة</button>
+        <span id="avatar-status-msg" class="status"></span>
+      </div>
+
+      <div class="profile-body">
+        <div id="profile-view-section">
+          <div class="profile-grid">
+            <div class="field"><div class="label">👤 الاسم الكامل</div><div class="value" id="view-full-name">—</div></div>
+            <div class="field"><div class="label">✉️ البريد الإلكتروني</div><div class="value" id="view-email">—</div></div>
+            <div class="field"><div class="label">📱 الهاتف</div><div class="value" id="view-phone">—</div></div>
+            <div class="field"><div class="label">🪪 الرقم القومي</div><div class="value" id="view-national-id">جاري التحميل...</div></div>
+            <div class="field"><div class="label">📅 تاريخ الانضمام</div><div class="value" id="view-created-at">—</div></div>
+            <div class="field"><div class="label">نوع الحساب</div><div class="value" id="view-role-title">—</div></div>
+            <div class="field"><div class="label">🇪🇬 الدولة</div><div class="value" id="view-country">مصر</div></div>
+            <div class="field"><div class="label">📍 المحافظة</div><div class="value" id="view-profile-governorate">—</div></div>
+            <div class="field"><div class="label">🏙️ المدينة</div><div class="value" id="view-profile-city">—</div></div>
+            <div class="field"><div class="label">🏠 العنوان</div><div class="value" id="view-profile-address">—</div></div>
+          </div>
+        </div>
+
+        <!-- يظهر هذا القسم للممرض فقط -->
+        <section id="nurse-view-block" class="nurse-section" hidden>
+          <h3>💼 البيانات المهنية للتمريض</h3>
+          <div class="field" style="margin:15px 0">
+            <b>اكتمال الملف: <span id="completion-percent-text">0%</span></b>
+            <div class="completion"><div id="completion-bar-fill"></div></div>
+          </div>
+          <div class="profile-grid">
+            <div class="field"><div class="label">التخصص</div><div class="value" id="view-specialization">—</div></div>
+            <div class="field"><div class="label">المؤهل</div><div class="value" id="view-qualifications">—</div></div>
+            <div class="field"><div class="label">سنوات الخبرة</div><div class="value" id="view-experience">—</div></div>
+            <div class="field"><div class="label">سعر الزيارة</div><div class="value" id="view-price">—</div></div>
+            <div class="field"><div class="label">محافظة العمل</div><div class="value" id="view-governorate">—</div></div>
+            <div class="field"><div class="label">مدينة العمل</div><div class="value" id="view-city">—</div></div>
+          </div>
+          <div class="field" style="margin-top:14px">
+            <div class="label">النبذة المهنية</div>
+            <div class="value" id="view-bio">—</div>
+          </div>
+        </section>
+
+        <form id="profile-edit-form" class="hidden" novalidate>
+          <h3>✏️ تعديل بيانات الحساب</h3>
+          <div class="profile-grid">
+            <div class="form-group"><label class="form-label" for="edit-full-name">الاسم الكامل *</label><input id="edit-full-name" class="form-control" required maxlength="120"></div>
+            <div class="form-group"><label class="form-label" for="edit-email">البريد الإلكتروني (غير قابل للتعديل)</label><input type="email" id="edit-email" class="form-control readonly" readonly disabled></div>
+            <div class="form-group"><label class="form-label" for="edit-country">الدولة</label><input id="edit-country" class="form-control" value="مصر"></div>
+            <div class="form-group"><label class="form-label" for="edit-profile-governorate">المحافظة</label><select id="edit-profile-governorate" class="form-control"><option value="">اختر المحافظة</option></select></div>
+            <div class="form-group"><label class="form-label" for="edit-profile-city">المدينة</label><select id="edit-profile-city" class="form-control"><option value="">اختر المحافظة أولاً</option></select></div>
+            <div class="form-group"><label class="form-label" for="edit-profile-address">العنوان بالتفصيل</label><textarea id="edit-profile-address" class="form-control" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label" for="edit-phone">رقم الهاتف</label><input type="tel" id="edit-phone" class="form-control" placeholder="01012345678" dir="ltr"></div>
+            <div class="form-group">
+  <label class="form-label" for="edit-national-id">الرقم القومي (14 رقمًا)</label>
+  <input
+    type="password"
+    id="edit-national-id"
+    class="form-control"
+    inputmode="numeric"
+    autocomplete="off"
+    maxlength="14"
+    pattern="[0-9]{14}"
+    placeholder="أدخل الرقم القومي"
+    dir="ltr"
+  >
+  <small>سيُحفظ الرقم مشفّرًا، وسيظهر في ملفك الشخصي بعد الحفظ.</small>
+</div>
+            <div class="form-group"><label class="form-label" for="edit-role-display">نوع الحساب</label><input id="edit-role-display" class="form-control readonly" readonly disabled></div>
+          </div>
+
+          <!-- كل الحقول المهنية داخل هذا القسم، وهو مخفي افتراضيًا -->
+          <section id="nurse-edit-block" class="nurse-section" hidden>
+            <h3>🩺 البيانات المهنية</h3>
+            <div class="profile-grid">
+              <div class="form-group">
+                <label class="form-label" for="edit-specialization">التخصص *</label>
+                <select id="edit-specialization" class="form-control">
+                  <option value="رعاية تمريضية شاملة">رعاية تمريضية شاملة</option>
+                  <option value="رعاية كبار السن">رعاية كبار السن</option>
+                  <option value="العناية بالجروح">العناية بالجروح</option>
+                  <option value="إعطاء الحقن والمحاليل">إعطاء الحقن والمحاليل</option>
+                  <option value="رعاية ما بعد العمليات الجراحية">رعاية ما بعد العمليات الجراحية</option>
+                  <option value="متابعة العلامات الحيوية والسكر">متابعة السكر والضغط</option>
+                  <option value="رعاية الأم وحديثي الولادة">رعاية الأم وحديثي الولادة</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label" for="edit-experience">سنوات الخبرة</label><input type="number" id="edit-experience" class="form-control" min="0" max="60" value="0"></div>
+              <div class="form-group"><label class="form-label" for="edit-visit-price">سعر الزيارة بالجنيه *</label><input type="number" id="edit-visit-price" class="form-control" min="50" step="10"></div>
+              <div class="form-group"><label class="form-label" for="edit-qualifications">المؤهل العلمي</label><input id="edit-qualifications" class="form-control" placeholder="اكتب مؤهلك الفعلي"></div>
+              <div class="form-group"><label class="form-label" for="edit-governorate">محافظة العمل *</label><select id="edit-governorate" class="form-control"><option value="">اختر المحافظة</option></select></div>
+              <div class="form-group"><label class="form-label" for="edit-city">مدينة العمل *</label><select id="edit-city" class="form-control"><option value="">اختر المدينة</option></select></div>
+            </div>
+            <div class="form-group" style="margin-top:14px"><label class="form-label" for="edit-bio">نبذة مهنية</label><textarea id="edit-bio" class="form-control" rows="3"></textarea></div>
+          </section>
+
+          <div class="actions">
+            <button type="button" id="cancel-edit-btn" class="btn btn-ghost btn-sm">إلغاء</button>
+            <button type="submit" id="save-profile-btn" class="btn btn-primary btn-sm">حفظ التعديلات 💾</button>
+          </div>
+        </form>
+
+        <!-- المستندات تظهر للممرض فقط -->
+        <section id="nurse-docs-section" class="nurse-section" hidden>
+          <h3>📄 الوثائق والشهادات المهنية</h3>
+          <p>رفع المستندات لا يعني اعتماد الحساب تلقائيًا؛ يجب مراجعتها من الإدارة.</p>
+          <div class="profile-grid">
+            <div class="form-group"><label class="form-label" for="doc-id-front">البطاقة القومية - الوجه الأمامي</label><input type="file" id="doc-id-front" accept="image/jpeg,image/png,image/webp,application/pdf" class="form-control"><button type="button" class="btn btn-outline btn-sm doc-upload-btn" data-doc="id_front">رفع الملف</button><span id="doc-id-front-status" class="status"></span></div>
+            <div class="form-group"><label class="form-label" for="doc-id-back">البطاقة القومية - الوجه الخلفي</label><input type="file" id="doc-id-back" accept="image/jpeg,image/png,image/webp,application/pdf" class="form-control"><button type="button" class="btn btn-outline btn-sm doc-upload-btn" data-doc="id_back">رفع الملف</button><span id="doc-id-back-status" class="status"></span></div>
+            <div class="form-group"><label class="form-label" for="doc-license">الترخيص المهني ان وجد</label><input type="file" id="doc-license" accept="image/jpeg,image/png,image/webp,application/pdf" class="form-control"><button type="button" class="btn btn-outline btn-sm doc-upload-btn" data-doc="license">رفع الملف</button><span id="doc-license-status" class="status"></span></div>
+            <div class="form-group"><label class="form-label" for="doc-certificate">الشهادة الدراسية</label><input type="file" id="doc-certificate" accept="image/jpeg,image/png,image/webp,application/pdf" class="form-control"><button type="button" class="btn btn-outline btn-sm doc-upload-btn" data-doc="certificate">رفع الملف</button><span id="doc-certificate-status" class="status"></span></div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script src="../js/egypt-locations.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/i18n.js"></script>
+<script src="../js/utils.js"></script>
+
+<script>
+'use strict';
+
+const Auth = window.Auth;
+const DB = window.DB;
+const EgyptLoc = window.EgyptLocations;
+
+let currentUser = null;
+let currentProfile = null;
+let currentNurseProfile = null;
+
+const $ = id => document.getElementById(id);
+
+function toast(message, type = 'info') {
+  const box = $('toast-container');
+  if (!box) { console.log(message); return; }
+
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.textContent = message;
+  el.style.cssText = `background:${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--error)' : 'var(--primary)'};color:white;padding:12px 18px;border-radius:var(--radius);margin:8px;box-shadow:var(--shadow-lg)`;
+  box.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+function txt(id, value) {
+  const el = $(id);
+  if (el) el.textContent = value == null ? '' : String(value);
+}
+
+function loadError(message) {
+  const el = $('profile-loading');
+  if (!el) return;
+  el.innerHTML = '';
+
+  const h = document.createElement('h3');
+  h.textContent = 'تعذر تحميل الملف الشخصي';
+
+  const p = document.createElement('p');
+  p.textContent = message || 'حدث خطأ غير متوقع';
+
+  const b = document.createElement('button');
+  b.className = 'btn btn-primary';
+  b.textContent = 'إعادة المحاولة';
+  b.onclick = () => location.reload();
+
+  el.append(h, p, b);
+}
+
+function isNurseAccount() {
+  const role = String(currentProfile?.role || currentUser?.role || '').trim().toLowerCase();
+  return role === 'nurse';
+}
+
+function applyRoleVisibility() {
+  const nurse = isNurseAccount();
+
+  if ($('nurse-view-block')) $('nurse-view-block').hidden = !nurse;
+  if ($('nurse-edit-block')) $('nurse-edit-block').hidden = !nurse;
+  if ($('nurse-docs-section')) $('nurse-docs-section').hidden = !nurse;
+
+  // تعطيل حقول الممرض المخفية حتى لا تعطل حفظ نموذج المريض.
+  [
+    'edit-specialization',
+    'edit-experience',
+    'edit-visit-price',
+    'edit-qualifications',
+    'edit-governorate',
+    'edit-city',
+    'edit-bio'
+  ].forEach(id => {
+    const field = $(id);
+    if (field) field.disabled = !nurse;
+  });
+}
+
+async function init() {
+  try {
+    if (!Auth || !DB) throw new Error('ملفات تسجيل الدخول أو قاعدة البيانات لم يتم تحميلها.');
+
+    currentUser = await Auth.requireAuth();
+    if (!currentUser) return;
+
+    const dash = $('nav-dash-link');
+    if (dash) dash.href = currentUser.role === 'nurse' ? 'nurse-dashboard.html' : 'patient-dashboard.html';
+
+    $('nav-logout-btn')?.addEventListener('click', async () => {
+      try {
+        await Auth.signOut();
+        location.href = '../index.html';
+      } catch (e) {
+        toast(e.message || 'تعذر تسجيل الخروج', 'error');
+      }
+    });
+
+    await loadProfile();
+  } catch (e) {
+    console.error(e);
+    loadError(e.message);
+  }
+}
+
+async function loadOwnNationalId() {
+  const output = $('view-national-id');
+  if (!output) return;
+  if (!currentUser || !DB) {
+    output.dir = 'auto';
+    output.textContent = 'تعذر تحميل الرقم القومي، حاول مرة أخرى';
+    return;
+  }
+
+  output.dir = 'auto';
+  output.textContent = 'جاري التحميل...';
+
+  try {
+    const sb = DB.client();
+    if (!sb) throw new Error('اتصال Supabase غير متاح.');
+
+    const { data, error } = await sb.functions.invoke('get-national-id', { body: {} });
+    if (error) {
+      output.dir = 'auto';
+      output.textContent = 'تعذر تحميل الرقم القومي، حاول مرة أخرى';
+      return;
+    }
+
+    if (data?.legacy_hash_only) {
+      output.dir = 'auto';
+      output.textContent = 'مسجل كبصمة أمان سابقة (يرجى إعادة إدخاله للتحديث)';
+      return;
+    }
+
+    const rawId = data?.national_id ? String(data.national_id).trim() : '';
+    if (!rawId) {
+      output.dir = 'auto';
+      output.textContent = 'لم يتم تسجيل الرقم القومي';
+      return;
+    }
+
+    // التحقق من أن الرقم المسترجع يتكون من 14 رقمًا بالضبط
+    if (!/^[0-9]{14}$/.test(rawId)) {
+      output.dir = 'auto';
+      output.textContent = 'تعذر تحميل الرقم القومي، حاول مرة أخرى';
+      return;
+    }
+
+    // إخفاء أول 10 أرقام وعرض آخر 4 أرقام فقط (مثال: ••••••••••1234)
+    output.dir = 'ltr';
+    output.textContent = '••••••••••' + rawId.slice(10);
+  } catch (_) {
+    output.dir = 'auto';
+    output.textContent = 'تعذر تحميل الرقم القومي، حاول مرة أخرى';
+  }
+}
+
+async function loadProfile() {
+  try {
+    const sb = DB.client();
+    if (!sb) throw new Error('اتصال Supabase غير متاح.');
+
+    const { data, error } = await sb
+      .from('profiles')
+      .select('*')
+      .eq('id', currentUser.id)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    currentProfile = data || {
+      id: currentUser.id,
+      email: currentUser.email || '',
+      full_name: currentUser.user_metadata?.full_name || '',
+      phone: currentUser.user_metadata?.phone || '',
+      role: currentUser.role || currentUser.user_metadata?.role || 'patient',
+      country: 'مصر',
+      governorate: '',
+      city: '',
+      address: '',
+      avatar_url: null,
+      created_at: currentUser.created_at || new Date().toISOString()
+    };
+
+    if (isNurseAccount()) {
+      currentNurseProfile = await DB.getNurseProfile(currentUser.id);
+    } else {
+      currentNurseProfile = null;
+    }
+
+    applyRoleVisibility();
+    render();
+    await loadOwnNationalId();
+
+    $('profile-loading')?.classList.add('hidden');
+    $('profile-content')?.classList.remove('hidden');
+  } catch (e) {
+    console.error(e);
+    loadError(e.message || 'تعذر الاتصال بقاعدة البيانات.');
+  }
+}
+
+function render() {
+  if (!currentProfile) return;
+
+  const p = currentProfile;
+  const np = currentNurseProfile || {};
+  const nurse = isNurseAccount();
+
+  applyRoleVisibility();
+
+  txt('banner-user-name', p.full_name || 'مستخدم');
+  txt('account-role-badge', nurse ? '👨‍⚕️ حساب ممرض' : '👤 حساب مريض');
+  txt('banner-user-role-text', nurse ? 'الملف الشخصي للكادر التمريضي' : 'مستفيد من خدمات الرعاية المنزلية');
+
+  txt('view-full-name', p.full_name || '—');
+  txt('view-email', p.email || currentUser?.email || '—');
+  txt('view-phone', p.phone || 'لم يتم تحديد رقم الهاتف');
+  txt('view-country', p.country || 'مصر');
+  txt('view-profile-governorate', p.governorate || 'لم يتم تحديد المحافظة');
+  txt('view-profile-city', p.city || 'لم يتم تحديد المدينة');
+  txt('view-profile-address', p.address || 'لم يتم تحديد العنوان');
+
+  txt('view-created-at', p.created_at
+    ? new Date(p.created_at).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })
+    : 'حديثًا'
+  );
+
+  txt('view-role-title', nurse ? 'ممرض' : 'مريض');
+
+  const avatar = $('avatar-container');
+  if (avatar) {
+    avatar.replaceChildren();
+    if (p.avatar_url) {
+      const img = document.createElement('img');
+      img.src = p.avatar_url;
+      img.alt = 'الصورة الشخصية';
+      img.onerror = () => { avatar.textContent = nurse ? '👩‍⚕️' : '👤'; };
+      avatar.appendChild(img);
+    } else {
+      avatar.textContent = nurse ? '👩‍⚕️' : '👤';
+    }
+  }
+
+  if (nurse) {
+    txt('view-specialization', np.specialization || 'لم يتم تحديد التخصص');
+    txt('view-qualifications', np.qualifications || 'لم يتم تحديد المؤهل');
+    txt('view-experience', `${np.experience_years ?? 0} سنوات`);
+    txt('view-price', Number(np.visit_price) > 0 ? `${np.visit_price} جنيه مصري` : 'لم يتم تحديد السعر');
+    txt('view-governorate', np.governorate || 'لم يتم تحديد المحافظة');
+    txt('view-city', np.city || 'لم يتم تحديد المدينة');
+    txt('view-bio', np.bio || 'لا توجد نبذة مضافة بعد.');
+
+    let score = 30;
+    if (p.avatar_url) score += 20;
+    if (p.phone) score += 15;
+    if (np.specialization) score += 15;
+    if (np.qualifications) score += 10;
+    if (np.bio) score += 10;
+
+    txt('completion-percent-text', `${Math.min(score, 100)}%`);
+    if ($('completion-bar-fill')) $('completion-bar-fill').style.width = `${Math.min(score, 100)}%`;
+  }
+}
+
+const edit = $('edit-profile-btn');
+const form = $('profile-edit-form');
+const view = $('profile-view-section');
+
+edit?.addEventListener('click', () => {
+  if (!currentProfile) {
+    toast('انتظر تحميل البيانات أولًا.', 'error');
+    return;
+  }
+
+  const p = currentProfile;
+  const nurse = isNurseAccount();
+  const np = currentNurseProfile || {};
+
+  $('edit-full-name').value = p.full_name || '';
+  $('edit-email').value = p.email || currentUser?.email || '';
+  $('edit-phone').value = p.phone || '';
+  $('edit-country').value = p.country || 'مصر';
+  const profGov = $('edit-profile-governorate');
+  const profCity = $('edit-profile-city');
+  if (EgyptLoc && profGov && profCity) {
+    EgyptLoc.populateGovernorateSelect(profGov, p.governorate || '', 'اختر المحافظة');
+    EgyptLoc.populateCitySelect(profCity, p.governorate || '', p.city || '', 'اختر المدينة');
+    profGov.onchange = () => EgyptLoc.populateCitySelect(profCity, profGov.value, '', 'اختر المدينة');
+  }
+  $('edit-profile-address').value = p.address || '';
+  $('edit-role-display').value = nurse ? 'ممرض' : 'مريض';
+
+  applyRoleVisibility();
+
+  if (nurse) {
+    $('edit-specialization').value = np.specialization || 'رعاية تمريضية شاملة';
+    $('edit-experience').value = np.experience_years ?? 0;
+    $('edit-visit-price').value = Number(np.visit_price) > 0 ? np.visit_price : '';
+    $('edit-qualifications').value = np.qualifications || '';
+    $('edit-bio').value = np.bio || '';
+
+    const gov = $('edit-governorate');
+    const city = $('edit-city');
+
+    if (EgyptLoc && gov && city) {
+      EgyptLoc.populateGovernorateSelect(gov, np.governorate || '', 'اختر المحافظة');
+      EgyptLoc.populateCitySelect(city, np.governorate || '', np.city || '', 'اختر المدينة');
+      gov.onchange = () => EgyptLoc.populateCitySelect(city, gov.value, '', 'اختر المدينة');
+    }
+  }
+
+  view?.classList.add('hidden');
+  form?.classList.remove('hidden');
+  edit.classList.add('hidden');
+});
+
+$('cancel-edit-btn')?.addEventListener('click', () => {
+  form?.classList.add('hidden');
+  view?.classList.remove('hidden');
+  edit?.classList.remove('hidden');
+});
+
+form?.addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const save = $('save-profile-btn');
+  if (!currentUser || !currentProfile || !DB || !save) return;
+
+  save.disabled = true;
+  save.textContent = 'جاري الحفظ...';
+
+  try {
+    const full_name = $('edit-full-name').value.trim();
+    const phone = $('edit-phone').value.trim();
+    const country = $('edit-country').value.trim() || 'مصر';
+    const governorate = $('edit-profile-governorate').value.trim();
+    const city = $('edit-profile-city').value.trim();
+    const address = $('edit-profile-address').value.trim();
+    const nationalIdInput = $('edit-national-id');
+    let nationalId = nationalIdInput ? nationalIdInput.value.trim() : '';
+
+    if (nationalId) {
+      nationalId = nationalId
+        .replace(/[٠-٩]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); })
+        .replace(/[۰-۹]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); })
+        .replace(/[\s-]/g, '')
+        .trim();
+
+      if (!/^[0-9]{14}$/.test(nationalId)) {
+        throw new Error('الرقم القومي يجب أن يتكون من 14 رقمًا.');
+      }
+    }
+
+    if (!full_name) throw new Error('يرجى إدخال الاسم الكامل.');
+
+    if (phone && EgyptLoc && !EgyptLoc.isValidEgyptianMobile(phone)) {
+      throw new Error('يرجى إدخال رقم هاتف مصري صحيح مكوّن من 11 رقمًا.');
+    }
+
+    const nurse = isNurseAccount();
+
+    if (nurse) {
+      const specialization = $('edit-specialization').value;
+      const experience = Number($('edit-experience').value);
+      const priceValue = $('edit-visit-price').value;
+      const price = Number(priceValue);
+      const qualifications = $('edit-qualifications').value.trim();
+      const nurseGovernorate = $('edit-governorate').value;
+      const nurseCity = $('edit-city').value;
+      const bio = $('edit-bio').value.trim();
+
+      if (!Number.isFinite(experience) || experience < 0) throw new Error('أدخل سنوات خبرة صحيحة.');
+      if (!priceValue || !Number.isFinite(price) || price < 50) throw new Error('أدخل سعر زيارة لا يقل عن 50 جنيهًا.');
+      if (!nurseGovernorate || !nurseCity) throw new Error('حدد محافظة ومدينة العمل.');
+
+      await DB.upsertNurseProfile(currentUser.id, {
+        specialization,
+        experience_years: experience,
+        visit_price: price,
+        qualifications,
+        governorate: nurseGovernorate,
+        city: nurseCity,
+        address: `${nurseGovernorate} - ${nurseCity}`,
+        bio
+      });
+
+      currentNurseProfile = {
+        ...(currentNurseProfile || {}),
+        specialization,
+        experience_years: experience,
+        visit_price: price,
+        qualifications,
+        governorate: nurseGovernorate,
+        city: nurseCity,
+        address: `${nurseGovernorate} - ${nurseCity}`,
+        bio
+      };
+    }
+// حفظ الرقم القومي من خلال الدالة الآمنة فقط
+if (nationalId) {
+    const sb = DB.client();
+
+    const { data: result, error: saveError } = await sb.functions.invoke(
+        'save-national-id',
+        {
+            body: {
+                national_id: nationalId,
+                nationalId: nationalId
+            }
+        }
+    );
+
+    if (saveError) {
+        throw new Error(
+            saveError.message || 'تعذر حفظ الرقم القومي.'
+        );
+    }
+
+    if (!result || result.success !== true) {
+        throw new Error(
+            result?.error || 'تعذر حفظ الرقم القومي.'
+        );
+    }
+
+    // مسح الرقم من الخانة بعد نجاح الحفظ
+    const nationalIdField = document.getElementById('edit-national-id');
+    if (nationalIdField) {
+        nationalIdField.value = '';
+    }
+}
+    const updatedProfile = await DB.updateProfile(currentUser.id, {
+      full_name,
+      phone,
+      country,
+      governorate: governorate || null,
+      city: city || null,
+      address: address || null
+    });
+
+    Object.assign(currentProfile, updatedProfile || {}, {
+      full_name,
+      phone,
+      country,
+      governorate,
+      city,
+      address
+    });
+
+    render();
+    if (nationalId) {
+      await loadOwnNationalId();
+    }
+    form.classList.add('hidden');
+    view?.classList.remove('hidden');
+    edit?.classList.remove('hidden');
+
+    toast('تم حفظ التعديلات بنجاح.', 'success');
+  } catch (e) {
+    console.error('Profile save error:', e);
+    toast(e.message || 'فشل حفظ التعديلات.', 'error');
+  } finally {
+    save.disabled = false;
+    save.textContent = 'حفظ التعديلات 💾';
+  }
+});
+
+const avatarInput = $('avatar-file-input');
+const changeAvatar = $('change-avatar-btn');
+const deleteAvatar = $('delete-avatar-btn');
+const avatarStatus = $('avatar-status-msg');
+
+changeAvatar?.addEventListener('click', () => avatarInput?.click());
+
+avatarInput?.addEventListener('change', async e => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  try {
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) throw new Error('اختر صورة JPEG أو PNG أو WEBP.');
+    if (file.size > 5 * 1024 * 1024) throw new Error('الحد الأقصى للصورة 5 ميجابايت.');
+    if (typeof DB?.uploadAvatar !== 'function') throw new Error('دالة رفع الصورة غير موجودة في js/supabase.js.');
+
+    changeAvatar.disabled = true;
+    if (avatarStatus) avatarStatus.textContent = 'جاري رفع الصورة...';
+
+    const url = await DB.uploadAvatar(currentUser.id, file);
+    currentProfile.avatar_url = url;
+    render();
+    toast('تم تحديث الصورة الشخصية بنجاح.', 'success');
+    if (avatarStatus) avatarStatus.textContent = '';
+  } catch (e) {
+    console.error(e);
+    toast(`فشل رفع الصورة: ${e.message}`, 'error');
+    if (avatarStatus) avatarStatus.textContent = 'فشل الرفع';
+  } finally {
+    if (changeAvatar) changeAvatar.disabled = false;
+    avatarInput.value = '';
+  }
+});
+
+deleteAvatar?.addEventListener('click', async () => {
+  if (!currentProfile?.avatar_url) {
+    toast('لا توجد صورة لإزالتها.');
+    return;
+  }
+
+  if (!confirm('هل تريد إزالة الصورة الشخصية؟')) return;
+
+  try {
+    deleteAvatar.disabled = true;
+    if (typeof DB?.deleteAvatar !== 'function') throw new Error('دالة حذف الصورة غير موجودة في js/supabase.js.');
+
+    await DB.deleteAvatar(currentUser.id);
+    currentProfile.avatar_url = null;
+    render();
+    toast('تمت إزالة الصورة الشخصية.', 'success');
+  } catch (e) {
+    console.error(e);
+    toast(`تعذر حذف الصورة: ${e.message}`, 'error');
+  } finally {
+    deleteAvatar.disabled = false;
+  }
+});
+
+const DOCS = {
+  id_front: ['doc-id-front', 'doc-id-front-status', 'الوجه الأمامي للبطاقة'],
+  id_back: ['doc-id-back', 'doc-id-back-status', 'الوجه الخلفي للبطاقة'],
+  license: ['doc-license', 'doc-license-status', 'الترخيص المهني'],
+  certificate: ['doc-certificate', 'doc-certificate-status', 'الشهادة الدراسية']
+};
+
+document.querySelectorAll('.doc-upload-btn').forEach(button => {
+  button.addEventListener('click', async () => {
+    const config = DOCS[button.dataset.doc];
+    if (!config) return;
+
+    const input = $(config[0]);
+    const status = $(config[1]);
+    const file = input?.files?.[0];
+
+    if (!file) { toast('اختر ملفًا أولًا.', 'error'); return; }
+    if (!['image/jpeg','image/png','image/webp','application/pdf'].includes(file.type)) {
+      toast('ارفع صورة JPEG أو PNG أو WEBP أو PDF.', 'error');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast('الحد الأقصى للمستند 10 ميجابايت.', 'error');
+      return;
+    }
+
+    try {
+      button.disabled = true;
+      if (status) status.textContent = 'جاري الرفع...';
+
+      const sb = DB?.client?.();
+      if (!sb) throw new Error('اتصال Supabase غير متاح.');
+      if (!isNurseAccount()) throw new Error('رفع المستندات متاح للممرضين فقط.');
+
+      const ext = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const path = `${currentUser.id}/${button.dataset.doc}_${Date.now()}.${ext}`;
+
+      const { error } = await sb.storage.from('private-docs').upload(path, file, {
+        cacheControl: '3600',
+        contentType: file.type,
+        upsert: false
+      });
+
+      if (error) throw error;
+
+      if (status) {
+        status.textContent = 'تم الرفع';
+        status.style.color = 'var(--success)';
+      }
+
+      toast(`تم رفع ${config[2]} بنجاح.`, 'success');
+      input.value = '';
+    } catch (e) {
+      console.error(e);
+      if (status) {
+        status.textContent = 'فشل الرفع';
+        status.style.color = 'var(--error)';
+      }
+      toast(`فشل رفع المستند: ${e.message || 'خطأ غير معروف'}`, 'error');
+    } finally {
+      button.disabled = false;
+    }
+  });
+});
+
+init();
+</script>
+</body>
+</html>

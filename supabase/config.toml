@@ -1,0 +1,19 @@
+project_id = "tfolrgauojmbeofartaq"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[auth]
+enabled = true
+jwt_expiry = 3600
+enable_signup = true
+
+[functions.save-national-id]
+verify_jwt = false
+
+[functions.get-national-id]
+verify_jwt = false

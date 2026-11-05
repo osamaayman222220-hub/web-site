@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="لوحة تحكم الأدمن - رعايه CareNest">
+  <meta name="robots" content="noindex, nofollow">
+  <title>لوحة تحكم الإدارة | رعايه CareNest</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .badge-status { display:inline-block; padding:4px 10px; border-radius:var(--radius-full); font-size:0.75rem; font-weight:700; }
+    .status-pending { background:#fef3c7; color:#92400e; }
+    .status-approved { background:#d1fae5; color:#065f46; }
+    .status-rejected { background:#fee2e2; color:#991b1b; }
+    .status-suspended { background:#f3f4f6; color:#4b5563; }
+    .status-incomplete { background:#e0e7ff; color:#3730a3; }
+    .admin-tabs { display:flex; gap:4px; background:var(--gray-100); padding:4px; border-radius:var(--radius-lg); margin-bottom:28px; flex-wrap:wrap; }
+    .admin-tab { flex:1; min-width:120px; padding:10px 16px; border:none; background:transparent; border-radius:var(--radius); cursor:pointer; font-weight:600; color:var(--gray-600); transition:all 0.2s; font-size:0.9rem; }
+    .admin-tab.active { background:white; color:var(--primary); box-shadow:var(--shadow-sm); }
+    .admin-panel { display:none; }
+    .admin-panel.active { display:block; }
+    .action-btn { padding:6px 12px; border-radius:var(--radius); border:none; cursor:pointer; font-weight:700; font-size:0.8rem; transition:all 0.2s; }
+    .btn-approve { background:#d1fae5; color:#065f46; }
+    .btn-approve:hover { background:#6ee7b7; }
+    .btn-reject { background:#fee2e2; color:#991b1b; }
+    .btn-reject:hover { background:#fca5a5; }
+    .btn-suspend { background:#fef3c7; color:#92400e; }
+    .stat-admin { background:white; border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow); border:1px solid var(--gray-100); text-align:center; }
+    .stat-admin-value { font-size:2rem; font-weight:800; color:var(--primary); }
+    .stat-admin-label { color:var(--gray-500); font-size:0.85rem; margin-top:4px; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar" style="position:fixed; top:0; left:0; right:0; z-index:100; background:white; border-bottom:1px solid var(--gray-100);">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="../index.html" class="navbar-brand">
+        <div class="logo-icon">🏥</div>
+        <div class="brand-text">
+          <span class="brand-ar">رعايه</span>
+          <span class="brand-en">CareNest</span>
+        </div>
+      </a>
+      <div class="navbar-actions">
+        <button class="lang-toggle" id="lang-toggle-btn" aria-label="تغيير اللغة / Change language" data-i18n="lang_toggle">English</button>
+        <span class="badge badge-warning" style="padding:6px 14px; font-size:0.85rem;">⚙️ لوحة الإدارة</span>
+        <button id="logout-btn-top" class="btn btn-outline btn-sm" data-i18n="nav_logout">تسجيل الخروج</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="admin-avatar-box">⚙️</div>
+        <div class="sidebar-user-info">
+          <h4 id="admin-display-name">المدير</h4>
+          <span style="color:var(--error); font-weight:700; font-size:0.8rem;">مدير النظام</span>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">الإدارة</div>
+      <a href="#" class="sidebar-link active" onclick="showPanel('nurses-panel')">
+        <span class="icon">👩‍⚕️</span><span>طلبات الممرضين</span>
+        <span class="badge badge-warning" id="pending-nurses-badge" style="font-size:0.7rem; padding:2px 8px; margin-inline-start:auto;">0</span>
+      </a>
+      <a href="#" class="sidebar-link" onclick="showPanel('bookings-panel')">
+        <span class="icon">📋</span><span>الحجوزات</span>
+      </a>
+      <a href="#" class="sidebar-link" onclick="showPanel('services-panel')">
+        <span class="icon">🩺</span><span>الخدمات</span>
+      </a>
+      <a href="#" class="sidebar-link" onclick="showPanel('users-panel')">
+        <span class="icon">👥</span><span>المستخدمون والأرقام القومية</span>
+      </a>
+      <a href="#" class="sidebar-link" onclick="showPanel('overview-panel')">
+        <span class="icon">📊</span><span>الإحصائيات</span>
+      </a>
+      <div class="sidebar-section-label">عام</div>
+      <a href="../index.html" class="sidebar-link">
+        <span class="icon">🏠</span><span data-i18n="nav_home">الرئيسية</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button id="logout-btn" class="btn btn-ghost w-full" style="color:var(--error); justify-content:flex-start;">
+        <span style="margin-inline-end:8px;">🚪</span> تسجيل الخروج
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <div class="container" style="max-width:1100px; padding:0;">
+
+      <!-- Welcome -->
+      <div style="margin-bottom:28px;">
+        <h1 style="font-size:1.75rem; font-weight:800; color:var(--gray-900);">لوحة تحكم الإدارة ⚙️</h1>
+        <p style="color:var(--gray-500);">إدارة الممرضين والحجوزات والخدمات من مكان واحد</p>
+      </div>
+
+      <!-- Overview Stats -->
+      <div id="overview-panel" class="admin-panel active" style="margin-bottom:32px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:16px; margin-bottom:32px;">
+          <div class="stat-admin"><div class="stat-admin-value" id="stat-total-nurses">—</div><div class="stat-admin-label">ممرضون مسجلون</div></div>
+          <div class="stat-admin"><div class="stat-admin-value" id="stat-pending-nurses">—</div><div class="stat-admin-label">قيد المراجعة</div></div>
+          <div class="stat-admin"><div class="stat-admin-value" id="stat-approved-nurses">—</div><div class="stat-admin-label">ممرضون معتمدون</div></div>
+          <div class="stat-admin"><div class="stat-admin-value" id="stat-total-patients">—</div><div class="stat-admin-label">مرضى مسجلون</div></div>
+          <div class="stat-admin"><div class="stat-admin-value" id="stat-total-bookings">—</div><div class="stat-admin-label">إجمالي الحجوزات</div></div>
+          <div class="stat-admin"><div class="stat-admin-value" id="stat-pending-bookings">—</div><div class="stat-admin-label">حجوزات قيد الانتظار</div></div>
+        </div>
+      </div>
+
+      <!-- Nurses Panel -->
+      <div id="nurses-panel" class="admin-panel active">
+        <div class="table-container">
+          <div class="table-header">
+            <h3>طلبات اعتماد الممرضين</h3>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <select id="nurse-filter-status" class="form-control" style="width:auto; padding:6px 12px; font-size:0.875rem;">
+                <option value="">جميع الحالات</option>
+                <option value="pending" selected>قيد المراجعة</option>
+                <option value="approved">معتمد</option>
+                <option value="rejected">مرفوض</option>
+                <option value="suspended">موقوف</option>
+              </select>
+              <button class="btn btn-outline btn-sm" onclick="loadNurseApplications()">🔄 تحديث</button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>الممرض</th>
+                  <th data-i18n="filter_specialty_label">التخصص</th>
+                  <th data-i18n="filter_gov_label">المحافظة</th>
+                  <th data-i18n="nurse_exp_label">الخبرة</th>
+                  <th>السعر</th>
+                  <th>الحالة</th>
+                  <th>الإجراء</th>
+                </tr>
+              </thead>
+              <tbody id="nurses-table-body">
+                <tr><td colspan="7" style="text-align:center; padding:40px; color:var(--gray-500);">⏳ جاري التحميل...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bookings Panel -->
+      <div id="bookings-panel" class="admin-panel">
+        <div class="table-container">
+          <div class="table-header">
+            <h3>جميع الحجوزات</h3>
+            <button class="btn btn-outline btn-sm" onclick="loadAllBookings()">🔄 تحديث</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>المريض</th>
+                  <th>الممرض</th>
+                  <th>الخدمة</th>
+                  <th>التاريخ</th>
+                  <th>المبلغ</th>
+                  <th>الحالة</th>
+                  <th>الإجراء</th>
+                </tr>
+              </thead>
+              <tbody id="bookings-table-body">
+                <tr><td colspan="7" style="text-align:center; padding:40px; color:var(--gray-500);">انقر فوق "الحجوزات" لتحميل البيانات</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users and National IDs Panel -->
+      <div id="users-panel" class="admin-panel">
+        <div class="table-container">
+          <div class="table-header">
+            <h3>المستخدمون والأرقام القومية</h3>
+            <button class="btn btn-outline btn-sm" onclick="loadUsersNationalIds()">🔄 تحديث</button>
+          </div>
+          <p style="padding:0 18px 14px;color:var(--gray-500);">بيانات حساسة؛ تظهر هذه القائمة لحسابات الإدارة المصرّح لها فقط.</p>
+          <div class="table-responsive">
+            <table>
+              <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>نوع الحساب</th><th>الرقم القومي</th></tr></thead>
+              <tbody id="users-national-id-body"><tr><td colspan="4" style="text-align:center;padding:30px;">افتح القسم لتحميل المستخدمين</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Services Panel -->
+      <div id="services-panel" class="admin-panel">
+        <div class="table-container">
+          <div class="table-header">
+            <h3>الخدمات المتاحة</h3>
+            <button class="btn btn-outline btn-sm" onclick="loadServices()">🔄 تحديث</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>الخدمة</th>
+                  <th>السعر الأساسي</th>
+                  <th>المدة</th>
+                  <th>الحالة</th>
+                  <th>الإجراء</th>
+                </tr>
+              </thead>
+              <tbody id="services-table-body">
+                <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--gray-500);">انقر فوق "الخدمات" لتحميل البيانات</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Rejection Reason Modal -->
+<div id="reject-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center;">
+  <div style="background:white; border-radius:var(--radius-xl); padding:32px; max-width:480px; width:90%; margin:auto;">
+    <h3 style="margin-bottom:16px; font-weight:700;">سبب الرفض (اختياري)</h3>
+    <textarea id="reject-reason-input" class="form-control" rows="4" placeholder="أدخل سبب الرفض للممرض ليتمكن من تصحيح وثائقه..."></textarea>
+    <div style="display:flex; gap:12px; margin-top:16px; justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeRejectModal()">إلغاء</button>
+      <button class="btn btn-primary" id="confirm-reject-btn" style="background:var(--error);">تأكيد الرفض</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script src="../js/egypt-locations.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/i18n.js"></script>
+<script src="../js/utils.js"></script>
+<script>
+  const SbAuth = window.Auth;
+  let currentAdmin = null;
+  let pendingRejectNurseId = null;
+
+  function showPanel(panelId) {
+    document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    const panel = document.getElementById(panelId);
+    if (panel) panel.classList.add('active');
+
+    // Load data for the activated panel
+    if (panelId === 'nurses-panel') loadNurseApplications();
+    if (panelId === 'bookings-panel') loadAllBookings();
+    if (panelId === 'services-panel') loadServices();
+    if (panelId === 'users-panel') loadUsersNationalIds();
+    if (panelId === 'overview-panel') loadOverviewStats();
+    return false;
+  }
+
+  async function initAdmin() {
+    currentAdmin = await SbAuth.requireAuth(['admin']);
+    if (!currentAdmin) return;
+
+    document.getElementById('admin-display-name').textContent = currentAdmin.full_name || 'المدير';
+
+    await loadOverviewStats();
+    await loadNurseApplications();
+  }
+
+  async function loadUsersNationalIds() {
+    const tbody = document.getElementById('users-national-id-body');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;">⏳ جاري التحميل...</td></tr>';
+    try {
+      const sb = window.getSupabase();
+      if (!sb) throw new Error('اتصال قاعدة البيانات غير متاح.');
+      const { data, error } = await sb.functions.invoke('get-national-id', { body: { action: 'admin_list' } });
+      if (error) throw error;
+      if (!data || !Array.isArray(data.users)) throw new Error(data?.error || 'تعذر تحميل المستخدمين.');
+      if (!data.users.length) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;">لا يوجد مستخدمون</td></tr>';
+        return;
+      }
+      const safe = value => String(value ?? '—').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      tbody.innerHTML = data.users.map(user => `<tr><td>${safe(user.full_name)}</td><td>${safe(user.email)}</td><td>${safe(user.role)}</td><td dir="ltr">${safe(user.national_id || 'غير مسجل')}</td></tr>`).join('');
+    } catch (error) {
+      console.error('Users national IDs load error:', error);
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--error);">تعذر تحميل البيانات: ${String(error.message || error).replace(/[&<>"']/g, '')}</td></tr>`;
+    }
+  }
+
+  async function loadOverviewStats() {
+    const sb = window.getSupabase();
+    if (!sb) return;
+    try {
+      const [nursesRes, patientsRes, bookingsRes] = await Promise.all([
+        sb.from('nurse_profiles').select('verified, is_active', { count: 'exact' }),
+        sb.from('profiles').select('id', { count: 'exact' }).eq('role', 'patient'),
+        sb.from('bookings').select('status', { count: 'exact' })
+      ]);
+
+      const nurseData = nursesRes.data || [];
+      const bookingData = bookingsRes.data || [];
+
+      const totalNurses = nurseData.length;
+      // Approved = verified AND active; Pending = not yet verified
+      const approvedNurses = nurseData.filter(n => n.verified && n.is_active).length;
+      const pendingNurses = nurseData.filter(n => !n.verified).length;
+
+      document.getElementById('stat-total-nurses').textContent = totalNurses;
+      document.getElementById('stat-pending-nurses').textContent = pendingNurses;
+      document.getElementById('stat-approved-nurses').textContent = approvedNurses;
+      document.getElementById('stat-total-patients').textContent = patientsRes.data?.length || 0;
+      document.getElementById('stat-total-bookings').textContent = bookingData.length;
+      document.getElementById('stat-pending-bookings').textContent = bookingData.filter(b => b.status === 'pending').length;
+      document.getElementById('pending-nurses-badge').textContent = pendingNurses;
+    } catch (err) {
+      console.error('Stats error:', err.message);
+    }
+  }
+
+  // Derive a display status key from verified + is_active booleans
+  function nurseStatusFromBooleans(n) {
+    if (n.verified && n.is_active)  return 'approved';
+    if (n.verified && !n.is_active) return 'suspended';
+    return 'pending'; // not yet verified
+  }
+
+  async function loadNurseApplications() {
+    const tbody = document.getElementById('nurses-table-body');
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:24px; color:var(--gray-500);">⏳ جاري التحميل...</td></tr>';
+
+    const sb = window.getSupabase();
+    if (!sb) return;
+
+    const filterStatus = document.getElementById('nurse-filter-status').value;
+
+    try {
+      // Join nurse_profiles → profiles via user_id to get nurse's account details
+      let query = sb.from('nurse_profiles')
+        .select('*, profiles!user_id(full_name, email, phone)')
+        .order('created_at', { ascending: false });
+
+      // Filter using the actual boolean columns instead of the non-existent
+      // verification_status text column
+      if (filterStatus === 'approved')  query = query.eq('verified', true).eq('is_active', true);
+      else if (filterStatus === 'suspended') query = query.eq('verified', true).eq('is_active', false);
+      else if (filterStatus === 'pending')   query = query.eq('verified', false);
+      // 'rejected' and 'incomplete' are not distinguishable from 'pending' in the
+      // current boolean schema — show all unverified nurses in that case
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--gray-500);">لا يوجد ممرضون في هذه الحالة</td></tr>';
+        return;
+      }
+
+      const statusLabels = {
+        pending:   { text: 'قيد المراجعة', cls: 'status-pending' },
+        approved:  { text: 'معتمد',        cls: 'status-approved' },
+        suspended: { text: 'موقوف',        cls: 'status-suspended' }
+      };
+
+      tbody.innerHTML = data.map(n => {
+        const profile = n.profiles || {};
+        const statusKey = nurseStatusFromBooleans(n);
+        const st = statusLabels[statusKey] || { text: statusKey, cls: 'status-pending' };
+        const priceText = n.visit_price ? `${n.visit_price} ج.م` : 'لم يحدد';
+        const expText   = n.experience_years ? `${n.experience_years} سنوات` : 'لم يحدد';
+
+        const actions = [];
+        if (statusKey !== 'approved') {
+          actions.push(`<button class="action-btn btn-approve" onclick="verifyNurse('${n.user_id}', 'approved')">✅ اعتماد</button>`);
+        }
+        if (statusKey !== 'suspended') {
+          actions.push(`<button class="action-btn btn-suspend" onclick="verifyNurse('${n.user_id}', 'suspended')">⏸ إيقاف</button>`);
+        }
+        if (statusKey === 'approved' || statusKey === 'suspended') {
+          actions.push(`<button class="action-btn btn-reject" onclick="verifyNurse('${n.user_id}', 'pending')">↩ إلغاء الاعتماد</button>`);
+        }
+
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:700;">${profile.full_name || n.full_name || 'غير معروف'}</div>
+              <div style="font-size:0.8rem; color:var(--gray-500);">${profile.email || ''}</div>
+              <div style="font-size:0.8rem; color:var(--gray-500);">${profile.phone || ''}</div>
+            </td>
+            <td>${n.specialization || 'لم يحدد'}</td>
+            <td>${n.governorate || '—'}</td>
+            <td>${expText}</td>
+            <td style="font-weight:700; color:var(--primary);">${priceText}</td>
+            <td><span class="badge-status ${st.cls}">${st.text}</span></td>
+            <td style="display:flex; gap:6px; flex-wrap:wrap;">${actions.join('')}</td>
+          </tr>
+        `;
+      }).join('');
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px; color:var(--error);">خطأ في تحميل البيانات: ${err.message}</td></tr>`;
+      Toast.error('خطأ: ' + err.message);
+    }
+  }
+
+  async function verifyNurse(nurseUserId, newStatus, reason = null) {
+    const sb = window.getSupabase();
+    if (!sb) return;
+    try {
+      let rpcSuccess = false;
+      try {
+        const { error } = await sb.rpc('admin_update_nurse_verification', {
+          p_nurse_user_id: nurseUserId,
+          p_new_status: newStatus,
+          p_reason: reason
+        });
+        if (!error) rpcSuccess = true;
+      } catch (_) {}
+
+      if (!rpcSuccess) {
+        // Direct fallback update — only use columns that actually exist in nurse_profiles.
+        // verification_status does NOT exist in the live DB, so it is intentionally omitted.
+        const isApproved = newStatus === 'approved';
+        const isSuspended = newStatus === 'suspended';
+        const updatePayload = {
+          verified:   isApproved,
+          is_active:  isApproved,
+          updated_at: new Date().toISOString()
+        };
+        // Suspended nurses stay verified but become inactive
+        if (isSuspended) {
+          updatePayload.verified  = true;
+          updatePayload.is_active = false;
+        }
+        // 'pending' means reverting approval
+        if (newStatus === 'pending') {
+          updatePayload.verified  = false;
+          updatePayload.is_active = false;
+        }
+        const { error: directErr } = await sb.from('nurse_profiles')
+          .update(updatePayload)
+          .eq('user_id', nurseUserId);
+        if (directErr) throw directErr;
+      }
+
+      const statusLabels = {
+        approved:  'تم اعتماد الممرض بنجاح',
+        suspended: 'تم إيقاف حساب الممرض',
+        pending:   'تم إلغاء اعتماد الممرض'
+      };
+      Toast.success(statusLabels[newStatus] || 'تم تحديث الحالة بنجاح');
+      await loadNurseApplications();
+      await loadOverviewStats();
+    } catch (err) {
+      Toast.error('فشل التحديث: ' + err.message);
+    }
+  }
+
+  function openRejectModal(nurseUserId) {
+    pendingRejectNurseId = nurseUserId;
+    document.getElementById('reject-reason-input').value = '';
+    document.getElementById('reject-modal').style.display = 'flex';
+  }
+
+  function closeRejectModal() {
+    document.getElementById('reject-modal').style.display = 'none';
+    pendingRejectNurseId = null;
+  }
+
+  document.getElementById('confirm-reject-btn').addEventListener('click', async () => {
+    if (!pendingRejectNurseId) return;
+    const reason = document.getElementById('reject-reason-input').value.trim() || null;
+    closeRejectModal();
+    await verifyNurse(pendingRejectNurseId, 'rejected', reason);
+  });
+
+  async function loadAllBookings() {
+    const tbody = document.getElementById('bookings-table-body');
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:24px; color:var(--gray-500);">⏳ جاري التحميل...</td></tr>';
+
+    const sb = window.getSupabase();
+    if (!sb) return;
+
+    try {
+      // bookings.patient_id → profiles.id  (direct FK → use profiles!patient_id)
+      // bookings.nurse_id   → nurse_profiles.id  (FK to nurse_profiles, NOT profiles)
+      //   then nurse_profiles.user_id → profiles.id  (nested join for nurse's name)
+      const { data, error } = await sb.from('bookings')
+        .select('*, patient:profiles!patient_id(full_name, phone), nurse_prof:nurse_profiles!nurse_id(user:profiles!user_id(full_name))')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--gray-500);">لا توجد حجوزات بعد</td></tr>';
+        return;
+      }
+
+      const statusMap = {
+        pending:     { text: 'قيد الانتظار', cls: 'status-pending' },
+        accepted:    { text: 'مقبول',        cls: 'status-approved' },
+        rejected:    { text: 'مرفوض',        cls: 'status-rejected' },
+        in_progress: { text: 'جارٍ',         cls: 'status-incomplete' },
+        completed:   { text: 'مكتمل',        cls: 'status-approved' },
+        cancelled:   { text: 'ملغى',         cls: 'status-rejected' }
+      };
+
+      tbody.innerHTML = data.map(b => {
+        const st = statusMap[b.status] || { text: b.status, cls: 'status-pending' };
+        // Nurse name comes from the nested join: nurse_prof → user (profile)
+        const nurseName = b.nurse_prof?.user?.full_name || '—';
+        // Price: prefer total_price column (schema.sql), fallback to price
+        const rawPrice = b.total_price ?? b.price ?? 0;
+        const priceText = window.EgyptLocations?.formatPrice
+          ? window.EgyptLocations.formatPrice(rawPrice)
+          : `${rawPrice} ج.م`;
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:600;">${b.patient?.full_name || b.patient_name || '—'}</div>
+              <div style="font-size:0.8rem; color:var(--gray-500);">${b.patient?.phone || b.patient_phone || ''}</div>
+            </td>
+            <td>${nurseName}</td>
+            <td>${b.service_name || b.service_type || '—'}</td>
+            <td>
+              <div style="font-weight:600;">${b.visit_date || '—'}</div>
+              <div style="font-size:0.8rem; color:var(--gray-500);">${b.visit_time || b.start_time || ''}</div>
+            </td>
+            <td style="font-weight:700; color:var(--primary);">${priceText}</td>
+            <td><span class="badge-status ${st.cls}">${st.text}</span></td>
+            <td>
+              ${b.status === 'pending'
+                ? `<button class="action-btn btn-reject" onclick="cancelBookingAdmin('${b.id}')">إلغاء</button>`
+                : '<span style="color:var(--gray-400); font-size:0.8rem;">—</span>'}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px; color:var(--error);">خطأ: ${err.message}</td></tr>`;
+    }
+  }
+
+  async function cancelBookingAdmin(bookingId) {
+    if (!confirm('هل أنت متأكد من إلغاء هذا الحجز؟')) return;
+    try {
+      await window.DB.updateBookingStatus(bookingId, 'cancelled');
+      Toast.success('تم إلغاء الحجز');
+      loadAllBookings();
+    } catch (err) {
+      Toast.error('فشل الإلغاء: ' + err.message);
+    }
+  }
+
+  async function loadServices() {
+    const tbody = document.getElementById('services-table-body');
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:24px; color:var(--gray-500);">⏳ جاري التحميل...</td></tr>';
+
+    const sb = window.getSupabase();
+    if (!sb) return;
+
+    try {
+      const { data, error } = await sb.from('services').select('*').order('base_price', { ascending: true });
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">لا توجد خدمات مسجلة</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.map(s => `
+        <tr>
+          <td>
+            <div style="font-weight:700;">${s.icon || ''} ${s.name_ar}</div>
+            <div style="font-size:0.8rem; color:var(--gray-500);">${s.name_en}</div>
+          </td>
+          <td style="font-weight:700; color:var(--primary);">${s.base_price} ج.م</td>
+          <td>${s.duration_minutes} دقيقة</td>
+          <td>
+            <span class="badge-status ${s.is_active ? 'status-approved' : 'status-rejected'}">
+              ${s.is_active ? 'نشط' : 'متوقف'}
+            </span>
+          </td>
+          <td>
+            <button class="action-btn ${s.is_active ? 'btn-reject' : 'btn-approve'}"
+              onclick="toggleService('${s.id}', ${!s.is_active})">
+              ${s.is_active ? 'إيقاف' : 'تفعيل'}
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--error);">خطأ: ${err.message}</td></tr>`;
+    }
+  }
+
+  async function toggleService(serviceId, newActive) {
+    const sb = window.getSupabase();
+    if (!sb) return;
+    try {
+      const { error } = await sb.from('services')
+        .update({ is_active: newActive })
+        .eq('id', serviceId);
+      if (error) throw error;
+      Toast.success(newActive ? 'تم تفعيل الخدمة' : 'تم إيقاف الخدمة');
+      loadServices();
+    } catch (err) {
+      Toast.error('خطأ: ' + err.message);
+    }
+  }
+
+  async function handleLogout() {
+    await SbAuth.signOut();
+    Toast.info('تم تسجيل الخروج');
+    setTimeout(() => { window.location.href = 'login.html'; }, 600);
+  }
+
+  document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
+  document.getElementById('logout-btn-top')?.addEventListener('click', handleLogout);
+  document.getElementById('nurse-filter-status')?.addEventListener('change', loadNurseApplications);
+
+  initAdmin();
+</script>
+</body>
+</html>

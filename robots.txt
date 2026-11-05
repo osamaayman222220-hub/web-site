@@ -1,0 +1,23 @@
+# robots.txt for CareNest
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /pages/nurses.html
+Allow: /pages/faq.html
+Allow: /pages/privacy.html
+Allow: /pages/terms.html
+Allow: /pages/login.html
+Allow: /pages/register.html
+
+# Disallow private dashboards and internal folders
+Disallow: /pages/admin-dashboard.html
+Disallow: /pages/nurse-dashboard.html
+Disallow: /pages/patient-dashboard.html
+Disallow: /pages/profile.html
+Disallow: /pages/book.html
+Disallow: /sql/
+Disallow: /supabase/
+Disallow: /.pre_launch_backup/
+
+Sitemap: https://carenest.app/sitemap.xml
+

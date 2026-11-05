@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2878B5">
+  <meta name="description"
+    content="رعايه - منصة حجز الرعاية التمريضية والزيارات المنزلية في مصر. احجز ممرضاً مؤهلاً لتلقي الرعاية الصحية في منزلك بكل أمان وراحة.">
+  <meta name="keywords"
+    content="رعايه, تمريض منزلي, رعاية منزلية, ممرض, حجز ممرض في مصر, تمريض منزلي القاهرة, home nursing Egypt, Raaya">
+  <meta name="robots" content="index, follow">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <!-- Open Graph -->
+  <meta property="og:title" content="رعايه - منصة التمريض المنزلي والرعاية الصحية في مصر">
+  <meta property="og:description" content="احجز ممرضاً مؤهلاً لتلقي الرعاية التمريضية المنزلية في مصر بكل أمان وراحة">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ar_EG">
+  <meta property="og:site_name" content="رعايه">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="رعايه - منصة التمريض المنزلي والرعاية الصحية في مصر">
+  <meta name="twitter:description" content="احجز ممرضاً مؤهلاً لتلقي الرعاية التمريضية المنزلية في مصر بكل أمان وراحة">
+
+  <title>رعايه - رعاية تمريضية منزلية احترافية في مصر</title>
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏥%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════
+     SKIP TO MAIN CONTENT (Accessibility)
+══════════════════════════════════════ -->
+  <a href="#main-content" class="skip-to-content">تخطي إلى المحتوى الرئيسي</a>
+
+  <!-- ══════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════ -->
+  <nav class="navbar" role="navigation" aria-label="التنقل الرئيسي">
+    <div class="container">
+      <div class="navbar-inner">
+        <!-- Brand -->
+        <a href="index.html" class="navbar-brand" aria-label="رعايه - الصفحة الرئيسية">
+          <div class="logo-icon" aria-hidden="true">🏥</div>
+          <div class="brand-text">
+            <span class="brand-ar">رعايه</span>
+            <span class="brand-en">CareNest</span>
+          </div>
+        </a>
+
+        <!-- Nav Links -->
+        <ul class="navbar-nav" id="main-nav" role="menubar">
+          <li role="none"><a href="#hero" class="nav-link" role="menuitem" data-i18n="nav_home">الرئيسية</a></li>
+          <li role="none"><a href="pages/nurses.html" class="nav-link" role="menuitem"
+              data-i18n="nav_nurses">الممرضون</a></li>
+          <li role="none"><a href="#services" class="nav-link" role="menuitem" data-i18n="services_title">خدماتنا</a>
+          </li>
+          <li role="none"><a href="#how-it-works" class="nav-link" role="menuitem" data-i18n="nav_how_it_works">كيف
+              يعمل</a></li>
+          <li role="none"><a href="pages/faq.html" class="nav-link" role="menuitem" data-i18n="nav_faq">الأسئلة
+              الشائعة</a></li>
+          <li role="none"><a href="#contact" class="nav-link" role="menuitem" data-i18n="nav_contact">تواصل معنا</a>
+          </li>
+          <!-- Mobile-only quick actions -->
+          <li class="mobile-auth-links" role="none">
+            <a href="pages/login.html" class="btn btn-ghost btn-sm mobile-auth-item" id="mobile-login-link"
+              data-i18n="nav_login">تسجيل الدخول</a>
+            <a href="pages/register.html" class="btn btn-primary btn-sm mobile-auth-item" id="mobile-register-link"
+              data-i18n="nav_register">إنشاء حساب</a>
+            <a href="#" class="btn btn-outline btn-sm mobile-auth-item hidden" id="mobile-dashboard-link"
+              data-i18n="nav_dashboard">لوحة التحكم</a>
+          </li>
+        </ul>
+
+        <!-- Actions (Desktop) -->
+        <div class="navbar-actions">
+          <button class="lang-toggle" id="lang-toggle-btn" aria-label="تغيير اللغة">English</button>
+          <a href="pages/login.html" class="btn btn-ghost btn-sm" id="nav-login-link" data-i18n="nav_login">تسجيل
+            الدخول</a>
+          <a href="pages/register.html" class="btn btn-primary btn-sm" id="nav-register-link"
+            data-i18n="nav_register">إنشاء حساب</a>
+          <!-- Shown only when logged in -->
+          <a href="#" class="btn btn-outline btn-sm hidden" id="nav-dashboard-btn" data-i18n="nav_dashboard">لوحة
+            التحكم</a>
+          <button class="btn btn-ghost btn-sm hidden" id="nav-logout-btn" style="color:var(--error);"
+            data-i18n="nav_logout">تسجيل الخروج</button>
+        </div>
+
+        <!-- Hamburger (Mobile) -->
+        <button class="hamburger" id="hamburger" aria-label="فتح القائمة" aria-expanded="false"
+          aria-controls="main-nav">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════
+     EMERGENCY NOTICE BANNER
+══════════════════════════════════════ -->
+  <div class="emergency-banner" role="alert" aria-live="polite">
+    <div class="container emergency-inner">
+      <span class="emergency-badge">🚨 <span data-i18n="emergency_label">تنبيه طبي عاجل</span></span>
+      <p class="emergency-text" data-i18n="emergency_notice">
+        منصة رعايه مخصصة للرعاية التمريضية والزيارات المنزلية المجدولة، ولا تحل محل خدمات الطوارئ أو الحالات الحرجة. في
+        حالات الطوارئ الطبية العاجلة، يُرجى الاتصال فوراً بالإسعاف المصري.
+      </p>
+      <a href="tel:123" class="emergency-call-btn" aria-label="الاتصال بالإسعاف المصري على الرقم 123">
+        📞 <span data-i18n="emergency_call">إسعاف مصر 123</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════ -->
+  <main id="main-content">
+
+    <!-- ══════════════════════════════════════
+       HERO
+  ══════════════════════════════════════ -->
+    <section class="hero" id="hero" aria-label="القسم التعريفي بالمنصة">
+      <div class="hero-particles" aria-hidden="true">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+      </div>
+
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-text">
+            <div class="hero-badge">
+              <span aria-hidden="true">✨</span>
+              <span id="hero-badge-text" data-i18n="hero_badge">منصة التمريض المنزلي والرعاية الصحية في مصر</span>
+            </div>
+            <h1 class="hero-title">
+              <span data-i18n="hero_title">رعاية تمريضية</span><br>
+              <span class="highlight" data-i18n="hero_title_2">احترافية في منزلك</span>
+            </h1>
+            <p class="hero-description" data-i18n="hero_subtitle">
+              نربطك بأفضل الكوادر التمريضية المؤهلة لتلقي الرعاية الصحية في راحة وأمان منزلك
+            </p>
+            
+<div class="hero-actions">
+  <a href="pages/nurses.html" class="btn btn-secondary btn-lg" id="hero-book-btn"
+    data-i18n="hero_book_nurse">
+    📅 احجز ممرضاً
+  </a>
+  
+  <a href="tel:01000000000" class="btn btn-outline-white btn-lg"
+    id="hero-customer-service-btn">
+    <i class="fa-solid fa-headset"></i>
+    خدمة العملاء
+  </a>
+</div>
+```
+
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <span class="number" id="stat-nurses">—</span>
+                <span class="label" id="stat-nurses-label" data-i18n="stat_nurses">كوادر تمريضية</span>
+              </div>
+              <div class="hero-stat">
+                <span class="number" id="stat-patients">27</span>
+                <span class="label" id="stat-patients-label" data-i18n="stat_governorates">محافظة بمصر</span>
+              </div>
+              <div class="hero-stat">
+                <span class="number" id="stat-rating">100%</span>
+                <span class="label" id="stat-rating-label" data-i18n="stat_home_care">رعاية منزلية</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-hidden="true">
+            <div class="hero-card-stack">
+              <div class="hero-main-card">
+                <div class="hero-nurse-avatar">🩺</div>
+                <h3 style="color:white; margin-bottom:8px;">رعاية صحية في منزلك</h3>
+                <p style="color:rgba(255,255,255,0.85); font-size:0.875rem; margin-bottom:16px;">زيارات مجدولة · كوادر
+                  تمريضية مؤهلة · متابعة دقيقة</p>
+                <div class="badge badge-success" style="margin:0 auto;">✓ رعاية موثوقة وآمنة</div>
+              </div>
+              <div class="hero-floating-card">
+                <span style="font-size:1.4rem;">📅</span>
+                <div>
+                  <div style="font-weight:700; color:#374151; font-size:0.8rem;">حجز زيارة مجدولة</div>
+                  <div style="color:#6b7280; font-size:0.75rem;">تنسيق الموعد بدقة</div>
+                </div>
+              </div>
+              <div class="hero-floating-card">
+                <span style="font-size:1.4rem;">🛡️</span>
+                <div>
+                  <div style="font-weight:700; color:#374151; font-size:0.8rem;">معايير أمان عالية</div>
+                  <div style="color:#027cf5; font-size:0.75rem;">تعقيم ومتابعة مستمرة</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+       SERVICES
+  ══════════════════════════════════════ -->
+    <section class="section" id="services" aria-label="خدمات التمريض المنزلي">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 data-i18n="services_title">خدماتنا التمريضية</h2>
+          <p data-i18n="services_subtitle">نقدم طيفاً واسعاً من الخدمات التمريضية المنزلية المتخصصة بأيدي كوادر مؤهلة
+          </p>
+        </div>
+        <div class="services-grid">
+          <a href="pages/nurses.html?specialty=العناية+بالجروح" class="service-card reveal"
+            aria-label="خدمة رعاية الجروح">
+            <div class="service-icon" aria-hidden="true">🩹</div>
+            <h3 data-i18n="service_wound">رعاية الجروح</h3>
+            <p data-i18n="service_wound_desc">تغيير الضمادات ورعاية الجروح والقرح السريرية بأيدٍ متخصصة ومعقمة</p>
+          </a>
+          <a href="pages/nurses.html?specialty=إعطاء+الحقن+والمحاليل" class="service-card reveal"
+            aria-label="خدمة الحقن والأدوية">
+            <div class="service-icon" aria-hidden="true">💉</div>
+            <h3 data-i18n="service_injection">الحقن والأدوية</h3>
+            <p data-i18n="service_injection_desc">إعطاء الحقن العضلية والوريدية وتركيب المحاليل بدقة وأمان تام</p>
+          </a>
+          <a href="pages/nurses.html?specialty=رعاية+كبار+السن" class="service-card reveal"
+            aria-label="خدمة رعاية كبار السن">
+            <div class="service-icon" aria-hidden="true">👴</div>
+            <h3 data-i18n="service_elderly">رعاية كبار السن</h3>
+            <p data-i18n="service_elderly_desc">رعاية يومية ومتابعة صحية شاملة لأحبائنا من كبار السن في منازلهم</p>
+          </a>
+          <a href="pages/nurses.html?specialty=رعاية+ما+بعد+العمليات+الجراحية" class="service-card reveal"
+            aria-label="خدمة ما بعد العمليات">
+            <div class="service-icon" aria-hidden="true">🏥</div>
+            <h3 data-i18n="service_postop">ما بعد العمليات</h3>
+            <p data-i18n="service_postop_desc">متابعة التعافي وقياس المؤشرات الحيوية بعد العمليات الجراحية</p>
+          </a>
+          <a href="pages/nurses.html?specialty=رعاية+الأم+وحديثي+الولادة" class="service-card reveal"
+            aria-label="خدمة رعاية الأطفال">
+            <div class="service-icon" aria-hidden="true">👶</div>
+            <h3 data-i18n="service_baby">رعاية الأطفال</h3>
+            <p data-i18n="service_baby_desc">رعاية متخصصة لحديثي الولادة والأطفال مع دعم وإرشاد للأمهات</p>
+          </a>
+          <a href="pages/nurses.html?specialty=العلاج+الطبيعي" class="service-card reveal"
+            aria-label="خدمة العلاج الطبيعي">
+            <div class="service-icon" aria-hidden="true">🦽</div>
+            <h3 data-i18n="service_physiotherapy">العلاج الطبيعي</h3>
+            <p data-i18n="service_physiotherapy_desc">جلسات علاج طبيعي وتأهيل حركي منزلي تحت إشراف متخصصين</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════════════ -->
+    <section class="section how-section" id="how-it-works" aria-label="كيف تعمل منصة رعايه">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 style="color:white;" data-i18n="how_title">كيف تعمل منصة رعايه؟</h2>
+        </div>
+        <div class="steps-grid">
+          <div class="step-card reveal">
+            <div class="step-number" aria-hidden="true">
+              <span class="step-icon">👤</span>
+            </div>
+            <h3 data-i18n="how_step1_title">سجّل حسابك</h3>
+            <p data-i18n="how_step1_desc">أنشئ حسابك بسهولة كمريض لتطلب الخدمة أو كممرض لتقدم خدماتك</p>
+          </div>
+          <div class="step-card reveal">
+            <div class="step-number" aria-hidden="true">
+              <span class="step-icon">🔍</span>
+            </div>
+            <h3 data-i18n="how_step2_title">اختر الممرض</h3>
+            <p data-i18n="how_step2_desc">تصفح الكوادر التمريضية حسب المحافظة والتخصص والتقييمات الحقيقية</p>
+          </div>
+          <div class="step-card reveal">
+            <div class="step-number" aria-hidden="true">
+              <span class="step-icon">📅</span>
+            </div>
+            <h3 data-i18n="how_step3_title">حدد الموعد والعنوان</h3>
+            <p data-i18n="how_step3_desc">اختر الخدمة والوقت المناسب وأرسل طلب الزيارة المنزلية مباشرة</p>
+          </div>
+          <div class="step-card reveal">
+            <div class="step-number" aria-hidden="true">
+              <span class="step-icon">❤️</span>
+            </div>
+            <h3 data-i18n="how_step4_title">استقبل الرعاية</h3>
+            <p data-i18n="how_step4_desc">يصلك الممرض المؤهل في موعده لتقديم الرعاية الطبية المطلوبة بكل راحة</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+
+    <!-- ══════════════════════════════════════
+       REVIEWS (Authentic DB data only)
+  ══════════════════════════════════════ -->
+    <section class="section" id="reviews" style="background: var(--gray-50);" aria-label="تقييمات وتجارب المرضى">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 data-i18n="reviews_title">تقييمات وتجارب المرضى</h2>
+          <p data-i18n="reviews_subtitle">آراء وتقييمات واقعية من مستخدمي خدمات الرعاية المنزلية بعد إتمام الزيارات</p>
+        </div>
+        <div class="reviews-grid" id="homepage-reviews">
+          <!-- Loaded dynamically from real reviews table -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+       FAQ PREVIEW
+  ══════════════════════════════════════ -->
+    <section class="section" id="faq-preview" aria-label="الأسئلة الشائعة">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 data-i18n="faq_title">الأسئلة الشائعة</h2>
+        </div>
+        <div class="faq-list">
+          <div class="faq-item reveal">
+            <button type="button" class="faq-question" id="faq-btn-1" aria-expanded="false" aria-controls="faq-ans-1">
+              <span id="faq1-q" data-i18n="faq1_q">كيف أسجل حساباً في منصة رعايه؟</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" id="faq-ans-1" role="region" aria-labelledby="faq-btn-1">
+              <div class="faq-answer-inner" id="faq1-a" data-i18n="faq1_a">
+                اضغط على "إنشاء حساب" في أعلى الصفحة، واختر نوع الحساب (مريض أو ممرض)، ثم أدخل بياناتك الأساسية ورقم
+                هاتفك المصري لتأكيد حسابك والبدء في استخدام المنصة.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item reveal">
+            <button type="button" class="faq-question" id="faq-btn-2" aria-expanded="false" aria-controls="faq-ans-2">
+              <span id="faq2-q" data-i18n="faq2_q">كيف يتم حجز زيارة تمريضية؟</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" id="faq-ans-2" role="region" aria-labelledby="faq-btn-2">
+              <div class="faq-answer-inner" id="faq2-a" data-i18n="faq2_a">
+                بعد تسجيل الدخول، تصفح قائمة الممرضين واختر الأنسب لمحافظتك وتخصصك، ثم اضغط "احجز زيارة" وحدد التاريخ
+                والوقت والعنوان المطلوب لتأكيد موعد الزيارة.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item reveal">
+            <button type="button" class="faq-question" id="faq-btn-3" aria-expanded="false" aria-controls="faq-ans-3">
+              <span id="faq3-q" data-i18n="faq3_q">هل تغطي المنصة جميع المحافظات؟</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" id="faq-ans-3" role="region" aria-labelledby="faq-btn-3">
+              <div class="faq-answer-inner" id="faq3-a" data-i18n="faq3_a">
+                تدعم المنصة محافظات جمهورية مصر العربية (مثل القاهرة، الجيزة، الإسكندرية والمحافظات الأخرى) وتتوسع
+                باستمرار بناءً على أماكن عمل الكوادر التمريضية المسجلة.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item reveal">
+            <button type="button" class="faq-question" id="faq-btn-4" aria-expanded="false" aria-controls="faq-ans-4">
+              <span id="faq4-q" data-i18n="faq4_q">هل المنصة بديل عن خدمات الطوارئ؟</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" id="faq-ans-4" role="region" aria-labelledby="faq-btn-4">
+              <div class="faq-answer-inner" id="faq4-a" data-i18n="faq4_a">
+                لا، منصة رعايه مخصصة للرعاية التمريضية المجدولة والزيارات المنزلية المحددة مسبقاً، ولا تتعامل مع الحالات
+                الحرجة. في الطوارئ يرجى الاتصال فوراً بالإسعاف المصري على 123.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item reveal">
+            <button type="button" class="faq-question" id="faq-btn-5" aria-expanded="false" aria-controls="faq-ans-5">
+              <span id="faq5-q" data-i18n="faq5_q">كيف يتم التحقق من مؤهلات الممرض؟</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" id="faq-ans-5" role="region" aria-labelledby="faq-btn-5">
+              <div class="faq-answer-inner" id="faq5-a" data-i18n="faq5_a">
+                يتم مراجعة بيانات الاعتماد والتسجيل المهني للممرضين ومؤهلاتهم قبل منحهم شارة التوثيق في المنصة، ويمكن
+                للمريض مراجعة تفاصيل الخبرة في الملف الشخصي.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-top:32px;">
+          <a href="pages/faq.html" class="btn btn-outline" data-i18n="view_all_faqs">عرض جميع الأسئلة الشائعة ←</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+       CONTACT / INQUIRY SECTION
+  ══════════════════════════════════════ -->
+    <section class="section" id="contact" style="background: var(--gray-50);" aria-label="تواصل معنا">
+      <div class="container">
+        <div class="contact-grid">
+          <!-- Contact Information -->
+          <div class="contact-info reveal">
+            <h2 data-i18n="contact_title">تواصل معنا</h2>
+            <p data-i18n="contact_subtitle" style="color:var(--gray-500); margin-bottom:32px; font-size:1.05rem;">
+              نحن هنا لمساعدتك في أي استفسار حول خدمات الرعاية التمريضية المنزلية
+            </p>
+
+            <div class="contact-item">
+              <div class="contact-item-icon" aria-hidden="true">📧</div>
+              <div class="contact-item-text">
+                <h4 data-i18n="contact_email">البريد الإلكتروني الرسمي</h4>
+                <p><a href="mailto:support@raaya.eg" id="contact-email-link">reayahomecare11@gmail.com</a></p>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-item-icon" aria-hidden="true">📍</div>
+              <div class="contact-item-text">
+                <h4 data-i18n="contact_address">نطاق الخدمة</h4>
+                <p id="contact-address-text" data-i18n="contact_address_val">محافظات الدقهلية، البحيرة، الغربية، الفيوم وبني سويف</p>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-item-icon" aria-hidden="true">🚨</div>
+              <div class="contact-item-text">
+                <h4 data-i18n="emergency_label">طوارئ الرعاية الصحية</h4>
+                <p>الاتصال الفوري بالإسعاف المصري: <a href="tel:123"
+                    style="font-weight:700; color:var(--error);">123</a></p>
+              </div>
+            </div>
+
+            <!-- Social Links (Shown only if validly configured) -->
+            <div class="social-links" id="contact-social-links" style="display:none;">
+              <a href="#" class="social-link whatsapp hidden" id="whatsapp-link" aria-label="WhatsApp" target="_blank"
+                rel="noopener">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                  <path
+                    d="M11.998 0C5.373 0 0 5.373 0 12c0 2.116.554 4.104 1.523 5.826L0 24l6.335-1.652A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.625 0 11.998 0zm.002 21.818a9.808 9.808 0 01-5.001-1.366l-.358-.213-3.761.982.998-3.654-.234-.374A9.79 9.79 0 012.182 12c0-5.414 4.402-9.818 9.818-9.818 5.415 0 9.818 4.404 9.818 9.818 0 5.415-4.403 9.818-9.818 9.818z" />
+                </svg>
+              </a>
+              <a href="#" class="social-link facebook hidden" id="facebook-link" aria-label="Facebook" target="_blank"
+                rel="noopener">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+              </a>
+              <a href="#" class="social-link instagram hidden" id="instagram-link" aria-label="Instagram"
+                target="_blank" rel="noopener">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Validated Inquiry Form -->
+          <div class="reveal">
+            <div class="card" style="box-shadow:var(--shadow-md);">
+              <div class="card-body">
+                <h3 style="margin-bottom:8px; font-size:1.3rem;" data-i18n="contact_form_title">أرسل استفسارك</h3>
+                <p style="color:var(--gray-500); margin-bottom:20px; font-size:0.9rem;" data-i18n="contact_form_desc">
+                  نسعد بالإجابة عن تساؤلاتك ومساعدتك في اختيار الخدمة المناسبة.
+                </p>
+
+                <form id="home-contact-form" novalidate>
+                  <div class="form-group">
+                    <label class="form-label" for="contact-name">
+                      <span data-i18n="contact_name">الاسم بالكامل</span> <span class="required">*</span>
+                    </label>
+                    <input type="text" id="contact-name" class="form-control" data-validate="required,min:3"
+                      placeholder="أدخل اسمك الكريم" required>
+                    <div class="form-error"></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="contact-phone">
+                      <span data-i18n="contact_phone_field">رقم الهاتف (مصري)</span> <span class="required">*</span>
+                    </label>
+                    <input type="tel" id="contact-phone" class="form-control" data-validate="required,phone"
+                      placeholder="01023456789" dir="ltr" required>
+                    <div class="form-error"></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="contact-subject" data-i18n="contact_subject">موضوع الاستفسار</label>
+                    <select id="contact-subject" class="form-control">
+                      <option value="inquiry" data-i18n="contact_subj_general">استفسار عام عن الخدمات</option>
+                      <option value="nurse" data-i18n="contact_subj_nurse">الانضمام ككادر تمريضي</option>
+                      <option value="booking" data-i18n="contact_subj_booking">مساعدة في حجز زيارة</option>
+                      <option value="feedback" data-i18n="contact_subj_complaint">اقتراح أو ملاحظة</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="contact-msg">
+                      <span data-i18n="contact_message">نص الرسالة أو الاستفسار</span> <span class="required">*</span>
+                    </label>
+                    <textarea id="contact-msg" rows="3" class="form-control" data-validate="required,min:10"
+                      placeholder="اكتب تفاصيل طلبك أو استفسارك هنا..." required></textarea>
+                    <div class="form-error"></div>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary w-full" id="contact-submit-btn" data-i18n="contact_send">
+                    إرسال الاستفسار
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+       CTA SECTION
+  ══════════════════════════════════════ -->
+    <section class="section" style="background:white; border-top:1px solid var(--gray-100);" aria-label="دعوة للانضمام">
+      <div class="container">
+        <div style="max-width:700px; margin:0 auto; text-align:center;">
+          <h2 style="font-size:1.8rem; margin-bottom:12px;" data-i18n="cta_nurse_title">هل أنت ممرض/ة مؤهل/ة؟</h2>
+          <p style="color:var(--gray-500); margin-bottom:24px; line-height:1.8;" data-i18n="cta_nurse_desc">
+            انضم إلى شبكة رعايه لتقديم الرعاية المنزلية للمرضى في محافظتك وزيادة دخلك المهني.
+          </p>
+          <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+            <a href="pages/register.html?type=nurse" class="btn btn-primary" id="cta-nurse-btn"
+              data-i18n="cta_join_nurse">
+              🏥 انضم ككادر تمريضي الآن
+            </a>
+            <a href="pages/register.html?type=patient" class="btn btn-outline" id="cta-patient-btn"
+              data-i18n="cta_join_patient">
+              👤 سجّل كمريض
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════════════════════════════════
+     FOOTER
+══════════════════════════════════════ -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <div class="logo-icon" aria-hidden="true">🏥</div>
+            <span class="brand-text">رعايه</span>
+          </div>
+          <p class="footer-desc" data-i18n="footer_desc">
+            منصة رعايه تربط المرضى بالكوادر التمريضية المؤهلة لتقديم خدمات الرعاية الصحية والتمريض المنزلي بأعلى معايير
+            الجودة والأمان.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4 data-i18n="footer_services">الخدمات التمريضية</h4>
+          <nav class="footer-links" aria-label="روابط الخدمات">
+            <a href="pages/nurses.html?specialty=العناية+بالجروح" class="footer-link" data-i18n="service_wound">رعاية
+              الجروح</a>
+            <a href="pages/nurses.html?specialty=إعطاء+الحقن+والمحاليل" class="footer-link"
+              data-i18n="service_injection">الحقن والأدوية</a>
+            <a href="pages/nurses.html?specialty=رعاية+كبار+السن" class="footer-link" data-i18n="service_elderly">رعاية
+              كبار السن</a>
+            <a href="pages/nurses.html?specialty=رعاية+ما+بعد+العمليات+الجراحية" class="footer-link"
+              data-i18n="service_postop">ما بعد العمليات</a>
+            <a href="pages/nurses.html?specialty=رعاية+الأم+وحديثي+الولادة" class="footer-link"
+              data-i18n="service_baby">رعاية الأطفال</a>
+          </nav>
+        </div>
+
+        <div class="footer-col">
+          <h4 data-i18n="footer_useful_links">روابط هامة</h4>
+          <nav class="footer-links" aria-label="روابط هامة">
+            <a href="#hero" class="footer-link" data-i18n="nav_home">الرئيسية</a>
+            <a href="pages/nurses.html" class="footer-link" data-i18n="nav_nurses">الممرضون</a>
+            <a href="pages/faq.html" class="footer-link" data-i18n="nav_faq">الأسئلة الشائعة</a>
+            <a href="#contact" class="footer-link" data-i18n="nav_contact">تواصل معنا</a>
+            <a href="pages/book.html" class="footer-link" data-i18n="hero_book_nurse">احجز ممرضاً</a>
+          </nav>
+        </div>
+
+        <div class="footer-col">
+          <h4 data-i18n="footer_account">الحساب</h4>
+          <nav class="footer-links" aria-label="روابط الحساب">
+            <a href="pages/login.html" class="footer-link" data-i18n="nav_login">تسجيل الدخول</a>
+            <a href="pages/register.html" class="footer-link" data-i18n="nav_register">إنشاء حساب</a>
+            <a href="pages/patient-dashboard.html" class="footer-link" data-i18n="dash_welcome">لوحة المريض</a>
+            <a href="pages/nurse-dashboard.html" class="footer-link" data-i18n="nurse_profile">لوحة الممرض</a>
+            <a href="pages/privacy.html" class="footer-link" data-i18n="footer_privacy">سياسة الخصوصية</a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-bottom-left">
+           <span id="footer-year">2026</span> منصة رعايه. <span data-i18n="footer_rights">جميع الحقوق محفوظة.</span>
+        </div>
+        <div class="footer-bottom-right">
+          <a href="pages/privacy.html" data-i18n="footer_privacy">سياسة الخصوصية</a>
+          <a href="pages/terms.html" data-i18n="footer_terms">الشروط والأحكام</a>
+        </div>
+      </div>
+    </div>
+    
+<!-- Reaya Social Media -->
+
+<!-- Reaya Social Media Icons -->
+<div class="reaya-social-icons" aria-label="تابعنا على مواقع التواصل">
+
+    <!-- Facebook -->
+    <a href="https://www.facebook.com/share/1CcDC3kHQy/"
+       class="facebook-icon"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="فيسبوك">
+        <i class="fa-brands fa-facebook-f"></i>
+    </a>
+
+    <!-- Instagram -->
+    <a href="https://www.instagram.com/re3aya.eg?exln=bXB3OWpmMnpkNXpl"
+       class="instagram-icon"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="إنستجرام">
+        <i class="fa-brands fa-instagram"></i>
+    </a>
+
+</div>
+
+
+
+  </footer>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/egypt-locations.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    const Auth = window.Auth;
+    const DB = window.DB;
+
+    // ── Set Year ──
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+    // ── Language Toggle ──
+        document.addEventListener('langChanged', () => updateLangDependentContent());
+
+
+    function updateLangDependentContent() {
+      const isAr = window.i18n ? window.i18n.currentLang === 'ar' : true;
+      const viewAllBtn = document.getElementById('view-all-nurses');
+      if (viewAllBtn) {
+        viewAllBtn.textContent = isAr ? 'عرض جميع الممرضين ←' : 'View All Nurses →';
+      }
+    }
+
+    // ── Check Auth State (Robust: never hides booking buttons) ──
+    async function checkAuthState() {
+      if (!Auth || typeof Auth.getUserProfile !== 'function') return;
+      try {
+        const profile = await Auth.getUserProfile();
+        if (profile) {
+          // Hide only navbar/mobile login and register buttons
+          ['nav-login-link', 'nav-register-link', 'mobile-login-link', 'mobile-register-link'].forEach(id => {
+            document.getElementById(id)?.classList.add('hidden');
+          });
+
+          // Configure Dashboard buttons
+          const targetDashboard = profile.role === 'nurse' ? 'pages/nurse-dashboard.html' : 'pages/patient-dashboard.html';
+
+          const dashBtn = document.getElementById('nav-dashboard-btn');
+          if (dashBtn) {
+            dashBtn.classList.remove('hidden');
+            dashBtn.href = targetDashboard;
+          }
+
+          const mobileDash = document.getElementById('mobile-dashboard-link');
+          if (mobileDash) {
+            mobileDash.classList.remove('hidden');
+            mobileDash.href = targetDashboard;
+          }
+
+          // Profile Button in Navbar
+          let profileBtn = document.getElementById('nav-profile-btn');
+          if (!profileBtn && dashBtn?.parentNode) {
+            profileBtn = document.createElement('a');
+            profileBtn.id = 'nav-profile-btn';
+            profileBtn.href = 'pages/profile.html';
+            profileBtn.className = 'btn btn-ghost btn-sm';
+            profileBtn.textContent = profile.role === 'nurse' ? '👨‍⚕️ حسابي' : '👤 حسابي';
+            dashBtn.parentNode.insertBefore(profileBtn, dashBtn.nextSibling);
+          } else if (profileBtn) {
+            profileBtn.classList.remove('hidden');
+          }
+
+          // Logout Button
+          const logoutBtn = document.getElementById('nav-logout-btn');
+          if (logoutBtn) {
+            logoutBtn.classList.remove('hidden');
+            logoutBtn.onclick = async () => {
+              await Auth.signOut();
+              window.location.reload();
+            };
+          }
+
+          // Hero book button: adapt to logged-in user role
+          const heroBookBtn = document.getElementById('hero-book-btn');
+          if (heroBookBtn) {
+            if (profile.role === 'nurse') {
+              heroBookBtn.href = 'pages/nurse-dashboard.html';
+              heroBookBtn.textContent = '📋 لوحة الممرض';
+            } else {
+              heroBookBtn.href = 'pages/nurses.html';
+              heroBookBtn.textContent = '📅 احجز ممرضاً';
+            }
+          }
+
+          // CTA buttons
+          const ctaNurse = document.getElementById('cta-nurse-btn');
+          const ctaPatient = document.getElementById('cta-patient-btn');
+          if (profile.role === 'nurse') {
+            if (ctaNurse) {
+              ctaNurse.href = 'pages/nurse-dashboard.html';
+              ctaNurse.textContent = '📋 الانتقال إلى لوحة الممرض';
+            }
+            if (ctaPatient) ctaPatient.classList.add('hidden');
+          } else {
+            if (ctaPatient) {
+              ctaPatient.href = 'pages/patient-dashboard.html';
+              ctaPatient.textContent = '📋 متابعة حجوزاتي';
+            }
+          }
+        }
+      } catch (err) {
+        // User is visitor - default state is preserved
+      }
+    }
+
+    // ── Load Featured Nurses (Safe DOM Construction: NO XSS) ──
+    async function loadFeaturedNurses() {
+      const container = document.getElementById('featured-nurses');
+      if (!container) return;
+
+      try {
+        if (!DB || typeof DB.getVerifiedNurses !== 'function') {
+          throw new Error('Database service not available');
+        }
+
+        const nurses = await DB.getVerifiedNurses();
+        const featured = (nurses || []).slice(0, 6);
+
+        // Clear container safely
+        container.textContent = '';
+
+        if (featured.length === 0) {
+          const emptyBox = document.createElement('div');
+          emptyBox.className = 'empty-state';
+          emptyBox.style.cssText = 'grid-column: 1/-1; text-align:center; padding:50px 20px; background:white; border-radius:var(--radius-lg); box-shadow:var(--shadow-sm);';
+
+          const icon = document.createElement('div');
+          icon.style.cssText = 'font-size:3rem; margin-bottom:12px;';
+          icon.textContent = '👩‍⚕️';
+          emptyBox.appendChild(icon);
+
+          const h3 = document.createElement('h3');
+          h3.style.cssText = 'font-size:1.2rem; margin-bottom:8px;';
+          h3.textContent = i18n.t('no_data');
+          emptyBox.appendChild(h3);
+
+          const p = document.createElement('p');
+          p.style.cssText = 'color:var(--gray-500); max-width:400px; margin:0 auto 16px;';
+          p.textContent = i18n.currentLang === 'ar'
+            ? 'لا يوجد ممرضون متاحون حالياً. يمكنك الانضمام والتسجيل ككادر تمريضي.'
+            : 'No nurses available right now. You can register as a nursing provider.';
+          emptyBox.appendChild(p);
+
+          const joinLink = document.createElement('a');
+          joinLink.href = 'pages/register.html?type=nurse';
+          joinLink.className = 'btn btn-primary btn-sm';
+          joinLink.textContent = i18n.currentLang === 'ar' ? 'انضم ككادر تمريضي' : 'Join as Nurse';
+          emptyBox.appendChild(joinLink);
+
+          container.appendChild(emptyBox);
+          return;
+        }
+
+        featured.forEach(nurse => {
+          const name = nurse.profiles?.full_name || (i18n.currentLang === 'ar' ? 'ممرض معتمد' : 'Qualified Nurse');
+          const exp = nurse.experience_years || nurse.years_experience || 2;
+          const rate = Number(nurse.visit_price || nurse.hourly_rate || 200);
+          const spec = nurse.specialization || (Array.isArray(nurse.specialties) ? nurse.specialties[0] : (i18n.currentLang === 'ar' ? 'تمريض منزلي عام' : 'General Home Care'));
+          const gov = nurse.governorate || (nurse.profiles?.governorate || 'مصر');
+          const loc = nurse.city ? `${gov} - ${nurse.city}` : gov;
+          const priceTag = window.EgyptLocations
+            ? window.EgyptLocations.formatEGP(rate, i18n.currentLang) + (i18n.currentLang === 'ar' ? ' / زيارة' : ' / visit')
+            : `${rate} ج.م / زيارة`;
+
+          // Card wrapper
+          const card = document.createElement('div');
+          card.className = 'nurse-card reveal visible';
+
+          // Header
+          const cardHeader = document.createElement('div');
+          cardHeader.className = 'nurse-card-header';
+
+          const avatarWrapper = document.createElement('div');
+          avatarWrapper.className = 'nurse-avatar';
+          avatarWrapper.style.overflow = 'hidden';
+
+          const avatarUrl = nurse.profiles?.avatar_url;
+          if (avatarUrl && (avatarUrl.startsWith('https://') || avatarUrl.startsWith('http://') || avatarUrl.startsWith('data:image/'))) {
+            const img = document.createElement('img');
+            img.src = avatarUrl;
+            img.alt = name;
+            img.style.cssText = 'width:100%; height:100%; object-fit:cover;';
+            img.loading = 'lazy';
+            avatarWrapper.appendChild(img);
+          } else {
+            const emojiSpan = document.createElement('span');
+            emojiSpan.style.cssText = 'font-size:2.5rem; display:flex; align-items:center; justify-content:center; width:100%; height:100%;';
+            emojiSpan.textContent = '👩‍⚕️';
+            avatarWrapper.appendChild(emojiSpan);
+          }
+          cardHeader.appendChild(avatarWrapper);
+
+          const nameEl = document.createElement('h3');
+          nameEl.style.cssText = 'color:white; font-size:1.1rem; margin-bottom:4px;';
+          nameEl.textContent = name;
+          cardHeader.appendChild(nameEl);
+
+          // Verification Badge (Only if verified in DB)
+          if (nurse.verified === true || nurse.is_verified === true) {
+            const badge = document.createElement('div');
+            badge.className = 'nurse-verified-badge';
+            badge.style.margin = '0 auto';
+            badge.textContent = i18n.currentLang === 'ar' ? '✓ تم التحقق من الهوية' : '✓ ID Verified';
+            cardHeader.appendChild(badge);
+          } else {
+            const badge = document.createElement('div');
+            badge.className = 'badge badge-primary';
+            badge.style.cssText = 'margin:0 auto; background:rgba(255,255,255,0.25); color:white;';
+            badge.textContent = i18n.currentLang === 'ar' ? 'كادر مسجل' : 'Registered';
+            cardHeader.appendChild(badge);
+          }
+          card.appendChild(cardHeader);
+
+          // Body
+          const cardBody = document.createElement('div');
+          cardBody.className = 'nurse-card-body';
+
+          // Meta (Experience & Rating)
+          const metaRow = document.createElement('div');
+          metaRow.style.cssText = 'display:flex; justify-content:space-between; margin-bottom:8px;';
+
+          const expSpan = document.createElement('span');
+          expSpan.style.cssText = 'font-size:0.875rem; color:var(--gray-500);';
+          expSpan.textContent = `${i18n.currentLang === 'ar' ? 'الخبرة:' : 'Experience:'} ${exp} ${i18n.currentLang === 'ar' ? 'سنوات' : 'yrs'}`;
+          metaRow.appendChild(expSpan);
+
+          if (nurse.rating || nurse.average_rating) {
+            const starSpan = document.createElement('span');
+            starSpan.style.cssText = 'font-size:0.875rem; color:var(--warning); font-weight:700;';
+            starSpan.textContent = `⭐ ${Number(nurse.rating || nurse.average_rating).toFixed(1)}`;
+            metaRow.appendChild(starSpan);
+          } else {
+            const noReviewSpan = document.createElement('span');
+            noReviewSpan.style.cssText = 'font-size:0.78rem; color:var(--gray-400);';
+            noReviewSpan.textContent = i18n.currentLang === 'ar' ? 'عضو جديد' : 'New Member';
+            metaRow.appendChild(noReviewSpan);
+          }
+          cardBody.appendChild(metaRow);
+
+          // Location
+          const locDiv = document.createElement('div');
+          locDiv.style.cssText = 'font-size:0.82rem; color:var(--gray-600); margin-bottom:10px;';
+          locDiv.textContent = `📍 ${loc}`;
+          cardBody.appendChild(locDiv);
+
+          // Price
+          const priceDiv = document.createElement('div');
+          priceDiv.style.cssText = 'font-size:0.95rem; font-weight:700; color:var(--primary); margin-bottom:12px;';
+          priceDiv.textContent = priceTag;
+          cardBody.appendChild(priceDiv);
+
+          // Specialty
+          const specDiv = document.createElement('div');
+          specDiv.style.marginBottom = '16px';
+          const specBadge = document.createElement('span');
+          specBadge.className = 'badge badge-primary';
+          specBadge.textContent = spec;
+          specDiv.appendChild(specBadge);
+          cardBody.appendChild(specDiv);
+
+          // Book Link
+          const bookLink = document.createElement('a');
+          const nurseId = encodeURIComponent(nurse.user_id || nurse.id || '');
+          bookLink.href = `pages/book.html?nurse=${nurseId}`;
+          bookLink.className = 'btn btn-primary w-full';
+          bookLink.style.display = 'block';
+          bookLink.style.textAlign = 'center';
+          bookLink.textContent = i18n.currentLang === 'ar' ? '📅 احجز زيارة' : '📅 Book Visit';
+          cardBody.appendChild(bookLink);
+
+          card.appendChild(cardBody);
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error('Failed to load featured nurses:', err);
+        container.textContent = '';
+        const errBox = document.createElement('div');
+        errBox.className = 'empty-state';
+        errBox.style.cssText = 'grid-column: 1/-1; text-align:center; padding:40px 20px; background:white; border-radius:var(--radius-lg); box-shadow:var(--shadow-sm);';
+
+        const icon = document.createElement('div');
+        icon.style.cssText = 'font-size:2.5rem; margin-bottom:10px;';
+        icon.textContent = 'ℹ️';
+        errBox.appendChild(icon);
+
+        const p1 = document.createElement('p');
+        p1.style.cssText = 'color:var(--gray-700); font-weight:600;';
+        p1.textContent = i18n.currentLang === 'ar' ? 'يمكنك تصفح قائمة الممرضين والبحث حسب المحافظة' : 'You can browse the nurses catalog by governorate';
+        errBox.appendChild(p1);
+
+        const nursesLink = document.createElement('a');
+        nursesLink.href = 'pages/nurses.html';
+        nursesLink.className = 'btn btn-outline btn-sm';
+        nursesLink.style.marginTop = '12px';
+        nursesLink.textContent = i18n.currentLang === 'ar' ? 'دليل الممرضين' : 'Nurses Directory';
+        errBox.appendChild(nursesLink);
+
+        container.appendChild(errBox);
+      }
+    }
+
+    // ── Load Authentic Reviews (No Fake Saudi Testimonials) ──
+    async function loadReviews() {
+      const container = document.getElementById('homepage-reviews');
+      if (!container) return;
+
+      try {
+        const sb = window.getSupabase ? window.getSupabase() : null;
+        let reviews = [];
+        if (sb) {
+          const { data, error } = await sb
+            .from('reviews')
+            .select(`
+            id,
+            rating,
+            comment,
+            created_at,
+            patient:profiles!patient_id(full_name, avatar_url)
+          `)
+            .order('created_at', { ascending: false })
+            .limit(3);
+          if (!error && Array.isArray(data)) reviews = data;
+        }
+
+        container.textContent = '';
+
+        if (reviews.length === 0) {
+          const emptyState = document.createElement('div');
+          emptyState.className = 'empty-state';
+          emptyState.style.cssText = 'grid-column: 1/-1; text-align:center; padding:40px 20px; background:white; border-radius:var(--radius-lg); box-shadow:var(--shadow-sm);';
+
+          const starIcon = document.createElement('div');
+          starIcon.style.cssText = 'font-size:2.5rem; margin-bottom:8px;';
+          starIcon.textContent = '⭐';
+          emptyState.appendChild(starIcon);
+
+          const h3 = document.createElement('h3');
+          h3.style.cssText = 'font-size:1.15rem; margin-bottom:6px; color:var(--gray-800);';
+          h3.textContent = i18n.currentLang === 'ar' ? 'تقييمات واقعية وموثقة' : 'Verified Authentic Reviews';
+          emptyState.appendChild(h3);
+
+          const p = document.createElement('p');
+          p.style.cssText = 'color:var(--gray-500); max-width:520px; margin:0 auto; font-size:0.92rem; line-height:1.7;';
+          p.textContent = i18n.currentLang === 'ar'
+            ? 'تُنشر التقييمات تلقائياً من قبل المرضى المسجلين بعد إتمام الزيارات المنزلية لضمان الشفافية والمصداقية التامة.'
+            : 'Reviews are published automatically by registered patients following completed home visits for full transparency.';
+          emptyState.appendChild(p);
+
+          container.appendChild(emptyState);
+          return;
+        }
+
+        reviews.forEach(r => {
+          const card = document.createElement('div');
+          card.className = 'review-card reveal visible';
+
+          const starDiv = document.createElement('div');
+          starDiv.className = 'review-stars';
+          const rating = Math.min(Math.max(Number(r.rating) || 5, 1), 5);
+          starDiv.textContent = '⭐'.repeat(rating);
+          card.appendChild(starDiv);
+
+          const textP = document.createElement('p');
+          textP.className = 'review-text';
+          textP.textContent = `"${r.comment || ''}"`;
+          card.appendChild(textP);
+
+          const authorDiv = document.createElement('div');
+          authorDiv.className = 'review-author';
+
+          const avatar = document.createElement('div');
+          avatar.className = 'review-avatar';
+          const authorName = r.patient?.full_name || (i18n.currentLang === 'ar' ? 'مريض معتمد' : 'Patient');
+          avatar.textContent = authorName.charAt(0).toUpperCase();
+          authorDiv.appendChild(avatar);
+
+          const metaDiv = document.createElement('div');
+          const nameDiv = document.createElement('div');
+          nameDiv.className = 'review-name';
+          nameDiv.textContent = authorName;
+          metaDiv.appendChild(nameDiv);
+
+          if (r.created_at) {
+            const dateDiv = document.createElement('div');
+            dateDiv.className = 'review-date';
+            dateDiv.textContent = new Date(r.created_at).toLocaleDateString(i18n.currentLang === 'ar' ? 'ar-EG' : 'en-US');
+            metaDiv.appendChild(dateDiv);
+          }
+          authorDiv.appendChild(metaDiv);
+
+          card.appendChild(authorDiv);
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.warn('Reviews notice:', err);
+      }
+    }
+
+    // ── Platform Metrics (Truthful: replaces fake 5000+ / 4.9) ──
+    async function loadPlatformStats() {
+      try {
+        const sb = window.getSupabase ? window.getSupabase() : null;
+        let nurseCount = 0;
+
+        if (sb) {
+          const { count, error } = await sb
+            .from('nurse_profiles')
+            .select('*', { count: 'exact', head: true })
+            .eq('is_active', true);
+          if (!error && typeof count === 'number') nurseCount = count;
+        }
+
+        const statNursesEl = document.getElementById('stat-nurses');
+        if (statNursesEl) {
+          statNursesEl.textContent = nurseCount > 0 ? `${nurseCount}+` : 'نخبة';
+        }
+      } catch (e) {
+        // Keep initial truthful fallback
+      }
+    }
+
+    // ── Social Media Configuration (Hides unconfigured links) ──
+    function applySocialLinks() {
+      const config = window.CARENEST_CONFIG?.social || {};
+      let hasAnyValid = false;
+
+      const links = [
+        { id: 'whatsapp-link', url: config.whatsapp },
+        { id: 'facebook-link', url: config.facebook },
+        { id: 'instagram-link', url: config.instagram },
+      ];
+
+      links.forEach(({ id, url }) => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (url && typeof url === 'string' && url.trim().length > 5 && !url.includes('YOUR_') && !url.includes('000000000')) {
+            el.href = url.trim();
+            el.classList.remove('hidden');
+            hasAnyValid = true;
+          } else {
+            el.classList.add('hidden');
+          }
+        }
+      });
+
+      // الأيقونات العائمة على اليسار (reaya-social-icons) تُغطي هذا الغرض
+      // نُخفي مجموعة الفوتر دائمًا لتجنب التكرار
+      const wrapper = document.getElementById('contact-social-links');
+      if (wrapper) {
+        wrapper.style.display = 'none';
+      }
+    }
+
+    // ── Validated Inquiry Form ──
+function initInquiryForm() {
+  const form = document.getElementById('home-contact-form');
+
+  if (!form) {
+    console.warn('Contact form was not found.');
+    return;
+  }
+
+  // Prevent registering the same event more than once.
+  if (form.dataset.initialized === 'true') return;
+  form.dataset.initialized = 'true';
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    if (window.Validator && !window.Validator.validate(form)) {
+      return;
+    }
+
+    const submitBtn = document.getElementById('contact-submit-btn');
+    const name = document.getElementById('contact-name')?.value.trim() || '';
+    const phone = document.getElementById('contact-phone')?.value.trim() || ''; 
+    const email = document.getElementById('contact-email')?.value.trim() || '';
+    const subject = document.getElementById('contact-subject')?.value || 'inquiry';
+    const message = document.getElementById('contact-msg')?.value.trim() || '';
+
+    if (!name || !phone || !message) {
+      alert('من فضلك املأ الاسم ورقم الهاتف والرسالة.');
+      return;
+    }
+
+    let loadingStarted = false;
+
+    try {
+      if (submitBtn && typeof window.setButtonLoading === 'function') {
+        window.setButtonLoading(submitBtn, true);
+        loadingStarted = true;
+      } else if (submitBtn) {
+        submitBtn.disabled = true;
+      }
+
+      const client =
+        window.ReayaSupabase?.client ||
+        window.supabaseClient ||
+        (typeof window.getSupabase === 'function'
+          ? window.getSupabase()
+          : null);
+
+      if (!client || typeof client.from !== 'function') {
+        throw new Error('Supabase client is not available.');
+      }
+
+      const { error } = await client
+        .from('contact_messages')
+        .insert({
+          sender_name: name,
+          
+          sender_phone: phone,
+          subject: subject,
+          message: message
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      form.reset();
+
+      if (window.Validator &&
+          typeof window.Validator.clearErrors === 'function') {
+        window.Validator.clearErrors(form);
+      }
+
+      const isArabic =
+        !window.i18n || window.i18n.currentLang === 'ar';
+
+      if (window.Toast &&
+          typeof window.Toast.success === 'function') {
+        window.Toast.success(
+          isArabic
+            ? 'تم حفظ رسالتك بنجاح  وسيتم التواصل معك قريباشكرًا لتواصلك مع رعايه.'
+            : 'Your message has been saved successfully.'
+        );
+      } else {
+        alert(
+          isArabic
+            ? 'تم حفظ رسالتك بنجاح.'
+            : 'Your message has been saved successfully.'
+        );
+      }
+
+    } catch (error) {
+      console.error('Contact form submission failed:', error);
+
+      alert(
+        'لم نتمكن من حفظ الرسالة. افتح Console وابعتلي الخطأ الجديد.'
+      );
+
+    } finally {
+      if (submitBtn) {
+        if (loadingStarted &&
+            typeof window.setButtonLoading === 'function') {
+          window.setButtonLoading(submitBtn, false);
+        } else {
+          submitBtn.disabled = false;
+        }
+      }
+    }
+  });
+}
+
+    // ── Execution Flow ──
+    checkAuthState();
+    loadFeaturedNurses();
+    loadReviews();
+    loadPlatformStats();
+    applySocialLinks();
+    initInquiryForm();
+
+    document.addEventListener('langChanged', () => {
+      loadFeaturedNurses();
+      loadReviews();
+      updateLangDependentContent();
+    });
+ </script>
+<!-- CareNest Floating WhatsApp Button -->
+<a
+  href="https://wa.me/201097729492"
+  class="floating-whatsapp"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="تواصل معنا عبر واتساب"
+  title="تواصل معنا عبر واتساب"
+>
+  <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+</a>
+
+<style>
+  a.floating-whatsapp {
+    position: fixed !important;
+    left: 16px !important;
+    right: auto !important;
+    bottom: 20px !important;
+    width: 54px !important;  
+    height: 54px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #25D366 !important;
+    color: #ffffff !important;
+    border-radius: 50% !important;
+    font-size: 30px !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,.25) !important;
+    z-index: 2147483647 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+  }
+
+  a.floating-whatsapp:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45) !important;
+  }
+
+  @media (max-width: 600px) {
+    a.floating-whatsapp {
+      left: 12px !important;
+      right: auto !important;
+      bottom: 16px !important;
+      width: 48px !important;
+      height: 48px !important;
+      font-size: 25px !important;
+    }
+  }
+</style>
+
+
+  <script src="js/whatsapp.js"></script>
+</body>

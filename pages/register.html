@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="سجّل حسابك في رعايه - منصة الرعاية التمريضية المنزلية">
+  <meta name="robots" content="noindex, nofollow">
+
+  <title>إنشاء حساب | رعايه CareNest</title>
+
+  <link
+    rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%A5%3C/text%3E%3C/svg%3E"
+  >
+
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body>
+
+<div class="auth-page">
+
+  <!-- Visual Side -->
+  <div class="auth-visual">
+    <div class="auth-visual-content">
+
+      <div class="auth-visual-icon">🏥</div>
+
+      <h2 class="auth-visual-title">انضم إلى رعايه</h2>
+
+      <p class="auth-visual-text">
+        سجّل حسابك وابدأ رحلتك نحو رعاية صحية أفضل.
+        <br><br>
+        سواء كنت مريضًا تبحث عن رعاية احترافية في منزلك،
+        أو ممرضًا تريد تقديم خدماتك — رعايه هنا لك.
+      </p>
+
+      <div style="display:flex; flex-direction:column; gap:16px; margin-top:40px;">
+
+        <div style="display:flex; align-items:center; gap:12px; color:rgba(255,255,255,0.8); font-size:0.925rem;">
+          <span style="font-size:1.3rem;">✅</span>
+          ممرضون معتمدون ومؤهلون
+        </div>
+
+        <div style="display:flex; align-items:center; gap:12px; color:rgba(255,255,255,0.8); font-size:0.925rem;">
+          <span style="font-size:1.3rem;">🔒</span>
+          بيانات آمنة ومحمية
+        </div>
+
+        <div style="display:flex; align-items:center; gap:12px; color:rgba(255,255,255,0.8); font-size:0.925rem;">
+          <span style="font-size:1.3rem;">⚡</span>
+          حجز سريع وسهل
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Side -->
+  <div class="auth-form-section">
+    <div class="auth-form-container">
+
+      <!-- Mobile Logo -->
+      <div class="auth-logo-mobile">
+        <a
+          href="../index.html"
+          style="display:inline-flex; align-items:center; gap:10px; text-decoration:none;"
+        >
+          <span style="font-size:2rem;">🏥</span>
+          <span style="font-size:1.5rem; font-weight:800; color:var(--primary); font-family:var(--font-ar);">
+            رعايه
+          </span>
+        </a>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <div>
+          <h1 class="auth-form-title" id="form-title">إنشاء حساب جديد</h1>
+          <p class="auth-form-subtitle" id="form-subtitle">أدخل بياناتك للبدء</p>
+        </div>
+
+        <button
+          type="button"
+          class="lang-toggle"
+          id="lang-btn"
+          aria-label="Toggle Language"
+        >
+          English
+        </button>
+      </div>
+
+      <!-- Account Type Selector -->
+      <div
+        class="account-type-selector"
+        id="account-type-selector"
+        role="group"
+        aria-label="نوع الحساب"
+      >
+
+        <label class="account-type-option selected" for="type-patient" id="label-patient">
+          <input
+            type="radio"
+            name="account_type"
+            id="type-patient"
+            value="patient"
+            checked
+          >
+          <div class="type-icon">👤</div>
+          <div class="type-label" data-i18n="auth_patient">مريض</div>
+        </label>
+
+        <label class="account-type-option" for="type-nurse" id="label-nurse">
+          <input
+            type="radio"
+            name="account_type"
+            id="type-nurse"
+            value="nurse"
+          >
+          <div class="type-icon">👩‍⚕️</div>
+          <div class="type-label" data-i18n="auth_nurse">ممرض/ممرضة</div>
+        </label>
+
+      </div>
+
+      <!-- Registration Form -->
+      <form id="register-form" novalidate>
+
+        <!-- Full Name -->
+        <div class="form-group">
+          <label class="form-label" for="full-name">
+            <span data-i18n="auth_full_name">الاسم الكامل</span>
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="full-name"
+            name="full_name"
+            class="form-control"
+            placeholder="الاسم الكامل"
+            autocomplete="name"
+            aria-required="true"
+            required
+            minlength="3"
+          >
+
+          <div class="form-error" id="full-name-error" role="alert"></div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label" for="email">
+            <span data-i18n="auth_email">البريد الإلكتروني</span>
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="form-control"
+            placeholder="example@email.com"
+            autocomplete="email"
+            aria-required="true"
+            dir="ltr"
+            required
+          >
+
+          <div class="form-error" id="email-error" role="alert"></div>
+        </div>
+
+        <!-- Phone -->
+        <div class="form-group">
+          <label class="form-label" for="phone">
+            <span data-i18n="auth_phone">رقم الهاتف</span> (مصر)
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            class="form-control"
+            placeholder="010XXXXXXXX أو +20"
+            autocomplete="tel"
+            aria-required="true"
+            dir="ltr"
+            required
+          >
+
+          <div class="form-error" id="phone-error" role="alert"></div>
+        </div>
+
+        <!-- Egyptian National ID -->
+        <div class="form-group">
+          <label class="form-label" for="national-id">
+            <span>الرقم القومي المصري</span>
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="password"
+            id="national-id"
+            name="national_id"
+            class="form-control"
+            placeholder="أدخل رقمك القومي المكون من 14 رقماً"
+            maxlength="14"
+            inputmode="numeric"
+            autocomplete="off"
+            aria-required="true"
+            dir="ltr"
+            required
+          >
+
+          <div style="font-size:0.8rem; color:var(--gray-500); margin-top:4px;">
+            🔒 رقم حساس. لا تشاركه مع الآخرين.
+          </div>
+
+          <div class="form-error" id="national-id-error" role="alert"></div>
+        </div>
+
+        <!-- Egyptian Governorate -->
+        <div class="form-group">
+          <label class="form-label" for="register-governorate">
+            <span>المحافظة</span>
+            <span class="required">*</span>
+          </label>
+
+          <select
+            id="register-governorate"
+            name="governorate"
+            class="form-control"
+            required
+          >
+            <option value="">اختر المحافظة</option>
+          </select>
+
+          <div class="form-error" id="governorate-error" role="alert"></div>
+        </div>
+
+        <!-- Egyptian City / Center -->
+        <div class="form-group">
+          <label class="form-label" for="register-city">
+            <span>المدينة أو المركز</span>
+            <span class="required">*</span>
+          </label>
+
+          <select
+            id="register-city"
+            name="city"
+            class="form-control"
+            disabled
+            required
+          >
+            <option value="">اختر المحافظة أولاً</option>
+          </select>
+
+          <div class="form-error" id="city-error" role="alert"></div>
+        </div>
+
+        <!-- Detailed Address -->
+        <div class="form-group">
+          <label class="form-label" for="register-address">
+            <span>العنوان بالتفصيل</span>
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="register-address"
+            name="address"
+            class="form-control"
+            placeholder="مثال: شارع مصطفى النحاس، عمارة 15، الدور الثالث، شقة 6"
+            autocomplete="street-address"
+            required
+            minlength="5"
+          >
+
+          <div class="form-error" id="address-error" role="alert"></div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label" for="password">
+            <span data-i18n="auth_password">كلمة المرور</span>
+            <span class="required">*</span>
+          </label>
+
+          <div style="position:relative;">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-control"
+              placeholder="••••••••"
+              autocomplete="new-password"
+              aria-required="true"
+              dir="ltr"
+              required
+              minlength="8"
+            >
+
+            <button
+              type="button"
+              class="toggle-password"
+              id="toggle-password"
+              aria-label="Show/Hide Password"
+              style="position:absolute; top:50%; left:12px; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:1rem; color:var(--gray-400);"
+            >
+              👁️
+            </button>
+          </div>
+
+          <div class="form-hint" id="password-hint">
+            يجب أن تحتوي على 8 أحرف على الأقل، وحرف كبير وصغير ورقم.
+          </div>
+
+          <div class="form-error" id="password-error" role="alert"></div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label class="form-label" for="confirm-password">
+            <span data-i18n="auth_confirm_password">تأكيد كلمة المرور</span>
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="password"
+            id="confirm-password"
+            name="confirm_password"
+            class="form-control"
+            placeholder="••••••••"
+            autocomplete="new-password"
+            aria-required="true"
+            dir="ltr"
+            required
+          >
+
+          <div class="form-error" id="confirm-password-error" role="alert"></div>
+        </div>
+
+        <!-- Terms -->
+        <div class="form-group" style="display:flex; align-items:flex-start; gap:10px;">
+          <input
+            type="checkbox"
+            id="terms"
+            style="margin-top:3px; width:16px; height:16px; flex-shrink:0;"
+            required
+          >
+
+          <label
+            for="terms"
+            style="font-size:0.875rem; color:var(--gray-600); line-height:1.5; cursor:pointer;"
+          >
+            أوافق على
+            <a href="terms.html" style="color:var(--primary);">الشروط والأحكام</a>
+            و
+            <a href="privacy.html" style="color:var(--primary);">سياسة الخصوصية</a>
+          </label>
+        </div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="btn btn-primary w-full"
+          id="register-btn"
+          style="font-size:1rem; margin-top:8px;"
+        >
+          <span data-i18n="auth_register">إنشاء حساب</span>
+        </button>
+
+        <!-- Success Message -->
+        <div
+          id="success-message"
+          class="hidden"
+          style="background:var(--success-bg); color:#065f46; border-radius:var(--radius); padding:16px; text-align:center; margin-top:16px; font-weight:600;"
+          role="status"
+          aria-live="polite"
+        >
+          ✅ <span id="success-text"></span>
+        </div>
+
+        <!-- Error Message -->
+        <div
+          id="error-message"
+          class="hidden"
+          style="background:var(--error-bg); color:#991b1b; border-radius:var(--radius); padding:16px; text-align:center; margin-top:16px; font-weight:600;"
+          role="alert"
+          aria-live="assertive"
+        >
+          <span id="error-text"></span>
+        </div>
+
+      </form>
+
+      <div class="auth-divider">
+        <span data-i18n="auth_have_account">لديك حساب بالفعل؟</span>
+      </div>
+
+      <a
+        href="login.html"
+        class="btn btn-outline w-full"
+        style="text-align:center; display:block;"
+        data-i18n="auth_login"
+      >
+        تسجيل الدخول
+      </a>
+
+      <p style="text-align:center; margin-top:16px;">
+        <a href="../index.html" style="color:var(--gray-500); font-size:0.875rem;">
+          ← العودة للرئيسية
+        </a>
+      </p>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script src="../js/egypt-locations.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/i18n.js"></script>
+<script src="../js/utils.js"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('register-form');
+    const registerBtn = document.getElementById('register-btn');
+    const successMsg = document.getElementById('success-message');
+    const errorMsg = document.getElementById('error-message');
+    const errorText = document.getElementById('error-text');
+    const successText = document.getElementById('success-text');
+
+    const nationalIdInput = document.getElementById('national-id');
+    const nationalIdError = document.getElementById('national-id-error');
+
+    const governorateSelect = document.getElementById('register-governorate');
+    const citySelect = document.getElementById('register-city');
+    const addressInput = document.getElementById('register-address');
+
+    function currentLanguage() {
+      return window.i18n && window.i18n.currentLang === 'en' ? 'en' : 'ar';
+    }
+
+    function message(ar, en) {
+      return currentLanguage() === 'en' ? en : ar;
+    }
+
+    function showError(text) {
+      errorText.textContent = text;
+      errorMsg.classList.remove('hidden');
+
+      if (window.Toast && typeof window.Toast.error === 'function') {
+        window.Toast.error(text);
+      }
+    }
+
+    function showWarning(text) {
+      errorText.textContent = text;
+      errorMsg.classList.remove('hidden');
+
+      if (window.Toast && typeof window.Toast.warning === 'function') {
+        window.Toast.warning(text);
+      }
+    }
+
+    function clearMessages() {
+      successMsg.classList.add('hidden');
+      errorMsg.classList.add('hidden');
+      errorText.textContent = '';
+      successText.textContent = '';
+    }
+
+    function setLoading(isLoading) {
+      registerBtn.disabled = isLoading;
+      registerBtn.setAttribute('aria-busy', String(isLoading));
+
+      if (isLoading) {
+        registerBtn.dataset.originalText = registerBtn.textContent.trim();
+        registerBtn.textContent = message('جارٍ إنشاء الحساب...', 'Creating account...');
+      } else {
+        registerBtn.textContent =
+          currentLanguage() === 'en'
+            ? 'Create Account'
+            : 'إنشاء حساب';
+      }
+    }
+
+    function normalizeDigits(value) {
+      return value
+        .replace(/[٠-٩]/g, function (digit) {
+          return String(digit.charCodeAt(0) - 0x0660);
+        })
+        .replace(/[۰-۹]/g, function (digit) {
+          return String(digit.charCodeAt(0) - 0x06F0);
+        });
+    }
+
+    function normalizeNationalId(value) {
+      return normalizeDigits(value).replace(/[\s-]/g, '');
+    }
+
+    function setFieldError(input, errorElement, text) {
+      input.classList.add('error');
+      errorElement.textContent = text;
+      errorElement.classList.add('visible');
+    }
+
+    function clearFieldError(input, errorElement) {
+      input.classList.remove('error');
+      errorElement.textContent = '';
+      errorElement.classList.remove('visible');
+    }
+
+    function validateNationalId() {
+      const value = normalizeNationalId(nationalIdInput.value);
+
+      if (!/^\d{14}$/.test(value)) {
+        setFieldError(
+          nationalIdInput,
+          nationalIdError,
+          message(
+            'الرقم القومي يجب أن يتكون من 14 رقمًا.',
+            'The national ID must contain exactly 14 digits.'
+          )
+        );
+
+        return null;
+      }
+
+      clearFieldError(nationalIdInput, nationalIdError);
+
+      return value;
+    }
+
+    function validatePassword(password) {
+      return (
+        password.length >= 8 &&
+        /[a-z]/.test(password) &&
+        /[A-Z]/.test(password) &&
+        /\d/.test(password)
+      );
+    }
+
+    function clearAllFieldErrors() {
+      form.querySelectorAll('.form-error').forEach(function (element) {
+        element.textContent = '';
+        element.classList.remove('visible');
+      });
+
+      form.querySelectorAll('.form-control').forEach(function (element) {
+        element.classList.remove('error');
+      });
+    }
+
+    // Populate governorates & bind cities using EgyptLocations
+    if (window.EgyptLocations) {
+      if (typeof window.EgyptLocations.bindGovernorateAndCity === 'function') {
+        window.EgyptLocations.bindGovernorateAndCity(governorateSelect, citySelect, {
+          initialGovernorate: '',
+          initialCity: '',
+          govPlaceholder: 'اختر المحافظة',
+          cityPlaceholder: 'اختر المدينة أو المركز'
+        });
+      } else if (typeof window.EgyptLocations.populateGovernorateSelect === 'function') {
+        window.EgyptLocations.populateGovernorateSelect(governorateSelect, '', 'اختر المحافظة');
+        governorateSelect.addEventListener('change', function () {
+          if (typeof window.EgyptLocations.populateCitySelect === 'function') {
+            window.EgyptLocations.populateCitySelect(citySelect, governorateSelect.value, '', 'اختر المدينة أو المركز');
+          }
+        });
+      }
+    }
+
+    // Clear city/governorate/address errors on input
+    governorateSelect?.addEventListener('change', function () {
+      clearFieldError(governorateSelect, document.getElementById('governorate-error'));
+    });
+    citySelect?.addEventListener('change', function () {
+      clearFieldError(citySelect, document.getElementById('city-error'));
+    });
+    addressInput?.addEventListener('input', function () {
+      if (addressInput.value.trim().length >= 5) {
+        clearFieldError(addressInput, document.getElementById('address-error'));
+      }
+    });
+
+    // Redirect an already authenticated user.
+    if (window.Auth && typeof window.Auth.getSession === 'function') {
+      window.Auth.getSession()
+        .then(function (session) {
+          if (session && window.Auth.redirectByRole) {
+            window.Auth.redirectByRole();
+          }
+        })
+        .catch(function () {
+          // Session checking must not prevent the registration page from opening.
+        });
+    }
+
+    // Preselect account type from URL.
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlType = urlParams.get('type');
+
+    if (urlType === 'nurse') {
+      document.getElementById('type-nurse').checked = true;
+      document.getElementById('label-nurse').classList.add('selected');
+      document.getElementById('label-patient').classList.remove('selected');
+    }
+
+    // Account type selection.
+    document.querySelectorAll('input[name="account_type"]').forEach(function (radio) {
+      radio.addEventListener('change', function (event) {
+        document.querySelectorAll('.account-type-option').forEach(function (option) {
+          option.classList.remove('selected');
+        });
+
+        event.target.closest('.account-type-option')?.classList.add('selected');
+      });
+    });
+
+    // Password visibility toggle.
+    document.getElementById('toggle-password').addEventListener('click', function () {
+      const passwordInput = document.getElementById('password');
+
+      passwordInput.type =
+        passwordInput.type === 'password' ? 'text' : 'password';
+    });
+
+    // Password strength hint.
+    document.getElementById('password').addEventListener('input', function (event) {
+      const password = event.target.value;
+      const hint = document.getElementById('password-hint');
+
+      if (!password) {
+        hint.textContent = message(
+          'يجب أن تحتوي على 8 أحرف على الأقل، وحرف كبير وصغير ورقم.',
+          'Use at least 8 characters, including uppercase, lowercase, and a number.'
+        );
+        hint.style.color = '';
+        return;
+      }
+
+      let strength = 0;
+
+      if (/[a-z]/.test(password)) strength++;
+      if (/[A-Z]/.test(password)) strength++;
+      if (/\d/.test(password)) strength++;
+      if (password.length >= 8) strength++;
+
+      const colors = ['', '#ef4444', '#f59e0b', '#f59e0b', '#10b981'];
+
+      const labels = currentLanguage() === 'en'
+        ? ['', 'Weak', 'Fair', 'Good', 'Strong']
+        : ['', 'ضعيفة', 'مقبولة', 'جيدة', 'قوية'];
+
+      hint.style.color = colors[strength];
+      hint.textContent =
+        message('قوة كلمة المرور: ', 'Password strength: ') + labels[strength];
+    });
+
+    // Normalize national ID digits while typing.
+    nationalIdInput.addEventListener('input', function () {
+      const normalized = normalizeDigits(nationalIdInput.value)
+        .replace(/[^\d]/g, '')
+        .slice(0, 14);
+
+      nationalIdInput.value = normalized;
+
+      if (/^\d{14}$/.test(normalized)) {
+        clearFieldError(nationalIdInput, nationalIdError);
+      }
+    });
+
+    // Registration submission.
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      clearMessages();
+      clearAllFieldErrors();
+
+      const terms = document.getElementById('terms');
+
+      if (!terms.checked) {
+        showWarning(
+          message(
+            'يجب الموافقة على الشروط والأحكام وسياسة الخصوصية للمتابعة.',
+            'You must agree to the terms and privacy policy to continue.'
+          )
+        );
+
+        terms.focus();
+        return;
+      }
+
+      const fullName = document.getElementById('full-name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const governorate = governorateSelect ? governorateSelect.value : '';
+      const city = citySelect ? citySelect.value : '';
+      const address = addressInput ? addressInput.value.trim() : '';
+      const role =
+        document.querySelector('input[name="account_type"]:checked')?.value ||
+        'patient';
+
+      let hasErrors = false;
+
+      if (fullName.length < 3) {
+        setFieldError(
+          document.getElementById('full-name'),
+          document.getElementById('full-name-error'),
+          message('يرجى إدخال الاسم الكامل.', 'Please enter your full name.')
+        );
+        hasErrors = true;
+      }
+
+      const emailInput = document.getElementById('email');
+
+      if (!emailInput.validity.valid || !email) {
+        setFieldError(
+          emailInput,
+          document.getElementById('email-error'),
+          message('يرجى إدخال بريد إلكتروني صحيح.', 'Please enter a valid email address.')
+        );
+        hasErrors = true;
+      }
+
+      // Basic Egyptian phone validation.
+      const normalizedPhone = normalizeDigits(phone).replace(/[\s()-]/g, '');
+      const validPhone = /^(?:\+20|0020|0)?1[0125]\d{8}$/.test(normalizedPhone);
+
+      if (!validPhone) {
+        setFieldError(
+          document.getElementById('phone'),
+          document.getElementById('phone-error'),
+          message('يرجى إدخال رقم هاتف مصري صحيح.', 'Please enter a valid Egyptian phone number.')
+        );
+        hasErrors = true;
+      }
+
+      const nationalId = validateNationalId();
+
+      if (!nationalId) {
+        hasErrors = true;
+      }
+
+      if (!governorate) {
+        setFieldError(
+          governorateSelect,
+          document.getElementById('governorate-error'),
+          message('يرجى اختيار المحافظة.', 'Please select a governorate.')
+        );
+        hasErrors = true;
+      }
+
+      if (!city) {
+        setFieldError(
+          citySelect,
+          document.getElementById('city-error'),
+          message('يرجى اختيار المدينة أو المركز التابع للمحافظة.', 'Please select a city or district.')
+        );
+        hasErrors = true;
+      }
+
+      if (!address || address.length < 5) {
+        setFieldError(
+          addressInput,
+          document.getElementById('address-error'),
+          message('يرجى كتابة العنوان بالتفصيل (اسم الشارع، رقم العمارة، رقم الشقة).', 'Please enter your detailed address.')
+        );
+        hasErrors = true;
+      }
+
+      if (!validatePassword(password)) {
+        setFieldError(
+          document.getElementById('password'),
+          document.getElementById('password-error'),
+          message(
+            'كلمة المرور يجب أن تحتوي على 8 أحرف على الأقل، وحرف كبير وصغير ورقم.',
+            'Password must contain at least 8 characters, uppercase, lowercase, and a number.'
+          )
+        );
+        hasErrors = true;
+      }
+
+      if (password !== confirmPassword) {
+        setFieldError(
+          document.getElementById('confirm-password'),
+          document.getElementById('confirm-password-error'),
+          message('كلمتا المرور غير متطابقتين.', 'Passwords do not match.')
+        );
+        hasErrors = true;
+      }
+
+      if (hasErrors) {
+        const firstError = form.querySelector('.form-control.error');
+
+        if (firstError) {
+          firstError.focus();
+        }
+
+        showWarning(
+          message(
+            'يرجى مراجعة البيانات المدخلة وتصحيح الحقول المميزة.',
+            'Please correct the highlighted fields.'
+          )
+        );
+
+        return;
+      }
+
+      // Never send or log the national ID from this page.
+      // Secure server-side national ID storage must be configured separately.
+      if (!window.Auth || typeof window.Auth.signUp !== 'function') {
+        showError(
+          message(
+            'وحدة المصادقة غير محملة. تحقق من ملفات Supabase وauth.js.',
+            'Authentication module is unavailable. Check Supabase and auth.js.'
+          )
+        );
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const result = await window.Auth.signUp({
+          email: email,
+          password: password,
+          fullName: fullName,
+          phone: normalizedPhone,
+          role: role,
+          governorate: governorate,
+          city: city,
+          address: address,
+          country: 'Egypt',
+          nationalId: nationalId
+        });
+
+
+        if (!result || !result.user || !result.user.id) {
+          throw new Error(
+            message(
+              'لم يتم تأكيد إنشاء الحساب. راجع إعدادات Supabase ورسالة الخطأ.',
+              'Account creation could not be confirmed. Check Supabase configuration.'
+            )
+          );
+        }
+
+        const nationalIdNotice = result.nationalIdSaved ? '' : (result.nationalIdSaveMessage || '');
+
+        form.reset();
+
+        // Restore the default account type and selection style.
+        document.getElementById('type-patient').checked = true;
+        document.getElementById('label-patient').classList.add('selected');
+        document.getElementById('label-nurse').classList.remove('selected');
+
+        successMsg.classList.remove('hidden');
+
+        if (result.session) {
+          successText.textContent = message(
+            'تم إنشاء الحساب بنجاح. جارٍ تحويلك إلى لوحة التحكم...',
+            'Account created successfully. Redirecting to your dashboard...'
+          );
+
+          if (window.Toast && typeof window.Toast.success === 'function') {
+            window.Toast.success(
+              message('تم إنشاء الحساب بنجاح.', 'Account created successfully.')
+            );
+          }
+
+          setTimeout(function () {
+            if (window.Auth && typeof window.Auth.redirectByRole === 'function') {
+              window.Auth.redirectByRole();
+            } else {
+              window.location.href = 'login.html';
+            }
+          }, 1200);
+        } else {
+          successText.textContent = message(
+            'تم إنشاء الحساب. تحقق من بريدك الإلكتروني لتأكيده، ثم سجّل الدخول.',
+            'Account created. Check your email to confirm it, then log in.'
+          );
+
+          if (window.Toast && typeof window.Toast.success === 'function') {
+            window.Toast.success(
+              message('تم إنشاء الحساب.', 'Account created.')
+            );
+          }
+        }
+
+        if (nationalIdNotice && window.Toast && typeof window.Toast.warning === 'function') {
+          window.Toast.warning(nationalIdNotice);
+        }
+
+      } catch (error) {
+        // Do not log form values, passwords, or national ID.
+        console.error('Registration failed:', error);
+
+        const errorMessage =
+          error && typeof error.message === 'string'
+            ? error.message
+            : message(
+                'حدث خطأ غير متوقع أثناء التسجيل.',
+                'An unexpected registration error occurred.'
+              );
+
+        showError(errorMessage);
+
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // Language toggle.
+    // الزر عليه class="lang-toggle" فـ i18n.js بيربطه بنفسه (i18n.init).
+    // لذلك هنا بنسمع للحدث langChanged بس، من غير ما نعمل toggle تاني،
+    // لأن الضغطة كانت بتتحسب مرتين فاللغة ترجع زي ما كانت.
+    function setText(selector, ar, en) {
+      const el = document.querySelector(selector);
+      if (el) el.textContent = message(ar, en);
+    }
+
+    function setHtml(selector, ar, en) {
+      const el = document.querySelector(selector);
+      if (el) el.innerHTML = message(ar, en);
+    }
+
+    function setPlaceholder(id, ar, en) {
+      const el = document.getElementById(id);
+      if (el) el.placeholder = message(ar, en);
+    }
+
+    function applyPageLanguage() {
+      setText('#form-title', 'إنشاء حساب جديد', 'Create New Account');
+      setText('#form-subtitle', 'أدخل بياناتك للبدء', 'Enter your details to get started');
+
+      setText('.auth-visual-title', 'انضم إلى رعايه', 'Join CareNest');
+      setHtml(
+        '.auth-visual-text',
+        'سجّل حسابك وابدأ رحلتك نحو رعاية صحية أفضل.<br><br>سواء كنت مريضًا تبحث عن رعاية احترافية في منزلك، أو ممرضًا تريد تقديم خدماتك — رعايه هنا لك.',
+        'Create your account and start your journey to better healthcare.<br><br>Whether you are a patient looking for professional care at home, or a nurse who wants to offer your services, CareNest is for you.'
+      );
+
+      const features = [
+        ['ممرضون معتمدون ومؤهلون', 'Certified and qualified nurses'],
+        ['بيانات آمنة ومحمية', 'Safe and protected data'],
+        ['حجز سريع وسهل', 'Fast and easy booking']
+      ];
+
+      document.querySelectorAll('.auth-visual-content > div:last-child > div').forEach(function (row, i) {
+        if (features[i] && row.lastChild) {
+          row.lastChild.textContent = '\n          ' + message(features[i][0], features[i][1]) + '\n        ';
+        }
+      });
+
+      setPlaceholder('full-name', 'الاسم الكامل', 'Full name');
+      setPlaceholder('phone', '010XXXXXXXX أو +20', '010XXXXXXXX or +20');
+      setPlaceholder('national-id', 'أدخل رقمك القومي المكون من 14 رقماً', 'Enter your 14-digit national ID');
+
+      setText('label[for="national-id"] > span:first-child', 'الرقم القومي المصري', 'Egyptian National ID');
+      setText('label[for="register-governorate"] > span:first-child', 'المحافظة', 'Governorate');
+
+      const phoneLabel = document.querySelector('label[for="phone"]');
+      if (phoneLabel) {
+        Array.prototype.forEach.call(phoneLabel.childNodes, function (node) {
+          if (node.nodeType === 3 && node.textContent.trim()) {
+            node.textContent = ' ' + message('(مصر)', '(Egypt)') + ' ';
+          }
+        });
+      }
+
+      const idNote = document.getElementById('national-id').parentElement.querySelector('div[style*="font-size:0.8rem"]');
+      if (idNote) {
+        idNote.textContent = message('🔒 رقم حساس. لا تشاركه مع الآخرين.', '🔒 Sensitive number. Do not share it with anyone.');
+      }
+
+      const firstOption = governorateSelect.querySelector('option[value=""]');
+      if (firstOption) firstOption.textContent = message('اختر المحافظة', 'Select governorate');
+
+      if (!document.getElementById('password').value) {
+        document.getElementById('password-hint').textContent = message(
+          'يجب أن تحتوي على 8 أحرف على الأقل، وحرف كبير وصغير ورقم.',
+          'Use at least 8 characters, including uppercase, lowercase, and a number.'
+        );
+      }
+
+      setHtml(
+        'label[for="terms"]',
+        'أوافق على <a href="terms.html" style="color:var(--primary);">الشروط والأحكام</a> و <a href="privacy.html" style="color:var(--primary);">سياسة الخصوصية</a>',
+        'I agree to the <a href="terms.html" style="color:var(--primary);">Terms &amp; Conditions</a> and the <a href="privacy.html" style="color:var(--primary);">Privacy Policy</a>'
+      );
+
+      setText('p a[href="../index.html"]', '← العودة للرئيسية', '← Back to home');
+
+      document.getElementById('account-type-selector').setAttribute('aria-label', message('نوع الحساب', 'Account type'));
+      document.getElementById('lang-btn').setAttribute('aria-label', message('تغيير اللغة', 'Change language'));
+      document.getElementById('toggle-password').setAttribute('aria-label', message('إظهار/إخفاء كلمة المرور', 'Show/Hide password'));
+
+      if (!registerBtn.disabled) {
+        registerBtn.innerHTML = '<span data-i18n="auth_register">' + message('إنشاء حساب', 'Create Account') + '</span>';
+      }
+    }
+
+    document.addEventListener('langChanged', applyPageLanguage);
+    applyPageLanguage();
+  });
+})();
+</script>
+
+  <script src="../js/whatsapp.js"></script>
+</body>
+</html>

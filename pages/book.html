@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="حجز زيارة تمريضية منزلية داخل مصر - رعايه CareNest">
+  <title>حجز زيارة تمريضية في مصر | رعايه CareNest</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .booking-wrapper {
+      max-width: 860px;
+      margin: 40px auto;
+      background: white;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+      border: 1px solid var(--gray-100);
+    }
+    .booking-header {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--secondary));
+      color: white;
+      padding: 36px;
+      text-align: center;
+    }
+    .booking-body {
+      padding: 36px;
+    }
+    .service-card-select {
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .service-card-select.selected {
+      border-color: var(--primary);
+      background: var(--primary-glow);
+    }
+    .service-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+    .summary-box {
+      background: var(--off-white);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 24px;
+      border: 1px solid var(--gray-200);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar" role="navigation">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="../index.html" class="navbar-brand">
+        <div class="logo-icon">🏥</div>
+        <div class="brand-text">
+          <span class="brand-ar">رعايه</span>
+          <span class="brand-en">CareNest</span>
+        </div>
+      </a>
+      <div class="navbar-actions">
+        <button class="lang-toggle" id="lang-toggle-btn" aria-label="تغيير اللغة / Change language" data-i18n="lang_toggle">English</button>
+        <a href="nurses.html" class="btn btn-ghost btn-sm" data-i18n="nav_nurses">الممرضون</a>
+        <a href="patient-dashboard.html" class="btn btn-outline btn-sm" data-i18n="nav_dashboard">لوحة التحكم</a>
+        <a href="../index.html" class="btn btn-ghost btn-sm" data-i18n="nav_home">الرئيسية</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="booking-wrapper">
+    <div class="booking-header">
+      <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.18); padding:5px 14px; border-radius:var(--radius-full); margin-bottom:12px; font-size:0.85rem;">
+        <span>🇪🇬</span> الرعاية التمريضية المنزلية في جمهورية مصر العربية
+      </div>
+      <h1 style="font-size:1.85rem; font-weight:800; margin-bottom:8px;">حجز زيارة تمريضية منزلية</h1>
+      <p style="opacity:0.9; font-size:1rem;">اختر الخدمة والممرض وعنوانك داخل مصر لتلقي الرعاية في منزلك بكل راحة وأمان</p>
+    </div>
+
+    <div class="booking-body">
+      <form id="booking-form" novalidate>
+        
+        <!-- Step 1: Service Selection -->
+        <div style="margin-bottom:32px;">
+          <h3 style="font-size:1.15rem; font-weight:700; color:var(--gray-800); margin-bottom:16px;">
+            1. اختر نوع الخدمة المطلوبة <span class="required">*</span>
+          </h3>
+          <div id="services-container" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px;">
+            <div style="padding:20px; text-align:center; color:var(--gray-500); grid-column:1/-1;">
+              جاري تحميل قائمة الخدمات...
+            </div>
+          </div>
+          <input type="hidden" id="selected-service-id" required>
+          <input type="hidden" id="selected-service-name" required>
+          <input type="hidden" id="selected-service-price" value="200">
+        </div>
+
+        <!-- Step 2: Nurse Selection -->
+        <div style="margin-bottom:32px;">
+          <h3 style="font-size:1.15rem; font-weight:700; color:var(--gray-800); margin-bottom:16px;">
+            2. اختر الممرض المفضل <span class="required">*</span>
+          </h3>
+          <div class="form-group">
+            <select id="nurse-select" class="form-control" required style="font-size:1rem; padding:12px 16px;">
+              <option value="">-- جاري تحميل الممرضين المتاحين في مصر... --</option>
+            </select>
+          </div>
+          <div id="nurse-preview" class="hidden" style="display:flex; align-items:center; gap:16px; background:var(--off-white); padding:16px; border-radius:var(--radius); margin-top:12px; border:1px solid var(--gray-200);">
+            <div class="sidebar-avatar" id="selected-nurse-avatar" style="width:50px; height:50px; font-size:1.5rem;">👩‍⚕️</div>
+            <div>
+              <h4 id="selected-nurse-name" style="font-weight:700; font-size:1rem; margin-bottom:2px;">اسم الممرض</h4>
+              <p style="font-size:0.85rem; color:var(--gray-500); margin:0;" id="selected-nurse-info">ممرض معتمد في مصر</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Date & Time -->
+        <div style="margin-bottom:32px;">
+          <h3 style="font-size:1.15rem; font-weight:700; color:var(--gray-800); margin-bottom:16px;">
+            3. تفاصيل الموعد والمدة <span class="required">*</span>
+          </h3>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
+            <div class="form-group">
+              <label class="form-label" for="visit-date">تاريخ الزيارة</label>
+              <input type="date" id="visit-date" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="visit-time">وقت الزيارة المفضل</label>
+              <input type="time" id="visit-time" class="form-control" value="10:00" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="duration-hours">مدة الزيارة (بالساعات)</label>
+              <select id="duration-hours" class="form-control">
+                <option value="1">ساعة واحدة (1)</option>
+                <option value="2" selected>ساعتان (2)</option>
+                <option value="3">3 ساعات</option>
+                <option value="4">4 ساعات</option>
+                <option value="8">دوام كامل (8 ساعات)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Patient Info & Egyptian Location -->
+        <div style="margin-bottom:32px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+            <h3 style="font-size:1.15rem; font-weight:700; color:var(--gray-800); margin:0;">
+              4. بيانات المريض وموقع الزيارة في مصر <span class="required">*</span>
+            </h3>
+            <button type="button" id="geo-btn" class="btn btn-outline btn-sm" style="display:inline-flex; align-items:center; gap:6px; font-weight:600; border-color:var(--primary); color:var(--primary);">
+              <span id="geo-btn-icon">📍</span> <span id="geo-btn-text">تحديد موقعي تلقائيًا</span>
+            </button>
+          </div>
+
+          <!-- Geolocation Live Feedback Box -->
+          <div id="geo-feedback-box" style="display:none; margin-bottom:16px; padding:12px 16px; border-radius:var(--radius); font-size:0.875rem;"></div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px; margin-bottom:16px;">
+            <div class="form-group">
+              <label class="form-label" for="patient-name">اسم المريض الكامل</label>
+              <input type="text" id="patient-name" class="form-control" required placeholder="مثال: محمود علي حسن">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="patient-phone">رقم الهاتف للتواصل (مصر +20)</label>
+              <input type="tel" id="patient-phone" class="form-control" required placeholder="مثال: 01012345678 أو 011...">
+            </div>
+          </div>
+
+          <!-- Egyptian Governorate & City Selectors -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px; margin-bottom:16px;">
+            <div class="form-group">
+              <label class="form-label" for="booking-governorate" data-i18n="filter_gov_label">المحافظة</label>
+              <select id="booking-governorate" class="form-control" required>
+                <option value="">-- اختر المحافظة --</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="booking-city" data-i18n="filter_city_label">المدينة / المنطقة</label>
+              <select id="booking-city" class="form-control" required disabled>
+                <option value="" data-i18n="filter_city_placeholder">اختر المحافظة أولاً</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:16px;">
+            <label class="form-label" for="patient-address">العنوان بالتفصيل (اسم الشارع، رقم العمارة، رقم الشقة)</label>
+            <input type="text" id="patient-address" class="form-control" required placeholder="مثال: شارع مصطفى النحاس، عمارة 15، الدور الثالث، شقة 6">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="booking-notes">ملاحظات طبية خاصة للممرض (اختياري)</label>
+            <textarea id="booking-notes" class="form-control" rows="3" placeholder="اذكر أي تفاصيل صحية عن المريض أو متطلبات خاصة بالزيارة..."></textarea>
+          </div>
+        </div>
+
+        <!-- Price Summary in Egyptian Pounds -->
+        <div class="summary-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="color:var(--gray-600); font-size:0.95rem;">الخدمة المحددة:</span>
+            <span style="font-weight:700;" id="summary-service-text">—</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="color:var(--gray-600); font-size:0.95rem;">المدة المقدرة:</span>
+            <span style="font-weight:700;" id="summary-duration-text">2 ساعة</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--gray-200); padding-top:12px; margin-top:12px;">
+            <span style="font-weight:800; font-size:1.15rem; color:var(--gray-900);">المبلغ الإجمالي المتوقع:</span>
+            <span style="font-weight:800; font-size:1.35rem; color:var(--primary);" id="summary-total-price">0 جنيه مصري</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary btn-lg w-full" id="confirm-booking-btn" style="margin-top:24px;">
+          <span>✅</span> تأكيد وحفظ الحجز بالجنيه المصري
+        </button>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Booking Confirmation Modal -->
+<div id="booking-success-modal" class="hidden" style="position:fixed; inset:0; background:rgba(15,23,42,0.65); display:none; align-items:center; justify-content:center; z-index:1000; padding:20px; backdrop-filter:blur(4px);">
+  <div style="background:#fff; border-radius:20px; padding:32px; max-width:480px; width:100%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); text-align:center;">
+    <div style="width:64px; height:64px; background:var(--primary-50, #eff6ff); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px auto; font-size:2rem;">
+      🎉
+    </div>
+    <h3 style="font-size:1.4rem; font-weight:800; color:var(--gray-900); margin-bottom:6px;">تم تأكيد وحفظ الحجز بنجاح!</h3>
+    <p style="color:var(--gray-600); margin-bottom:20px; font-size:0.9rem;">تم تسجيل زيارتك الطبية المنزلية في النظام بنجاح.</p>
+    
+    <div style="background:var(--off-white); border:1px solid var(--gray-200); border-radius:14px; padding:18px; margin-bottom:24px; text-align:right; font-size:0.92rem;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
+        <span style="color:var(--gray-500);">الرقم المرجعي للحجز:</span>
+        <span id="modal-ref-id" style="font-family:monospace; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:6px; font-weight:700;">#CN-000000</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+        <span style="color:var(--gray-500);">الخدمة المطلوبة:</span>
+        <strong id="modal-service-name" style="color:var(--gray-800);">—</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+        <span style="color:var(--gray-500);">الممرض المعتمد:</span>
+        <strong id="modal-nurse-name" style="color:var(--gray-800);">—</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+        <span style="color:var(--gray-500);">تاريخ ووقت الزيارة:</span>
+        <strong id="modal-datetime" style="color:var(--gray-800);">—</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--gray-300); padding-top:10px; margin-top:10px;">
+        <span style="color:var(--gray-800); font-weight:700;">المبلغ الإجمالي:</span>
+        <strong id="modal-total-price" style="color:var(--primary); font-size:1.15rem; font-weight:800;">0 ج.م</strong>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:12px; justify-content:center;">
+      <a href="patient-dashboard.html" class="btn btn-primary" style="flex:1; justify-content:center; text-decoration:none;">
+        متابعة الحجز في لوحة التحكم
+      </a>
+      <button type="button" onclick="window.location.reload();" class="btn btn-outline" style="flex:1; justify-content:center;">
+        حجز جديد
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script src="../js/egypt-locations.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/i18n.js"></script>
+<script src="../js/utils.js"></script>
+<script>
+  const Auth = window.Auth;
+  const DB = window.DB;
+  const EgyptLoc = window.EgyptLocations;
+  let currentProfile = null;
+  let nursesList = [];
+  let servicesList = [];
+  let isSubmitting = false;
+
+  // Minimum date is today
+  const today = new Date().toISOString().split('T')[0];
+  const dateInput = document.getElementById('visit-date');
+  if (dateInput) {
+    dateInput.min = today;
+    dateInput.value = today;
+  }
+
+  // Populate Egyptian Governorates
+  const govSelect = document.getElementById('booking-governorate');
+  const citySelect = document.getElementById('booking-city');
+
+  if (EgyptLoc && govSelect && citySelect) {
+    EgyptLoc.populateGovernorateSelect(govSelect, '', 'اختر المحافظة');
+    citySelect.innerHTML = '<option value="">اختر المحافظة أولاً</option>';
+    citySelect.disabled = true;
+  }
+
+  if (govSelect && citySelect) {
+    govSelect.addEventListener('change', () => {
+      const selectedGov = govSelect.value;
+      if (selectedGov && EgyptLoc) {
+        EgyptLoc.populateCitySelect(citySelect, selectedGov, '', 'اختر المدينة أو المركز');
+      } else {
+        citySelect.innerHTML = '<option value="">اختر المحافظة أولاً</option>';
+        citySelect.disabled = true;
+      }
+      // Re-populate nurses filter prioritizing governorate
+      renderNursesDropdown(selectedGov);
+    });
+  }
+
+  // Geolocation handling (Interactive, Reverse Geocoding & Map link)
+  let userGeoCoordinates = null;
+
+  async function performGeolocation() {
+    const geoBtn = document.getElementById('geo-btn');
+    const geoIcon = document.getElementById('geo-btn-icon');
+    const geoText = document.getElementById('geo-btn-text');
+    const feedbackBox = document.getElementById('geo-feedback-box');
+
+    if (!navigator.geolocation) {
+      if (feedbackBox) {
+        feedbackBox.style.display = 'block';
+        feedbackBox.style.background = '#fef2f2';
+        feedbackBox.style.color = '#991b1b';
+        feedbackBox.style.border = '1px solid #fecaca';
+        feedbackBox.textContent = 'تحديد الموقع الجغرافي غير مدعوم في متصفحك، يمكنك إدخال العنوان يدويًا.';
+      }
+      Toast.info('تحديد الموقع الجغرافي غير مدعوم في متصفحك.');
+      return;
+    }
+
+    // الحالة 1: أثناء تحديد الموقع
+    if (geoIcon) geoIcon.textContent = '⏳';
+    if (geoText) geoText.textContent = 'جاري تحديد موقعك...';
+    if (geoBtn) geoBtn.disabled = true;
+
+    if (feedbackBox) {
+      feedbackBox.style.display = 'block';
+      feedbackBox.style.background = '#eff6ff';
+      feedbackBox.style.color = '#1e40af';
+      feedbackBox.style.border = '1px solid #bfdbfe';
+      feedbackBox.innerHTML = '<span>جاري طلب إذن الوصول وتحديد إحداثيات موقعك عبر GPS...</span>';
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        userGeoCoordinates = { lat, lng };
+
+        // الحالة 2: عند النجاح
+        if (geoIcon) geoIcon.textContent = '✅';
+        if (geoText) geoText.textContent = 'تم تحديد موقعك بنجاح';
+        if (geoBtn) geoBtn.disabled = false;
+
+        const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+        if (feedbackBox) {
+          feedbackBox.style.display = 'block';
+          feedbackBox.style.background = '#f0fdf4';
+          feedbackBox.style.color = '#166534';
+          feedbackBox.style.border = '1px solid #bbf7d0';
+          feedbackBox.innerHTML = `
+            <div style="font-weight:700; margin-bottom:4px;">✅ تم تحديد موقعك بنجاح (${lat.toFixed(5)}, ${lng.toFixed(5)})</div>
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:6px;">
+              <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" style="color:#0284c7; font-weight:600; text-decoration:underline;">
+                🗺️ عرض موقعك على Google Maps
+              </a>
+              <button type="button" id="geo-retry-action" style="background:none; border:none; color:var(--gray-600); text-decoration:underline; cursor:pointer; font-size:0.8rem;">
+                🔄 إعادة التحديد
+              </button>
+            </div>
+            <div id="geo-reverse-status" style="font-size:0.8rem; color:#15803d; margin-top:6px;">جاري مطابقة العنوان والمنطقة تلقائياً...</div>
+          `;
+          document.getElementById('geo-retry-action')?.addEventListener('click', performGeolocation);
+        }
+
+        // Reverse Geocoding
+        try {
+          const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=ar`);
+          if (revRes.ok) {
+            const revData = await revRes.json();
+            const addr = revData.address || {};
+            const state = addr.state || addr.province || addr.governorate || '';
+            const city = addr.city || addr.town || addr.village || addr.suburb || addr.municipality || '';
+            const road = addr.road || addr.neighbourhood || addr.quarter || '';
+
+            // المطابقة مع إحدى المحافظات الـ 5 المستهدفة
+            if (state && govSelect) {
+              const targetGovs = ['الفيوم', 'الدقهلية', 'البحيرة', 'بني سويف', 'الغربية'];
+              const matchedGov = targetGovs.find(g => state.includes(g) || g.includes(state));
+              if (matchedGov) {
+                govSelect.value = matchedGov;
+                if (EgyptLoc && citySelect) {
+                  EgyptLoc.populateCitySelect(citySelect, matchedGov, '', 'اختر المدينة / المنطقة');
+                  if (city) {
+                    const cities = EgyptLoc.getCities(matchedGov);
+                    const matchedCity = cities.find(c => city.includes(c) || c.includes(city));
+                    if (matchedCity) citySelect.value = matchedCity;
+                  }
+                }
+                renderNursesDropdown(matchedGov);
+              }
+            }
+
+            const currentAddrInput = document.getElementById('patient-address');
+            if (currentAddrInput && (!currentAddrInput.value || currentAddrInput.value.length < 5)) {
+              const roadParts = [road, city].filter(Boolean);
+              if (roadParts.length > 0) {
+                currentAddrInput.value = roadParts.join('، ');
+              }
+            }
+
+            const revStatusEl = document.getElementById('geo-reverse-status');
+            if (revStatusEl) {
+              revStatusEl.textContent = 'تم التعرف على المنطقة التقريبية. يمكنك مراجعة وتعديل العنوان يدويًا قبل التأكيد.';
+            }
+          }
+        } catch (revErr) {
+          console.warn('Reverse geocode note:', revErr);
+          const revStatusEl = document.getElementById('geo-reverse-status');
+          if (revStatusEl) {
+            revStatusEl.textContent = 'تم حفظ الإحداثيات بنجاح. يرجى إدخال اسم الشارع وتفاصيل العنوان يدويًا.';
+          }
+        }
+
+        Toast.success('تم تحديد موقعك بنجاح!');
+      },
+      (err) => {
+        if (geoIcon) geoIcon.textContent = '📍';
+        if (geoText) geoText.textContent = 'تحديد موقعي تلقائيًا';
+        if (geoBtn) geoBtn.disabled = false;
+
+        let msg = '';
+        if (err.code === 1) { // PERMISSION_DENIED
+          // الحالة 3: عند رفض الإذن
+          msg = 'لم تسمح بالوصول إلى موقعك، يمكنك إدخال العنوان يدويًا.';
+          Toast.info(msg);
+          if (feedbackBox) {
+            feedbackBox.style.display = 'block';
+            feedbackBox.style.background = '#fffbeb';
+            feedbackBox.style.color = '#92400e';
+            feedbackBox.style.border = '1px solid #fde68a';
+            feedbackBox.innerHTML = `<span>⚠️ ${msg}</span>`;
+          }
+        } else {
+          // الحالة 4: عند فشل التحديد
+          msg = 'تعذّر تحديد موقعك بدقة، يمكنك إدخال العنوان يدويًا أو إعادة المحاولة.';
+          Toast.warning(msg);
+          if (feedbackBox) {
+            feedbackBox.style.display = 'block';
+            feedbackBox.style.background = '#fef2f2';
+            feedbackBox.style.color = '#991b1b';
+            feedbackBox.style.border = '1px solid #fecaca';
+            feedbackBox.innerHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <span>❌ ${msg}</span>
+                <button type="button" id="geo-retry-action-fail" class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:0.75rem; border-color:#991b1b; color:#991b1b;">
+                  🔄 إعادة المحاولة
+                </button>
+              </div>
+            `;
+            document.getElementById('geo-retry-action-fail')?.addEventListener('click', performGeolocation);
+          }
+        }
+      },
+      { timeout: 12000, enableHighAccuracy: true }
+    );
+  }
+
+  document.getElementById('geo-btn')?.addEventListener('click', performGeolocation);
+
+  async function initBookingPage() {
+    // Check if user is logged in without blocking page loading
+    try {
+      currentProfile = await Auth.getUserProfile();
+      if (currentProfile) {
+        if (currentProfile.full_name) document.getElementById('patient-name').value = currentProfile.full_name;
+        if (currentProfile.phone) document.getElementById('patient-phone').value = currentProfile.phone;
+        if (currentProfile.address) document.getElementById('patient-address').value = currentProfile.address;
+        if (currentProfile.governorate && govSelect) {
+          govSelect.value = currentProfile.governorate;
+          if (EgyptLoc && citySelect) {
+            EgyptLoc.populateCitySelect(citySelect, currentProfile.governorate, currentProfile.city || '', 'اختر المدينة / المنطقة');
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Auth check in book page:', e);
+    }
+
+    // Load Services & Nurses concurrently
+    await Promise.all([
+      loadServices(),
+      loadNurses()
+    ]);
+
+    // Restore draft if any saved
+    restoreDraft();
+
+    updateSummary();
+  }
+
+  async function loadServices() {
+    const container = document.getElementById('services-container');
+    container.innerHTML = `
+      <div style="grid-column:1/-1; display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+        <div style="background:#f1f5f9; height:80px; border-radius:12px; animation:pulse 1.5s infinite;"></div>
+        <div style="background:#f1f5f9; height:80px; border-radius:12px; animation:pulse 1.5s infinite;"></div>
+        <div style="background:#f1f5f9; height:80px; border-radius:12px; animation:pulse 1.5s infinite;"></div>
+      </div>
+    `;
+
+    try {
+      servicesList = await DB.getServices();
+
+      if (!servicesList || servicesList.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column:1/-1; padding:24px; text-align:center; background:var(--off-white); border-radius:12px; border:1px solid var(--gray-200);">
+            <p style="color:var(--gray-600); margin-bottom:8px; font-weight:700;">لا توجد خدمات متاحة حالياً في قاعدة البيانات.</p>
+            <p style="font-size:0.85rem; color:var(--gray-500);">يرجى التأكد من تشغيل جدول الخدمات في Supabase.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = servicesList.map((s, idx) => `
+        <div class="service-card-select ${idx === 0 ? 'selected' : ''}" data-id="${s.id}" data-name="${s.name_ar}" data-price="${s.base_price}">
+          <div class="service-icon">${s.icon || '🩺'}</div>
+          <div>
+            <h4 style="font-weight:700; font-size:0.95rem; margin-bottom:2px;">${s.name_ar}</h4>
+            <div style="font-size:0.82rem; color:var(--primary); font-weight:700;">
+              ${EgyptLoc ? EgyptLoc.formatPrice(s.base_price) : s.base_price + ' ج.م'} / زيارة
+            </div>
+            ${s.duration_minutes ? `<div style="font-size:0.75rem; color:var(--gray-500);">${s.duration_minutes} دقيقة تقريباً</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      // Preselect first service
+      if (servicesList.length > 0) {
+        selectService(servicesList[0].id, servicesList[0].name_ar, servicesList[0].base_price);
+      }
+
+      // Add click listeners
+      container.querySelectorAll('.service-card-select').forEach(card => {
+        card.addEventListener('click', () => {
+          container.querySelectorAll('.service-card-select').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          selectService(
+            card.getAttribute('data-id'),
+            card.getAttribute('data-name'),
+            card.getAttribute('data-price')
+          );
+        });
+      });
+
+    } catch (err) {
+      console.error('loadServices error:', err);
+      container.innerHTML = `
+        <div style="grid-column:1/-1; padding:20px; background:#fef2f2; border:1px solid #fecaca; border-radius:12px; text-align:center; color:#991b1b;">
+          <p style="font-weight:700; margin-bottom:8px;">⚠️ تعذّر الاتصال بقاعدة البيانات لتحميل الخدمات</p>
+          <p style="font-size:0.85rem; margin-bottom:12px;">${err.message || 'يرجى التحقق من اتصال الإنترنت وخادم Supabase.'}</p>
+          <button type="button" class="btn btn-outline btn-sm" onclick="loadServices()" style="background:#fff;">إعادة المحاولة 🔄</button>
+        </div>
+      `;
+    }
+  }
+
+  function selectService(id, name, price) {
+    document.getElementById('selected-service-id').value = id;
+    document.getElementById('selected-service-name').value = name;
+    document.getElementById('selected-service-price').value = price;
+    document.getElementById('summary-service-text').textContent = name;
+    updateSummary();
+  }
+
+  async function loadNurses() {
+    const select = document.getElementById('nurse-select');
+    select.innerHTML = '<option value="">⏳ جاري تحميل الكوادر التمريضية المعتمدة في مصر...</option>';
+
+    try {
+      nursesList = await DB.getVerifiedNurses();
+      renderNursesDropdown(govSelect?.value || '');
+      select.addEventListener('change', onNurseChanged);
+    } catch (err) {
+      console.error('loadNurses error:', err);
+      select.innerHTML = `
+        <option value="">⚠️ تعذّر تحميل قائمة الممرضين: ${err.message}</option>
+      `;
+    }
+  }
+
+  function renderNursesDropdown(filterGov = '') {
+    const select = document.getElementById('nurse-select');
+    if (!select) return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const preselectedNurseId = urlParams.get('nurse');
+
+    if (!nursesList || nursesList.length === 0) {
+      select.innerHTML = '<option value="">لا يوجد ممرضون معتمدون متاحون حالياً - يرجى المحاولة لاحقاً</option>';
+      document.getElementById('nurse-preview')?.classList.add('hidden');
+      return;
+    }
+
+    // Filter genuinely active and verified nurses
+    let filtered = nursesList.filter(n => n.verified === true && n.is_active !== false);
+
+    // If governorate filter provided, sort so local nurses appear first
+    if (filterGov) {
+      filtered = [...filtered].sort((a, b) => {
+        const aGov = (a.governorate || '').trim();
+        const bGov = (b.governorate || '').trim();
+        if (aGov === filterGov && bGov !== filterGov) return -1;
+        if (bGov === filterGov && aGov !== filterGov) return 1;
+        return 0;
+      });
+    }
+
+    if (filtered.length === 0) {
+      select.innerHTML = `<option value="">لا يوجد ممرضون معتمدون متاحون حالياً في ${filterGov || 'المحافظة المحددة'}</option>`;
+      document.getElementById('nurse-preview')?.classList.add('hidden');
+      return;
+    }
+
+    select.innerHTML = `
+      <option value="">-- اختر الممرض المطلوب للزيارة (${filtered.length} ممرض معتمد) --</option>
+      ${filtered.map(n => {
+        const name = n.full_name || n.profiles?.full_name || 'ممرض معتمد';
+        const rateNum = Number(n.visit_price);
+        const hasRate = !isNaN(rateNum) && rateNum > 0;
+        const rateText = hasRate ? (EgyptLoc ? EgyptLoc.formatPrice(rateNum) : `${rateNum} ج.م`) : 'السعر الأساسي للخدمة';
+
+        const expNum = Number(n.experience_years);
+        const expText = (!isNaN(expNum) && expNum > 0) ? `${expNum} سنوات خبرة` : 'مرخص ومعتمد';
+
+        const gov = n.governorate || 'مصر';
+        const city = n.city ? ` - ${n.city}` : '';
+        const locText = `${gov}${city}`;
+
+        // nurse_profiles.id is the primary key and the foreign key expected by bookings_before_insert trigger
+        const nurseRecordId = n.id;
+        const nurseUserId = n.user_id || n.id;
+        const isSelected = preselectedNurseId && (n.id === preselectedNurseId || n.user_id === preselectedNurseId);
+
+        return `<option value="${nurseRecordId}" data-profile-id="${nurseRecordId}" data-user-id="${nurseUserId}" data-rate="${hasRate ? rateNum : 0}" data-name="${name}" data-gov="${locText}" data-avatar="${n.avatar_url || ''}" ${isSelected ? 'selected' : ''}>
+          ${name} (${locText}) | ${expText} | [${rateText}]
+        </option>`;
+      }).join('')}
+    `;
+
+    if (preselectedNurseId) {
+      const matched = filtered.find(n => n.id === preselectedNurseId || n.user_id === preselectedNurseId);
+      if (matched) {
+        select.value = matched.id;
+      }
+      onNurseChanged();
+    } else {
+      onNurseChanged();
+    }
+  }
+
+  function onNurseChanged() {
+    const select = document.getElementById('nurse-select');
+    const selectedOption = select.options[select.selectedIndex];
+    const preview = document.getElementById('nurse-preview');
+
+    if (select.value && selectedOption && selectedOption.getAttribute('data-name')) {
+      const nurseName = selectedOption.getAttribute('data-name');
+      const nurseRate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
+      const nurseGov = selectedOption.getAttribute('data-gov') || 'مصر';
+      const avatarUrl = selectedOption.getAttribute('data-avatar');
+
+      const avatarEl = document.getElementById('selected-nurse-avatar');
+      if (avatarEl) {
+        if (avatarUrl && (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://') || avatarUrl.startsWith('data:image/'))) {
+          avatarEl.innerHTML = `<img src="${avatarUrl}" alt="${nurseName}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+        } else {
+          avatarEl.textContent = '👩‍⚕️';
+        }
+      }
+
+      const rateText = nurseRate > 0 ? (EgyptLoc ? EgyptLoc.formatPrice(nurseRate) : `${nurseRate} ج.م`) : 'تسعيرة الخدمة الأساسية';
+      
+      document.getElementById('selected-nurse-name').textContent = nurseName;
+      document.getElementById('selected-nurse-info').innerHTML = `
+        <span style="color:var(--success); font-weight:700;">✓ معتمد وموثق</span> (${nurseGov}) | ${rateText}
+      `;
+
+      preview.classList.remove('hidden');
+    } else {
+      preview.classList.add('hidden');
+    }
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const hours = parseFloat(document.getElementById('duration-hours').value) || 1;
+    const baseServicePrice = parseFloat(document.getElementById('selected-service-price').value) || 0;
+    
+    const select = document.getElementById('nurse-select');
+    const selectedOption = select?.options[select.selectedIndex];
+    const nurseHourlyRate = selectedOption?.getAttribute('data-rate')
+      ? parseFloat(selectedOption.getAttribute('data-rate'))
+      : 0;
+
+    let total = baseServicePrice;
+    let totalText = '';
+
+    if (nurseHourlyRate > 0) {
+      total = Math.max(baseServicePrice, hours * nurseHourlyRate);
+      totalText = EgyptLoc ? EgyptLoc.formatCurrencyFull(total) : `${total} جنيه مصري`;
+    } else if (baseServicePrice > 0) {
+      total = baseServicePrice;
+      totalText = EgyptLoc ? EgyptLoc.formatCurrencyFull(baseServicePrice) : `${baseServicePrice} جنيه مصري`;
+    } else {
+      totalText = '0 جنيه مصري';
+    }
+
+    document.getElementById('summary-duration-text').textContent = `${hours} ساعة`;
+    document.getElementById('summary-total-price').textContent = totalText;
+  }
+
+  document.getElementById('duration-hours')?.addEventListener('change', updateSummary);
+
+  function saveDraft() {
+    try {
+      const draft = {
+        service_id: document.getElementById('selected-service-id').value,
+        nurse_id: document.getElementById('nurse-select').value,
+        visit_date: document.getElementById('visit-date').value,
+        visit_time: document.getElementById('visit-time').value,
+        duration_hours: document.getElementById('duration-hours').value,
+        patient_name: document.getElementById('patient-name').value,
+        patient_phone: document.getElementById('patient-phone').value,
+        governorate: govSelect?.value,
+        city: citySelect?.value,
+        address: document.getElementById('patient-address').value,
+        notes: document.getElementById('booking-notes').value
+      };
+      sessionStorage.setItem('pending_booking', JSON.stringify(draft));
+    } catch (_) {}
+  }
+
+  function restoreDraft() {
+    try {
+      const raw = sessionStorage.getItem('pending_booking');
+      if (!raw) return;
+      const draft = JSON.parse(raw);
+      if (draft.patient_name && !document.getElementById('patient-name').value) {
+        document.getElementById('patient-name').value = draft.patient_name;
+      }
+      if (draft.patient_phone && !document.getElementById('patient-phone').value) {
+        document.getElementById('patient-phone').value = draft.patient_phone;
+      }
+      if (draft.address && !document.getElementById('patient-address').value) {
+        document.getElementById('patient-address').value = draft.address;
+      }
+      if (draft.notes) document.getElementById('booking-notes').value = draft.notes;
+      if (draft.visit_date && draft.visit_date >= today) document.getElementById('visit-date').value = draft.visit_date;
+      if (draft.visit_time) document.getElementById('visit-time').value = draft.visit_time;
+      if (draft.duration_hours) document.getElementById('duration-hours').value = draft.duration_hours;
+      sessionStorage.removeItem('pending_booking');
+    } catch (_) {}
+  }
+
+  // Form Submission
+  document.getElementById('booking-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (isSubmitting) return;
+
+    // Validate Nurse Selection
+    const nurseSelect = document.getElementById('nurse-select');
+    const nurseId = nurseSelect.value;
+    if (!nurseId) {
+      Toast.warning('يرجى اختيار الممرض المطلوب للزيارة من القائمة.');
+      nurseSelect.focus();
+      return;
+    }
+
+    // Validate Service Selection
+    const serviceName = document.getElementById('selected-service-name').value;
+    const selectedServiceId = document.getElementById('selected-service-id').value;
+    if (!serviceName || !selectedServiceId) {
+      Toast.warning('يرجى اختيار نوع الخدمة المطلوبة.');
+      return;
+    }
+
+    const visitDate = document.getElementById('visit-date').value;
+    const visitTime = document.getElementById('visit-time').value;
+    const durationHours = parseFloat(document.getElementById('duration-hours').value) || 1;
+    const patientName = document.getElementById('patient-name').value.trim();
+    const patientPhone = document.getElementById('patient-phone').value.trim();
+    const selectedGov = govSelect.value;
+    const selectedCity = citySelect.value;
+    const detailedAddress = document.getElementById('patient-address').value.trim();
+    const notes = document.getElementById('booking-notes').value.trim();
+
+    if (visitDate < today) {
+      Toast.warning('تاريخ الزيارة يجب أن يكون اليوم أو في تاريخ لاحق.');
+      document.getElementById('visit-date').focus();
+      return;
+    }
+
+    if (!visitDate || !visitTime || !patientName || !patientPhone || !selectedGov || !detailedAddress) {
+      Toast.warning('يرجى إكمال جميع الحقول الإلزامية وتحديد العنوان بالتفصيل.');
+      return;
+    }
+
+    // Validate Egyptian Phone
+    if (EgyptLoc && !EgyptLoc.validateEgyptianPhone(patientPhone)) {
+      Toast.warning('يرجى إدخال رقم هاتف محمول مصري صحيح يبدأ بـ 010 أو 011 أو 012 أو 015.');
+      document.getElementById('patient-phone').focus();
+      return;
+    }
+
+    // Check if user is logged in
+    if (!currentProfile) {
+      saveDraft();
+      Toast.info('يرجى تسجيل الدخول أو إنشاء حساب لإتمام الحجز وسنقوم باسترجاع بياناتك تلقائياً.');
+      setTimeout(() => {
+        window.location.href = 'login.html?redirect=book.html';
+      }, 1500);
+      return;
+    }
+
+    const fullAddress = `${selectedGov}، ${selectedCity ? selectedCity + '، ' : ''}${detailedAddress}`;
+
+    // Authoritative Price Calculation
+    const authoritativeService = servicesList.find(s => s.id === selectedServiceId || s.name_ar === serviceName);
+    const authoritativeBasePrice = authoritativeService ? Number(authoritativeService.base_price) : 0;
+
+    const authoritativeNurse = nursesList.find(n => n.user_id === nurseId || n.id === nurseId);
+    const authoritativeNurseRate = Number(authoritativeNurse?.visit_price || 0);
+
+    let validatedPrice = authoritativeBasePrice;
+    if (authoritativeNurseRate > 0) {
+      validatedPrice = Math.max(authoritativeBasePrice, durationHours * authoritativeNurseRate);
+    }
+
+    if (!validatedPrice || isNaN(validatedPrice) || validatedPrice <= 0) {
+      Toast.error('لا يمكن إتمام الحجز بدون تحديد خدمة بسعر صحيح.');
+      return;
+    }
+
+    const selectedOption = nurseSelect.options[nurseSelect.selectedIndex];
+    const targetNurseRecordId = authoritativeNurse?.id || selectedOption?.getAttribute('data-profile-id') || nurseId;
+    const targetNurseUserId = authoritativeNurse?.user_id || selectedOption?.getAttribute('data-user-id') || null;
+    const nurseFullName = selectedOption?.getAttribute('data-name') || authoritativeNurse?.full_name || 'ممرض معتمد';
+
+    const btn = document.getElementById('confirm-booking-btn');
+    isSubmitting = true;
+    setButtonLoading(btn, true);
+
+    try {
+      const bookingData = {
+        // nurse_profiles.id is the key expected by the database trigger bookings_before_insert()
+        nurse_id: targetNurseRecordId,
+        nurse_profile_id: targetNurseRecordId,
+        nurse_user_id: targetNurseUserId,
+        service_name: authoritativeService ? authoritativeService.name_ar : serviceName,
+        service_id: authoritativeService ? authoritativeService.id : null,
+        service_type: authoritativeService ? authoritativeService.name_ar : serviceName,
+        visit_date: visitDate,
+        visit_time: visitTime,
+        duration_hours: durationHours,
+        total_price: validatedPrice,
+        price: validatedPrice,
+        currency: 'EGP',
+        country: 'Egypt',
+        governorate: selectedGov,
+        city: selectedCity,
+        patient_name: patientName,
+        patient_phone: patientPhone,
+        patient_address: fullAddress,
+        notes: notes || null,
+        patient_notes: notes || null,
+        latitude: userGeoCoordinates ? userGeoCoordinates.lat : null,
+        longitude: userGeoCoordinates ? userGeoCoordinates.lng : null,
+        status: 'pending'
+      };
+
+      const createdBooking = await DB.createBooking(bookingData);
+
+      // Display real reference
+      const refId = createdBooking?.id ? `CN-${createdBooking.id.substring(0, 8).toUpperCase()}` : 'CN-PENDING';
+      
+      const modal = document.getElementById('booking-success-modal');
+      if (modal) {
+        document.getElementById('modal-ref-id').textContent = refId;
+        document.getElementById('modal-service-name').textContent = authoritativeService?.name_ar || serviceName;
+        document.getElementById('modal-nurse-name').textContent = nurseFullName;
+        document.getElementById('modal-datetime').textContent = `${visitDate} في تمام الساعة ${visitTime}`;
+        document.getElementById('modal-total-price').textContent = EgyptLoc ? EgyptLoc.formatCurrencyFull(validatedPrice) : `${validatedPrice} ج.م`;
+        
+        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+      } else {
+        Toast.success(`تم تأكيد الحجز بنجاح برقم مرجعي: ${refId}`);
+        setTimeout(() => {
+          window.location.href = 'patient-dashboard.html';
+        }, 1500);
+      }
+
+    } catch (err) {
+      console.error('Booking creation error:', err);
+      let errMsg = err.message || 'حدث خطأ غير متوقع أثناء حفظ الحجز.';
+      if (errMsg.includes('violates foreign key')) {
+        errMsg = 'تعذّر إتمام الحجز بسبب تعارض في السجل المرجعي للممرض. يرجى تطبيق سكريبت التحديث sql/migration_fix_bookings_and_nurses.sql في Supabase.';
+      } else if (errMsg.includes('الممرض غير متاح')) {
+        errMsg = 'الممرض المحدد غير متاح حالياً لاستقبال الزيارات. يرجى اختيار ممرض معتمد آخر.';
+      }
+      Toast.error('فشل إتمام الحجز: ' + errMsg);
+      isSubmitting = false;
+      setButtonLoading(btn, false);
+    }
+  });
+
+  // Start initialization
+  initBookingPage();
+</script>
+<script src="../js/whatsapp.js"></script>
+</body>
+</html>

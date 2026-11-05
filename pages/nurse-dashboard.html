@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="لوحة تحكم الممرض - رعايه CareNest">
+  <meta name="robots" content="noindex, nofollow">
+  <title>لوحة تحكم الممرض | رعايه CareNest</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .badge-status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-accepted { background: #dbeafe; color: #1e40af; }
+    .status-in_progress { background: #e0e7ff; color: #3730a3; }
+    .status-completed { background: #d1fae5; color: #065f46; }
+    .status-cancelled { background: #fee2e2; color: #991b1b; }
+    .status-rejected { background: #f3f4f6; color: #4b5563; }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background-color: #ccc; transition: .4s; border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 18px; width: 18px;
+      left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(22px); }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar" style="position:fixed; top:0; left:0; right:0; z-index:100; background:white; border-bottom:1px solid var(--gray-100);">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="../index.html" class="navbar-brand">
+        <div class="logo-icon">🏥</div>
+        <div class="brand-text">
+          <span class="brand-ar">رعايه</span>
+          <span class="brand-en">CareNest</span>
+        </div>
+      </a>
+
+      <div class="navbar-actions">
+        <button class="lang-toggle" id="lang-toggle-btn" aria-label="تغيير اللغة / Change language" data-i18n="lang_toggle">English</button>
+        <a href="profile.html" class="btn btn-ghost btn-sm">👤 الملف الشخصي</a>
+        <span class="badge badge-success" id="availability-badge" style="padding:6px 14px; font-size:0.85rem;">متاح للزيارات</span>
+        <button id="logout-btn-top" class="btn btn-outline btn-sm" data-i18n="nav_logout">تسجيل الخروج</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="nurse-avatar-box">👩‍⚕️</div>
+        <div class="sidebar-user-info">
+          <h4 id="nurse-display-name" data-i18n="loading">جاري التحميل...</h4>
+          <span style="color:var(--primary); font-weight:600;">ممرض معتمد</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">لوحة التحكم</div>
+      <a href="#requests-section" class="sidebar-link active" id="tab-requests-link">
+        <span class="icon">📥</span>
+        <span>طلبات الزيارة</span>
+      </a>
+      <a href="profile.html" class="sidebar-link" id="tab-profile-link">
+        <span class="icon">👤</span>
+        <span>الملف الشخصي والمهني (Profile)</span>
+      </a>
+
+      <div class="sidebar-section-label">عام</div>
+      <a href="../index.html" class="sidebar-link">
+        <span class="icon">🏠</span>
+        <span>الصفحة الرئيسية</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button id="logout-btn" class="btn btn-ghost w-full" style="color:var(--error); justify-content:flex-start;">
+        <span style="margin-inline-end:8px;">🚪</span> تسجيل الخروج
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <div class="container" style="max-width:1100px; padding:0;">
+      
+      <!-- Welcome Header -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:16px;">
+        <div>
+          <h1 style="font-size:1.75rem; font-weight:800; color:var(--gray-900);" id="welcome-title">لوحة تحكم الكادر التمريضي 👋</h1>
+          <p style="color:var(--gray-500); font-size:0.95rem;">إدارة طلبات المرضى، جدولة الزيارات، وتحديث ملفك المهني</p>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; background:white; padding:10px 18px; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
+          <span style="font-weight:600; font-size:0.9rem;">استقبال طلبات جديدة:</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="accepting-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Nurse Profile Completion Alert Banner -->
+      <div id="profile-completion-alert" style="display:none; background:#fffbeb; border:1px solid #fde68a; border-right:5px solid #f59e0b; border-radius:var(--radius-lg); padding:18px 24px; margin-bottom:28px; box-shadow:var(--shadow-sm);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div style="display:flex; align-items:flex-start; gap:14px; max-width:650px;">
+            <span style="font-size:1.6rem; line-height:1; margin-top:2px;">⚠️</span>
+            <div>
+              <div style="font-weight:800; color:#92400e; font-size:1.05rem; margin-bottom:4px;">
+                أكمل الملف الشخصي بتاعك علشان المرضى يقدروا يتعرفوا على خبراتك وخدماتك.
+              </div>
+              <div style="font-size:0.875rem; color:#b45309;" id="missing-fields-text">
+                جاري فحص اكتمال البيانات المهنية...
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="text-align:right;">
+              <div style="font-size:0.85rem; font-weight:800; color:#92400e; margin-bottom:4px;" id="completion-percentage-label">0% مكتمل</div>
+              <div style="width:130px; height:9px; background:#fef3c7; border-radius:5px; overflow:hidden;">
+                <div id="completion-progress-bar" style="height:100%; width:0%; background:#f59e0b; transition:width 0.4s ease;"></div>
+              </div>
+            </div>
+            <a href="#profile-section" id="complete-profile-btn" class="btn btn-primary btn-sm" style="white-space:nowrap; background:#f59e0b; border-color:#d97706; color:white; font-weight:700; padding:8px 16px;">
+              استكمال الملف الشخصي
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon warning">🔔</div>
+          <div>
+            <div class="stat-value" id="stat-pending">0</div>
+            <div class="stat-label">طلبات بانتظار التأكيد</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon info">📅</div>
+          <div>
+            <div class="stat-value" id="stat-accepted">0</div>
+            <div class="stat-label">زيارات مؤكدة قادمة</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon success">✅</div>
+          <div>
+            <div class="stat-value" id="stat-completed">0</div>
+            <div class="stat-label">زيارات منجزة</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon primary">💰</div>
+          <div>
+            <div class="stat-value" id="stat-rate">200</div>
+            <div class="stat-label">سعر الساعة (جنيه مصري)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bookings Table Section -->
+      <section id="requests-section" style="margin-bottom:40px;">
+        <div class="table-container">
+          <div class="table-header">
+            <h3>طلبات الزيارات المنزلية في مصر</h3>
+            <span style="font-size:0.875rem; color:var(--gray-500);" id="bookings-count-label">0 طلب مسجل</span>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th style="min-width:190px;">المريض والتواصل</th>
+                  <th style="min-width:160px;">الخدمة والتكلفة</th>
+                  <th style="min-width:130px;">الموعد والمدة</th>
+                  <th style="min-width:270px;">العنوان وموقع الزيارة</th>
+                  <th>الحالة</th>
+                  <th style="min-width:120px;">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="bookings-table-body">
+                <tr>
+                  <td colspan="6" style="text-align:center; padding:40px; color:var(--gray-500);">
+                    <div style="font-size:2rem; margin-bottom:8px;">⏳</div>
+                    جاري تحميل الطلبات من قاعدة البيانات...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Nurse Profile & Professional Settings -->
+      <section id="profile-section" style="background:white; border-radius:var(--radius-lg); padding:32px; box-shadow:var(--shadow); margin-bottom:40px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h3 style="font-size:1.25rem; font-weight:700; color:var(--gray-800); margin:0;">الملف المهني والخبرات (مصر)</h3>
+            <p style="color:var(--gray-500); font-size:0.875rem; margin-top:4px;">احرص على اكتمال كافة البيانات المهنية لتظهر للمرضى وتزيد فرص قبول طلباتك.</p>
+          </div>
+          <a href="profile.html" class="btn btn-outline btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+            <span>📸</span> تعديل الصورة الشخصية والرقم القومي
+          </a>
+        </div>
+        
+        <form id="nurse-profile-form">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px; margin-bottom:20px;">
+            <div class="form-group">
+              <label class="form-label" for="nurse-name" data-i18n="auth_full_name">الاسم الكامل <span style="color:var(--error);">*</span></label>
+              <input type="text" id="nurse-name" class="form-control" required placeholder="مثال: أحمد محمد إبراهيم">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="nurse-phone">رقم الهاتف (مصر +20) <span style="color:var(--error);">*</span></label>
+              <input type="tel" id="nurse-phone" class="form-control" placeholder="010xxxxxxxx" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="nurse-rate">سعر الزيارة / الساعة (جنيه مصري) <span style="color:var(--error);">*</span></label>
+              <input type="number" id="nurse-rate" class="form-control" min="50" step="10" value="200" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="nurse-exp">سنوات الخبرة السريرية <span style="color:var(--error);">*</span></label>
+              <input type="number" id="nurse-exp" class="form-control" min="0" value="3" required>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px; margin-bottom:20px;">
+            <div class="form-group">
+              <label class="form-label" for="nurse-governorate">المحافظة (من المحافظات المتاحة) <span style="color:var(--error);">*</span></label>
+              <select id="nurse-governorate" class="form-control" required>
+                <option value="">-- اختر المحافظة --</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="nurse-city">المدينة أو المركز <span style="color:var(--error);">*</span></label>
+              <select id="nurse-city" class="form-control" required disabled>
+                <option value="">اختر المحافظة أولاً</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:20px;">
+            <label class="form-label" for="nurse-address">العنوان بالتفصيل <span style="color:var(--error);">*</span></label>
+            <input type="text" id="nurse-address" class="form-control" placeholder="مثال: شارع الجمهورية، بجوار مستشفى الجامعة" required>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px; margin-bottom:20px;">
+            <div class="form-group">
+              <label class="form-label" for="nurse-specialties">التخصص التمريضي <span style="color:var(--error);">*</span></label>
+              <input type="text" id="nurse-specialties" class="form-control" placeholder="مثال: تمريض عناية مركزة، رعاية كبار السن، جروح وسكري" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="nurse-qualifications">المؤهلات والشهادات الأكاديمية <span style="color:var(--error);">*</span></label>
+              <input type="text" id="nurse-qualifications" class="form-control" placeholder="مثال: بكالوريوس تمريض - جامعة المنصورة، ترخيص مزاولة مهنة" required>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:24px;">
+            <label class="form-label" for="nurse-bio">نبذة مهنية عنك <span style="color:var(--error);">*</span></label>
+            <textarea id="nurse-bio" class="form-control" rows="4" placeholder="اكتب نبذة عن مؤهلاتك وخبرتك السريرية في المستشفيات المصرية لمساعدة المرضى على التعرف عليك..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="save-nurse-profile-btn">
+            حفظ البيانات المهنية
+          </button>
+        </form>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- Visit Code Modal (M2 - Code-based Visit Confirmation) -->
+<div id="visit-code-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center; padding:16px;">
+  <div style="background:white; border-radius:var(--radius-xl); padding:26px; max-width:440px; width:100%; box-shadow:var(--shadow-xl); position:relative;" role="dialog" aria-modal="true" aria-labelledby="modal-code-title">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+      <h3 id="modal-code-title" style="margin:0; font-weight:700; color:var(--gray-900); font-size:1.2rem;">تأكيد الزيارة</h3>
+      <button type="button" id="close-modal-x-btn" style="background:none; border:none; font-size:1.4rem; color:var(--gray-400); cursor:pointer; line-height:1;" aria-label="إغلاق">&times;</button>
+    </div>
+    <p id="modal-code-desc" style="font-size:0.875rem; color:var(--gray-600); margin-bottom:18px; line-height:1.5;">
+      اطلب من المريض كود التحقق المكون من 6 أرقام الظاهر في حسابه، ثم أدخله هنا:
+    </p>
+
+    <div class="form-group" style="margin-bottom:18px;">
+      <label class="form-label" for="visit-code-input" style="font-weight:700; color:var(--gray-700);">كود التحقق (6 أرقام):</label>
+      <input
+        type="text"
+        id="visit-code-input"
+        class="form-control"
+        maxlength="6"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        placeholder="000000"
+        style="font-size:1.75rem; text-align:center; letter-spacing:8px; font-weight:800; font-family:monospace; padding:10px;"
+        autocomplete="off"
+      >
+      <div id="modal-code-error" style="color:var(--error); font-size:0.82rem; margin-top:8px; display:none; font-weight:600;"></div>
+    </div>
+
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button type="button" class="btn btn-outline btn-sm" id="cancel-visit-code-btn">إلغاء</button>
+      <button type="button" class="btn btn-primary btn-sm" id="submit-visit-code-btn" style="min-width:130px;">
+        <span id="submit-code-spinner" class="spinner hidden" style="width:14px; height:14px; margin-inline-end:6px; display:inline-block; vertical-align:middle;"></span>
+        <span id="submit-code-btn-text">تأكيد الكود</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script src="../js/egypt-locations.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/i18n.js"></script>
+<script src="../js/utils.js"></script>
+<script>
+  const Auth = window.Auth;
+  const DB = window.DB;
+  let currentProfile = null;
+  let currentNurseProfile = null;
+
+  // فحص نسبة اكتمال البيانات المهنية للممرض وفق الـ 11 حقلاً المحددة
+  function updateProfileCompletionUI(profile, nurseProfile) {
+    const p = profile || {};
+    const np = nurseProfile || {};
+
+    const items = [
+      { name: 'الاسم الكامل', valid: !!(p.full_name && p.full_name.trim().length >= 3) },
+      { name: 'رقم الهاتف', valid: !!(p.phone && p.phone.trim().length >= 10) },
+      { name: 'الصورة الشخصية', valid: !!(p.avatar_url && p.avatar_url.trim()) },
+      { name: 'التخصص', valid: !!(np.specialization && String(np.specialization).trim().length >= 2) },
+      { name: 'سنوات الخبرة', valid: (np.experience_years != null || np.years_experience != null) && !isNaN(Number(np.experience_years ?? np.years_experience)) },
+      { name: 'المؤهلات والشهادات', valid: !!(np.qualifications && String(np.qualifications).trim().length >= 2) },
+      { name: 'النبذة المهنية', valid: !!(np.bio && String(np.bio).trim().length >= 10) },
+      { name: 'المحافظة', valid: !!(np.governorate || p.governorate) },
+      { name: 'المدينة أو المركز', valid: !!(np.city || p.city) },
+      { name: 'العنوان بالتفصيل', valid: !!(p.address && String(p.address).trim().length >= 5) },
+      { name: 'سعر الزيارة', valid: (np.visit_price != null || np.hourly_rate != null) && Number(np.visit_price ?? np.hourly_rate) >= 50 }
+    ];
+
+    const completed = items.filter(i => i.valid).length;
+    const total = items.length;
+    const percentage = Math.round((completed / total) * 100);
+    const missing = items.filter(i => !i.valid).map(i => i.name);
+
+    const alertBox = document.getElementById('profile-completion-alert');
+    const pctLabel = document.getElementById('completion-percentage-label');
+    const progressBar = document.getElementById('completion-progress-bar');
+    const missingText = document.getElementById('missing-fields-text');
+
+    if (alertBox) {
+      if (completed === total) {
+        alertBox.style.display = 'none';
+      } else {
+        alertBox.style.display = 'block';
+        if (pctLabel) pctLabel.textContent = `${percentage}% مكتمل`;
+        if (progressBar) progressBar.style.width = `${percentage}%`;
+        if (missingText) {
+          missingText.textContent = `بيانات ناقصة يجب استكمالها: ${missing.join('، ')}.`;
+        }
+      }
+    }
+  }
+
+  async function initDashboard() {
+    // 1. Guard authentication (nurse or admin)
+    currentProfile = await Auth.requireAuth(['nurse', 'admin']);
+    if (!currentProfile) return;
+
+    // 2. Fetch extended nurse profile
+    currentNurseProfile = await DB.getNurseProfile(currentProfile.id);
+
+    // 3. Populate info
+    const displayName = currentProfile.full_name || 'ممرض';
+    document.getElementById('nurse-display-name').textContent = displayName;
+    document.getElementById('welcome-title').textContent = `مرحباً بك، د. / م. ${displayName}! 👋`;
+    document.getElementById('nurse-avatar-box').textContent = getAvatarInitial(displayName);
+
+    // Form inputs
+    document.getElementById('nurse-name').value = displayName;
+    document.getElementById('nurse-phone').value = currentProfile.phone || '';
+    document.getElementById('nurse-address').value = currentProfile.address || '';
+    
+    let govVal = currentProfile.governorate || 'الفيوم';
+    let cityVal = currentProfile.city || '';
+
+    if (currentNurseProfile) {
+      const priceVal = currentNurseProfile.visit_price ?? currentNurseProfile.hourly_rate;
+      const expVal = currentNurseProfile.experience_years ?? currentNurseProfile.years_experience;
+      const specVal = currentNurseProfile.specialization || (Array.isArray(currentNurseProfile.specialties) ? currentNurseProfile.specialties.join(', ') : '');
+      const qualVal = currentNurseProfile.qualifications || '';
+      govVal = currentNurseProfile.governorate || currentProfile.governorate || 'الفيوم';
+      cityVal = currentNurseProfile.city || currentProfile.city || '';
+      
+      document.getElementById('nurse-rate').value = (priceVal !== undefined && priceVal !== null && priceVal > 0) ? priceVal : '';
+      document.getElementById('nurse-exp').value = (expVal !== undefined && expVal !== null && expVal >= 0) ? expVal : 0;
+      document.getElementById('stat-rate').textContent = (priceVal !== undefined && priceVal !== null && priceVal > 0) ? `${priceVal} ج.م` : 'غير محدد';
+      document.getElementById('nurse-bio').value = currentNurseProfile.bio || '';
+      document.getElementById('nurse-specialties').value = specVal;
+      document.getElementById('nurse-qualifications').value = qualVal;
+      
+      const isAccepting = currentNurseProfile.is_active !== false && currentNurseProfile.accepting_bookings !== false;
+      document.getElementById('accepting-toggle').checked = isAccepting;
+      updateAvailabilityUI(isAccepting);
+    }
+
+    // ربط المحافظة والمدينة بالقوائم المحددة للمحافظات الخمس المستهدفة
+    if (window.EgyptLocations && typeof window.EgyptLocations.bindGovernorateAndCity === 'function') {
+      window.EgyptLocations.bindGovernorateAndCity(
+        document.getElementById('nurse-governorate'),
+        document.getElementById('nurse-city'),
+        {
+          initialGovernorate: govVal,
+          initialCity: cityVal,
+          govPlaceholder: 'اختر المحافظة',
+          cityPlaceholder: 'اختر المدينة أو المركز'
+        }
+      );
+    }
+
+    // فحص وعرض حالة اكتمال الملف المهني
+    updateProfileCompletionUI(currentProfile, currentNurseProfile);
+
+    // زر استكمال الملف ينقل المستخدم بنعومة إلى النموذج
+    document.getElementById('complete-profile-btn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('profile-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Toggle switch listener (updates is_active and accepting_bookings) (M1)
+    document.getElementById('accepting-toggle').addEventListener('change', async (e) => {
+      const isChecked = e.target.checked;
+      try {
+        if (typeof DB.setNurseAvailability === 'function') {
+          await DB.setNurseAvailability(currentProfile.id, isChecked);
+        } else {
+          await DB.upsertNurseProfile(currentProfile.id, { is_active: isChecked });
+        }
+        updateAvailabilityUI(isChecked);
+        Toast.success(isChecked ? 'أصبحت متاحاً لاستقبال الحجوزات' : 'تم تعطيل استقبال الحجوزات مؤقتاً');
+      } catch (err) {
+        // Revert switch on failure
+        e.target.checked = !isChecked;
+        updateAvailabilityUI(!isChecked);
+        Toast.error('فشل تحديث الحالة: ' + (err.message || 'خطأ في الاتصال'));
+      }
+    });
+
+    // 4. Load bookings
+    await loadNurseBookings();
+  }
+
+  function updateAvailabilityUI(isAccepting) {
+    const badge = document.getElementById('availability-badge');
+    if (isAccepting) {
+      badge.textContent = 'متاح للزيارات في مصر';
+      badge.className = 'badge badge-success';
+    } else {
+      badge.textContent = 'غير متاح حالياً';
+      badge.className = 'badge badge-danger';
+    }
+  }
+
+  async function loadNurseBookings() {
+    const tbody = document.getElementById('bookings-table-body');
+    try {
+      const bookings = await DB.getNurseBookings(currentProfile.id);
+
+      // Stats
+      document.getElementById('stat-pending').textContent = bookings.filter(b => b.status === 'pending').length;
+      document.getElementById('stat-accepted').textContent = bookings.filter(b => ['accepted', 'in_progress'].includes(b.status)).length;
+      document.getElementById('stat-completed').textContent = bookings.filter(b => b.status === 'completed').length;
+      document.getElementById('bookings-count-label').textContent = `${bookings.length} طلب مسجل`;
+
+      if (bookings.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center; padding:40px; color:var(--gray-500);">
+              <div style="font-size:2.5rem; margin-bottom:8px;">📬</div>
+              <p style="font-weight:600;">لا توجد أي طلبات زيارة موجهة إليك حالياً</p>
+              <p style="font-size:0.875rem;">تأكد من تفعيل خيار "متاح لاستقبال الحجوزات" وتحديد المحافظات لتظهر للمرضى في مصر</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const statusMap = {
+        pending: { text: 'قيد الانتظار', class: 'status-pending' },
+        accepted: { text: 'مقبول', class: 'status-accepted' },
+        in_progress: { text: 'جارية', class: 'status-in_progress' },
+        completed: { text: 'مكتملة', class: 'status-completed' },
+        cancelled: { text: 'ملغاة', class: 'status-cancelled' },
+        rejected: { text: 'مرفوضة', class: 'status-rejected' }
+      };
+
+      tbody.innerHTML = bookings.map(b => {
+        const st = statusMap[b.status] || { text: b.status, class: 'status-pending' };
+        const pName = escapeHtml(b.patient_name || 'مريض مسجل');
+        const isMasked = b.is_patient_masked || b.status === 'pending';
+        const rawPhone = (b.patient_phone || '').trim();
+
+        // 1. كتلة بيانات المريض والتواصل (هاتف، اتصال مباشر، واتساب) - مع الحماية H3
+        let contactHtml = '';
+        if (isMasked) {
+          contactHtml = `
+            <div style="font-size:0.75rem; color:#b45309; background:#fef3c7; border:1px solid #fde68a; padding:4px 8px; border-radius:4px; margin-top:5px;">
+              🔒 يظهر الهاتف والواتساب بعد قبول الطلب
+            </div>
+          `;
+        } else if (rawPhone) {
+          const digits = rawPhone.replace(/\D/g, '');
+          const waPhone = digits.startsWith('0') ? '2' + digits : (digits.startsWith('20') ? digits : '20' + digits);
+          const safePhone = escapeHtml(rawPhone);
+          contactHtml = `
+            <div style="font-size:0.85rem; color:var(--gray-700); margin:4px 0;">
+              <span dir="ltr" style="font-family:monospace; font-weight:600;">📱 ${safePhone}</span>
+            </div>
+            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:6px;">
+              <a href="tel:${safePhone}" class="btn btn-outline btn-sm" style="padding:3px 8px; font-size:0.75rem; text-decoration:none; border-color:#0284c7; color:#0284c7; display:inline-flex; align-items:center; gap:4px;" title="اتصال هاتفي مباشر">
+                <span>📞</span> اتصل الآن
+              </a>
+              <a href="https://wa.me/${waPhone}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="padding:3px 8px; font-size:0.75rem; text-decoration:none; border-color:#16a34a; color:#16a34a; display:inline-flex; align-items:center; gap:4px;" title="محادثة واتساب">
+                <span>💬</span> واتساب
+              </a>
+            </div>
+          `;
+        } else {
+          contactHtml = `
+            <div style="font-size:0.8rem; color:var(--gray-500); font-style:italic; margin-top:4px;">
+              رقم الهاتف غير متوفر
+            </div>
+          `;
+        }
+
+        // 2. موقع المريض على الخريطة والاتجاهات - مع الحماية H3
+        let mapLocationHtml = '';
+        if (isMasked) {
+          mapLocationHtml = `
+            <div style="margin-top:4px; font-size:0.75rem; color:#b45309;">
+              🔒 تظهر الإحداثيات والاتجاهات بعد قبول الطلب
+            </div>
+          `;
+        } else if (b.latitude != null && b.longitude != null && !isNaN(Number(b.latitude)) && !isNaN(Number(b.longitude)) && Number(b.latitude) !== 0) {
+          const lat = Number(b.latitude);
+          const lng = Number(b.longitude);
+          const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+          const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+          mapLocationHtml = `
+            <div style="margin-top:8px; display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+              <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="padding:3px 8px; font-size:0.75rem; text-decoration:none; border-color:#2563eb; color:#2563eb; display:inline-flex; align-items:center; gap:4px;" title="فتح موقع المريض على خرائط Google">
+                <span>🗺️</span> موقع المريض على الخريطة
+              </a>
+              <a href="${directionsUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="padding:3px 8px; font-size:0.75rem; text-decoration:none; border-color:#0f766e; color:#0f766e; display:inline-flex; align-items:center; gap:4px;" title="مسار السير والاتجاهات">
+                <span>🧭</span> الاتجاهات إلى المريض
+              </a>
+            </div>
+          `;
+        } else {
+          mapLocationHtml = `
+            <div style="margin-top:4px; font-size:0.75rem; color:var(--gray-500);">
+              لم يشارك المريض إحداثيات GPS
+            </div>
+          `;
+        }
+
+        // 3. تنظيف العنوان وإظهار المحافظة والمدينة
+        const cleanAddress = escapeHtml((b.patient_address || '').replace(/\[GPS:[^\]]+\]/gi, '').trim() || 'لم يحدد بالتفصيل');
+        const govText = escapeHtml(b.governorate || 'مصر');
+        const cityText = b.city ? ` - ${escapeHtml(b.city)}` : '';
+
+        // 4. ملاحظات المريض (مع حماية XSS)
+        const notesHtml = b.notes ? `
+          <div style="margin-top:6px; padding:4px 8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; font-size:0.78rem; color:var(--gray-700);">
+            <strong>📝 ملاحظات:</strong> ${escapeHtml(b.notes)}
+          </div>
+        ` : '';
+
+        // 5. أزرار الإجراءات حسب الحالة (M2)
+        let actionsHtml = '';
+        if (b.status === 'pending') {
+          actionsHtml = `
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-primary btn-sm action-btn" data-id="${b.id}" data-action="accepted" style="padding:4px 8px; font-size:0.75rem;">قبول</button>
+              <button class="btn btn-outline btn-sm action-btn" data-id="${b.id}" data-action="rejected" style="color:var(--error); border-color:var(--error); padding:4px 8px; font-size:0.75rem;">رفض</button>
+            </div>
+          `;
+        } else if (b.status === 'accepted') {
+          actionsHtml = `
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <button class="btn btn-primary btn-sm code-action-btn" data-id="${b.id}" data-type="start" style="padding:4px 8px; font-size:0.75rem;">وصلت للمريض</button>
+              <button class="btn btn-outline btn-sm action-btn" data-id="${b.id}" data-action="cancelled" style="color:var(--error); border-color:var(--error); padding:3px 6px; font-size:0.72rem;">اعتذار وإلغاء</button>
+            </div>
+          `;
+        } else if (b.status === 'in_progress') {
+          actionsHtml = `
+            <button class="btn btn-secondary btn-sm code-action-btn" data-id="${b.id}" data-type="end" style="padding:4px 8px; font-size:0.75rem;">طلب إنهاء الزيارة</button>
+          `;
+        } else {
+          actionsHtml = `<span style="color:var(--gray-400); font-size:0.8rem;">—</span>`;
+        }
+
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:700; font-size:0.95rem; color:var(--gray-900);">${pName}</div>
+              ${contactHtml}
+            </td>
+            <td>
+              <div style="font-weight:700; color:var(--gray-900);">${escapeHtml(b.service_name || 'زيارة تمريضية')}</div>
+              <div style="font-size:0.85rem; color:var(--primary); font-weight:700; margin-top:4px;">
+                💰 ${escapeHtml(b.total_price || 0)} ج.م
+              </div>
+            </td>
+            <td>
+              <div>📅 ${escapeHtml(b.visit_date || 'غير محدد')}</div>
+              <div style="font-size:0.8rem; color:var(--gray-500); margin-top:2px;">⏰ ${escapeHtml(b.visit_time || '10:00 صباحاً')}</div>
+              <div style="font-size:0.8rem; color:var(--gray-600); margin-top:2px;">⏱️ المدة: ${escapeHtml(b.duration_hours || 1)} ساعة</div>
+            </td>
+            <td style="max-width:270px; font-size:0.85rem;">
+              <div>📍 <strong>${govText}${cityText}</strong></div>
+              <div style="margin-top:3px; color:var(--gray-800);">🏠 ${cleanAddress}</div>
+              ${mapLocationHtml}
+              ${notesHtml}
+            </td>
+            <td><span class="badge-status ${st.class}">${st.text}</span></td>
+            <td>${actionsHtml}</td>
+          </tr>
+        `;
+      }).join('');
+
+      // Status action listeners
+      tbody.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const targetBtn = e.currentTarget;
+          const bookingId = targetBtn.getAttribute('data-id');
+          const nextStatus = targetBtn.getAttribute('data-action');
+          if (!bookingId || !nextStatus) return;
+
+          if (nextStatus === 'cancelled') {
+            if (!confirm('هل أنت متأكد من رغبتك في الاعتذار عن هذه الزيارة المقبولة وإلغائها؟')) return;
+          }
+
+          const originalText = targetBtn.textContent;
+          targetBtn.disabled = true;
+          targetBtn.textContent = 'جاري التحديث...';
+
+          try {
+            await DB.updateBookingStatus(bookingId, nextStatus);
+            Toast.success('تم تحديث حالة الزيارة بنجاح');
+            await loadNurseBookings();
+          } catch (err) {
+            Toast.error('فشل تحديث الحالة: ' + err.message);
+            targetBtn.disabled = false;
+            targetBtn.textContent = originalText;
+          }
+        });
+      });
+
+      // Visit code action listeners (وصلت للمريض / طلب إنهاء الزيارة)
+      tbody.querySelectorAll('.code-action-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const targetBtn = e.currentTarget;
+          const bookingId = targetBtn.getAttribute('data-id');
+          const codeType = targetBtn.getAttribute('data-type');
+          if (!bookingId || !codeType) return;
+          openVisitCodeModal(bookingId, codeType);
+        });
+      });
+
+    } catch (err) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center; padding:32px; color:var(--error);">
+            حدث خطأ أثناء تحميل الطلبات: ${err.message}
+          </td>
+        </tr>
+      `;
+    }
+  }
+
+  // ==========================================================
+  // Visit Code Modal Handling (Start & End Visit Codes)
+  // ==========================================================
+  let activeCodeBookingId = null;
+  let activeCodeType = null;
+  let isSubmittingVisitCode = false;
+
+  function openVisitCodeModal(bookingId, codeType) {
+    activeCodeBookingId = bookingId;
+    activeCodeType = codeType;
+    isSubmittingVisitCode = false;
+
+    const modal = document.getElementById('visit-code-modal');
+    const titleEl = document.getElementById('modal-code-title');
+    const descEl = document.getElementById('modal-code-desc');
+    const inputEl = document.getElementById('visit-code-input');
+    const submitBtn = document.getElementById('submit-visit-code-btn');
+    const btnText = document.getElementById('submit-code-btn-text');
+    const spinner = document.getElementById('submit-code-spinner');
+    const errorEl = document.getElementById('modal-code-error');
+
+    if (errorEl) {
+      errorEl.textContent = '';
+      errorEl.style.display = 'none';
+    }
+
+    if (codeType === 'start') {
+      titleEl.textContent = 'تأكيد بدء الزيارة';
+      descEl.textContent = 'اطلب من المريض كود تأكيد وصول الممرض (6 أرقام) الظاهر في حسابه، ثم أدخله هنا لبدء الزيارة:';
+      btnText.textContent = 'تأكيد بدء الزيارة';
+    } else {
+      titleEl.textContent = 'تأكيد إنهاء الزيارة';
+      descEl.textContent = 'اطلب من المريض كود تأكيد انتهاء الزيارة (6 أرقام) الظاهر في حسابه، ثم أدخله هنا لإنهاء الزيارة:';
+      btnText.textContent = 'تأكيد إنهاء الزيارة';
+    }
+
+    inputEl.value = '';
+    submitBtn.disabled = false;
+    spinner.classList.add('hidden');
+    modal.style.display = 'flex';
+    setTimeout(() => inputEl.focus(), 60);
+  }
+
+  function closeVisitCodeModal() {
+    const modal = document.getElementById('visit-code-modal');
+    if (modal) modal.style.display = 'none';
+    activeCodeBookingId = null;
+    activeCodeType = null;
+    isSubmittingVisitCode = false;
+  }
+
+  async function submitVisitCode() {
+    if (isSubmittingVisitCode || !activeCodeBookingId || !activeCodeType) return;
+
+    const inputEl = document.getElementById('visit-code-input');
+    const submitBtn = document.getElementById('submit-visit-code-btn');
+    const spinner = document.getElementById('submit-code-spinner');
+    const errorEl = document.getElementById('modal-code-error');
+
+    const rawVal = inputEl.value || '';
+    const cleanCode = rawVal
+      .replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 0x0660))
+      .replace(/[۰-۹]/g, d => String(d.charCodeAt(0) - 0x06F0))
+      .replace(/\D/g, '')
+      .trim();
+
+    if (!/^\d{6}$/.test(cleanCode)) {
+      if (errorEl) {
+        errorEl.textContent = 'يجب إدخال كود صحيح مكوّن من 6 أرقام.';
+        errorEl.style.display = 'block';
+      }
+      inputEl.focus();
+      return;
+    }
+
+    if (errorEl) errorEl.style.display = 'none';
+
+    isSubmittingVisitCode = true;
+    submitBtn.disabled = true;
+    spinner.classList.remove('hidden');
+
+    try {
+      await DB.verifyVisitCode(activeCodeBookingId, cleanCode, activeCodeType);
+
+      const successMsg = activeCodeType === 'start'
+        ? 'تم التحقق من الكود بنجاح وبدء الزيارة! الحالة الآن (جارية).'
+        : 'تم إنهاء الزيارة بنجاح!';
+
+      Toast.success(successMsg);
+      closeVisitCodeModal();
+      await loadNurseBookings();
+    } catch (err) {
+      const msg = err.message || 'فشل التحقق من كود الزيارة.';
+      if (errorEl) {
+        errorEl.textContent = msg;
+        errorEl.style.display = 'block';
+      }
+      Toast.error(msg);
+    } finally {
+      isSubmittingVisitCode = false;
+      submitBtn.disabled = false;
+      spinner.classList.add('hidden');
+    }
+  }
+
+  document.getElementById('cancel-visit-code-btn')?.addEventListener('click', closeVisitCodeModal);
+  document.getElementById('close-modal-x-btn')?.addEventListener('click', closeVisitCodeModal);
+  document.getElementById('submit-visit-code-btn')?.addEventListener('click', submitVisitCode);
+  document.getElementById('visit-code-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submitVisitCode();
+    }
+  });
+
+  // Profile Form Submit
+  document.getElementById('nurse-profile-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const saveBtn = document.getElementById('save-nurse-profile-btn');
+    setButtonLoading(saveBtn, true);
+
+    try {
+      const name = document.getElementById('nurse-name').value.trim();
+      const phone = document.getElementById('nurse-phone').value.trim();
+      const visitPrice = parseFloat(document.getElementById('nurse-rate').value);
+      const experienceYears = parseInt(document.getElementById('nurse-exp').value, 10);
+      const bio = document.getElementById('nurse-bio').value.trim();
+      const specialization = document.getElementById('nurse-specialties').value.trim();
+      const qualifications = document.getElementById('nurse-qualifications').value.trim();
+      const address = document.getElementById('nurse-address').value.trim();
+      const governorate = document.getElementById('nurse-governorate').value.trim() || 'الفيوم';
+      const city = document.getElementById('nurse-city').value.trim() || '';
+
+      // 1. Validation
+      if (!name) {
+        Toast.warning('يرجى إدخال الاسم الكامل.');
+        document.getElementById('nurse-name').focus();
+        setButtonLoading(saveBtn, false);
+        return;
+      }
+
+      if (phone && window.EgyptLocations && !window.EgyptLocations.validateEgyptianPhone(phone)) {
+        Toast.warning('يرجى إدخال رقم هاتف مصري صحيح يبدأ بـ 010 أو 011 أو 012 أو 015.');
+        document.getElementById('nurse-phone').focus();
+        setButtonLoading(saveBtn, false);
+        return;
+      }
+
+      if (isNaN(visitPrice) || visitPrice < 50) {
+        Toast.warning('يرجى تحديد سعر زيارة صالح (50 جنيه على الأقل).');
+        document.getElementById('nurse-rate').focus();
+        setButtonLoading(saveBtn, false);
+        return;
+      }
+
+      if (isNaN(experienceYears) || experienceYears < 0) {
+        Toast.warning('يرجى إدخال عدد سنوات خبرة صحيح.');
+        document.getElementById('nurse-exp').focus();
+        setButtonLoading(saveBtn, false);
+        return;
+      }
+
+      if (!specialization) {
+        Toast.warning('يرجى تحديد التخصص التمريضي.');
+        document.getElementById('nurse-specialties').focus();
+        setButtonLoading(saveBtn, false);
+        return;
+      }
+
+      // 2. Update base user profile (profiles table)
+      await DB.updateProfile(currentProfile.id, {
+        full_name: name,
+        phone: phone,
+        address: address,
+        governorate: governorate,
+        city: city
+      });
+      
+      // 3. Update nurse profile (nurse_profiles table)
+      const isActive = document.getElementById('accepting-toggle').checked;
+      await DB.upsertNurseProfile(currentProfile.id, {
+        visit_price: visitPrice,
+        experience_years: experienceYears,
+        specialization: specialization,
+        qualifications: qualifications,
+        bio: bio,
+        governorate: governorate,
+        city: city,
+        is_active: isActive
+      });
+
+      // إعادة تحميل الملف المحدث لتحديث مؤشر الاكتمال
+      currentProfile = await Auth.getUserProfile();
+      currentNurseProfile = await DB.getNurseProfile(currentProfile.id);
+      updateProfileCompletionUI(currentProfile, currentNurseProfile);
+
+      Toast.success('تم حفظ وتحديث بياناتك المهنية بنجاح في قاعدة البيانات!');
+      document.getElementById('nurse-display-name').textContent = name;
+      document.getElementById('welcome-title').textContent = `مرحباً بك، د. / م. ${name}! 👋`;
+      document.getElementById('stat-rate').textContent = `${visitPrice} ج.م`;
+
+    } catch (err) {
+      console.error('Error saving nurse profile:', err);
+      Toast.error('فشل حفظ البيانات: ' + (err.message || 'خطأ غير متوقع'));
+    } finally {
+      setButtonLoading(saveBtn, false);
+    }
+  });
+
+  // Logout Handlers
+  async function handleLogout() {
+    await Auth.signOut();
+    Toast.info('تم تسجيل الخروج بنجاح');
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 600);
+  }
+
+  document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
+  document.getElementById('logout-btn-top')?.addEventListener('click', handleLogout);
+
+  initDashboard();
+</script>
+<script src="../js/whatsapp.js"></script>
+</body>
+</html>

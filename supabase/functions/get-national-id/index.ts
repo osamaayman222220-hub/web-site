@@ -1,0 +1,286 @@
+// CareNest Edge Function: get-national-id
+// Deploy with: supabase functions deploy get-national-id
+// Required secrets:
+// - SUPABASE_URL
+// - SUPABASE_ANON_KEY
+// - SUPABASE_SERVICE_ROLE_KEY
+// - NATIONAL_ID_ENCRYPTION_KEY (AES-256-GCM key used to decrypt authorized records)
+// Never log or expose national IDs publicly.
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+};
+
+function jsonResponse(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+function fromHex(hexStr: string): Uint8Array {
+  const match = hexStr.match(/.{1,2}/g);
+  if (!match) return new Uint8Array();
+  return new Uint8Array(match.map((byte) => parseInt(byte, 16)));
+}
+
+async function getAesGcmKey(rawSecret: string): Promise<CryptoKey> {
+  const trimmed = rawSecret.trim();
+  let keyBytes: Uint8Array;
+
+  if (/^[0-9a-fA-F]{64}$/.test(trimmed)) {
+    keyBytes = new Uint8Array(32);
+    for (let i = 0; i < 32; i++) {
+      keyBytes[i] = parseInt(trimmed.substring(i * 2, i * 2 + 2), 16);
+    }
+  } else {
+    const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(trimmed));
+    keyBytes = new Uint8Array(hash);
+  }
+
+  return await crypto.subtle.importKey(
+    "raw",
+    keyBytes,
+    { name: "AES-GCM" },
+    false,
+    ["decrypt"],
+  );
+}
+
+async function decryptNationalId(
+  encryptedHex: string,
+  ivHex: string,
+  key: CryptoKey,
+): Promise<string> {
+  const iv = fromHex(ivHex);
+  const cipherBytes = fromHex(encryptedHex);
+
+  const plainBuffer = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv },
+    key,
+    cipherBytes,
+  );
+
+  return new TextDecoder().decode(plainBuffer);
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  if (req.method !== "GET" && req.method !== "POST") {
+    return jsonResponse({ success: false, error: "Method not allowed" }, 405);
+  }
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const encryptionKeySecret = Deno.env.get("NATIONAL_ID_ENCRYPTION_KEY");
+
+  if (!supabaseUrl || !anonKey || !serviceRoleKey) {
+    return jsonResponse(
+      { success: false, error: "Supabase service configuration is incomplete" },
+      500,
+    );
+  }
+
+  const authorization = req.headers.get("Authorization");
+  if (!authorization?.startsWith("Bearer ")) {
+    return jsonResponse({ success: false, error: "Authentication required" }, 401);
+  }
+
+  try {
+    // 1. Authenticate user from the verified bearer token
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authorization } },
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+
+    const { data: userData, error: userError } = await userClient.auth.getUser();
+    const user = userData?.user;
+    if (userError || !user) {
+      return jsonResponse({ success: false, error: "Invalid or expired session" }, 401);
+    }
+
+    const adminClient = createClient(supabaseUrl, serviceRoleKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+
+    const url = new URL(req.url);
+    let body: Record<string, unknown> = {};
+    if (req.method === "POST") {
+      try {
+        const raw = await req.json();
+        if (typeof raw === "object" && raw !== null) {
+          body = raw as Record<string, unknown>;
+        } else if (typeof raw === "string") {
+          body = JSON.parse(raw);
+        }
+      } catch (_) {
+        body = {};
+      }
+    }
+
+    const action = String(body?.action || url.searchParams.get("action") || "").trim();
+
+    // 2. Branch: Admin List Request
+    if (action === "admin_list") {
+      // Server-side check: caller MUST have role === 'admin' in profiles table
+      const { data: callerProfile, error: callerError } = await adminClient
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (callerError || callerProfile?.role !== "admin") {
+        return jsonResponse(
+          { success: false, error: "غير مصرح لك بالوصول لهذه القائمة." },
+          403,
+        );
+      }
+
+      // Fetch all users
+      const { data: profilesData, error: profilesError } = await adminClient
+        .from("profiles")
+        .select("id, full_name, email, role, created_at")
+        .order("created_at", { ascending: false });
+
+      if (profilesError) {
+        return jsonResponse(
+          { success: false, error: "تعذر استرجاع قائمة المستخدمين." },
+          500,
+        );
+      }
+
+      // Fetch all national ID records
+      const { data: nationalIdsData, error: nationalIdsError } = await adminClient
+        .from("user_national_ids")
+        .select("user_id, national_id_hash, encrypted_national_id, encryption_iv");
+
+      if (nationalIdsError) {
+        console.error("get-national-id admin_list database error:", {
+          code: nationalIdsError.code,
+        });
+
+        return jsonResponse(
+          { success: false, error: "تعذر استرجاع بيانات الأرقام القومية." },
+          500,
+        );
+      }
+      const nidMap = new Map(
+        (nationalIdsData || []).map((row) => [row.user_id, row]),
+      );
+
+      let decKey: CryptoKey | null = null;
+      if (encryptionKeySecret) {
+        try {
+          decKey = await getAesGcmKey(encryptionKeySecret);
+        } catch {
+          console.error("Failed to initialize AES key for admin_list");
+        }
+      }
+
+      const usersResult = [];
+      for (const p of profilesData || []) {
+        const nidRecord = nidMap.get(p.id);
+        let nationalIdText = "غير مسجل";
+
+        if (nidRecord) {
+          if (nidRecord.encrypted_national_id && nidRecord.encryption_iv && decKey) {
+            try {
+              nationalIdText = await decryptNationalId(
+                nidRecord.encrypted_national_id,
+                nidRecord.encryption_iv,
+                decKey,
+              );
+            } catch {
+              nationalIdText = "تعذر فك التشفير";
+            }
+          } else if (nidRecord.national_id_hash) {
+            // Unrecoverable legacy hash record without encryption keys
+            nationalIdText = "يحتاج إلى إعادة تسجيل الرقم القومي";
+          }
+        }
+
+        usersResult.push({
+          id: p.id,
+          full_name: p.full_name || "مستخدم",
+          email: p.email || "—",
+          role: p.role || "patient",
+          national_id: nationalIdText,
+        });
+      }
+
+      return jsonResponse({ success: true, users: usersResult });
+    }
+
+    // 3. User Self-Retrieval Request
+    const { data: record, error: fetchError } = await adminClient
+      .from("user_national_ids")
+      .select("national_id_hash, encrypted_national_id, encryption_iv")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (fetchError) {
+      console.error("get-national-id fetch error:", fetchError.code);
+      return jsonResponse(
+        { success: false, error: "تعذر استرجاع الرقم القومي من قاعدة البيانات." },
+        500,
+      );
+    }
+
+    if (!record) {
+      return jsonResponse({ success: true, national_id: null });
+    }
+
+    // If encrypted ciphertext exists, decrypt with authenticated AES-GCM
+    if (record.encrypted_national_id && record.encryption_iv) {
+      if (!encryptionKeySecret) {
+        return jsonResponse(
+          { success: false, error: "مفتاح فك التشفير غير مهيأ على الخادم." },
+          500,
+        );
+      }
+
+      try {
+        const decKey = await getAesGcmKey(encryptionKeySecret);
+        const plainId = await decryptNationalId(
+          record.encrypted_national_id,
+          record.encryption_iv,
+          decKey,
+        );
+        return jsonResponse({ success: true, national_id: plainId });
+      } catch (decErr) {
+        console.error("AES-GCM decryption failed:", decErr instanceof Error ? decErr.message : "unknown");
+        return jsonResponse(
+          { success: false, error: "فشل التحقق من صحة تشفير الرقم القومي." },
+          500,
+        );
+      }
+    }
+
+    // If legacy hash only exists (cannot be reversed)
+    if (record.national_id_hash) {
+      return jsonResponse({
+        success: true,
+        national_id: null,
+        legacy_hash_only: true,
+        needs_re_registration: true,
+        message: "يحتاج إلى إعادة تسجيل الرقم القومي. يرجى إدخاله في خانة التعديل للتحديث.",
+      });
+    }
+
+    return jsonResponse({ success: true, national_id: null });
+  } catch (error) {
+    console.error(
+      "get-national-id unexpected error:",
+      error instanceof Error ? error.message : "unknown",
+    );
+    return jsonResponse({ success: false, error: "تعذر معالجة الطلب." }, 500);
+  }
+});
