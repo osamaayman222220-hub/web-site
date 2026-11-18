@@ -1,0 +1,2231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="لوحة تحكم أخصائي العلاج الطبيعي - رعايه CareNest">
+  <meta name="robots" content="noindex, nofollow">
+  <title>لوحة تحكم أخصائي العلاج الطبيعي | رعايه CareNest</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .badge-status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-accepted { background: #dbeafe; color: #1e40af; }
+    .status-in_progress { background: #e0e7ff; color: #3730a3; }
+    .status-completed { background: #d1fae5; color: #065f46; }
+    .status-cancelled { background: #fee2e2; color: #991b1b; }
+    .status-rejected { background: #f3f4f6; color: #4b5563; }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background-color: #ccc; transition: .4s; border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 18px; width: 18px;
+      left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(22px); }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar" style="position:fixed; top:0; left:0; right:0; z-index:100; background:white; border-bottom:1px solid var(--gray-100);">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="../index.html" class="navbar-brand">
+        <div class="logo-icon">🏥</div>
+        <div class="brand-text">
+          <span class="brand-ar">رعايه</span>
+          <span class="brand-en">CareNest</span>
+        </div>
+      </a>
+
+      <div class="navbar-actions">
+        <button class="lang-toggle" id="lang-toggle-btn" aria-label="تغيير اللغة / Change language" data-i18n="lang_toggle">English</button>
+        <!-- زر الإشعارات -->
+        <div style="position:relative; display:inline-block;">
+          <button id="notif-bell-btn" aria-label="الإشعارات" style="background:none; border:none; cursor:pointer; font-size:1.3rem; position:relative; padding:4px 8px; color:var(--gray-700);" title="الإشعارات">
+            🔔
+            <span id="notif-badge" style="display:none; position:absolute; top:0; right:0; background:#ef4444; color:white; border-radius:50%; font-size:0.65rem; min-width:16px; height:16px; line-height:16px; text-align:center; font-weight:800; padding:0 3px;"></span>
+          </button>
+          <div id="notif-dropdown" style="display:none; position:absolute; top:calc(100% + 8px); left:0; background:white; border:1px solid var(--gray-200); border-radius:var(--radius-xl); box-shadow:var(--shadow-xl); min-width:320px; max-width:360px; z-index:999; overflow:hidden;" dir="rtl">
+            <div style="padding:12px 16px; border-bottom:1px solid var(--gray-100); display:flex; justify-content:space-between; align-items:center;">
+              <strong style="font-size:0.95rem;">🔔 الإشعارات</strong>
+              <button id="mark-all-read-btn" style="background:none; border:none; color:var(--primary); font-size:0.78rem; cursor:pointer; font-weight:700;">تعليم الكل كمقروء</button>
+            </div>
+            <div id="notif-list" style="max-height:340px; overflow-y:auto;"></div>
+          </div>
+        </div>
+        <a href="profile.html" class="btn btn-ghost btn-sm">👤 الملف الشخصي</a>
+        <span class="badge badge-success" id="availability-badge" style="padding:6px 14px; font-size:0.85rem;">متاح للجلسات</span>
+        <button id="logout-btn-top" class="btn btn-outline btn-sm" data-i18n="nav_logout">تسجيل الخروج</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="physio-avatar-box">🧑‍⚕️</div>
+        <div class="sidebar-user-info">
+          <h4 id="physio-display-name" data-i18n="loading">جاري التحميل...</h4>
+          <span style="color:var(--primary); font-weight:600;">أخصائي علاج طبيعي معتمد</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">لوحة التحكم</div>
+      <a href="#requests-section" class="sidebar-link active" id="tab-requests-link" onclick="switchPhysioTab('requests-section'); return false;">
+        <span class="icon">📥</span>
+        <span>طلبات الجلسات</span>
+      </a>
+      <a href="#finances-section" class="sidebar-link" id="tab-finances-link" onclick="switchPhysioTab('finances-section'); return false;">
+        <span class="icon">💰</span>
+        <span>حساباتي المالية والعمولات</span>
+      </a>
+      <a href="#contracts-section" class="sidebar-link" id="tab-contracts-link" onclick="switchPhysioTab('contracts-section'); return false;">
+        <span class="icon">📄</span>
+        <span>العقد والالتزامات</span>
+      </a>
+      <a href="#docs-section" class="sidebar-link" id="tab-docs-link" onclick="switchPhysioTab('docs-section'); return false;">
+        <span class="icon">📂</span>
+        <span>الوثائق والشهادات المهنية</span>
+      </a>
+      <a href="#profile-section" class="sidebar-link" id="tab-profile-link" onclick="switchPhysioTab('profile-section'); return false;">
+        <span class="icon">👤</span>
+        <span>الملف المهني والخبرات</span>
+      </a>
+      <a href="profile.html" class="sidebar-link">
+        <span class="icon">⚙️</span>
+        <span>بيانات الحساب والصورة</span>
+      </a>
+
+      <div class="sidebar-section-label">عام</div>
+      <a href="../index.html" class="sidebar-link">
+        <span class="icon">🏠</span>
+        <span>الصفحة الرئيسية</span>
+      </a>
+      <a href="#" id="view-guidelines-sidebar-link" class="sidebar-link" onclick="openPlatformGuidelines(); return false;">
+        <span class="icon">📘</span>
+        <span>تعليمات وقواعد المنصة</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button id="logout-btn" class="btn btn-ghost w-full" style="color:var(--error); justify-content:flex-start;">
+        <span style="margin-inline-end:8px;">🚪</span> تسجيل الخروج
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <div class="container" style="max-width:1100px; padding:0;">
+      
+      <!-- Welcome Header -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:16px;">
+        <div>
+          <h1 style="font-size:1.75rem; font-weight:800; color:var(--gray-900);" id="welcome-title">لوحة تحكم أخصائي العلاج الطبيعي 👋</h1>
+          <p style="color:var(--gray-500); font-size:0.95rem;">إدارة طلبات المرضى، جدولة الجلسات، وتحديث ملفك المهني</p>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; background:white; padding:10px 18px; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
+          <span style="font-weight:600; font-size:0.9rem;">استقبال طلبات جديدة:</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="accepting-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Physiotherapist Contract Warning Banner -->
+      <div id="contract-warning-banner" style="display:none; background:#fff7ed; border:1px solid #fed7aa; border-right:5px solid #f97316; border-radius:var(--radius-lg); padding:16px 20px; margin-bottom:24px; box-shadow:var(--shadow-sm);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span style="font-size:1.6rem; line-height:1;">📄</span>
+            <div>
+              <h4 style="margin:0 0 4px 0; color:#9a3412; font-weight:700; font-size:1.05rem;">توقيع عقد المنصة إلزامي لتفعيل حسابك واستقبال الجلسات</h4>
+              <p style="margin:0; color:#c2410c; font-size:0.88rem;" id="contract-banner-text">
+                يرجى تنزيل وتوقيع عقد المنصة ورفعه إلكترونياً لاعتماد حسابك والبدء في استقبال الجلسات.
+              </p>
+            </div>
+          </div>
+          <button type="button" class="btn btn-sm" style="background:#f97316; color:white; font-weight:700; border:none; padding:8px 16px; border-radius:var(--radius);" onclick="switchPhysioTab('contracts-section')">
+            الانتقال لقسم العقد ↵
+          </button>
+        </div>
+      </div>
+
+      <!-- Physiotherapist Profile Completion Alert Banner -->
+      <div id="profile-completion-alert" style="display:none; background:#fffbeb; border:1px solid #fde68a; border-right:5px solid #f59e0b; border-radius:var(--radius-lg); padding:18px 24px; margin-bottom:28px; box-shadow:var(--shadow-sm);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div style="display:flex; align-items:flex-start; gap:14px; max-width:650px;">
+            <span style="font-size:1.6rem; line-height:1; margin-top:2px;">⚠️</span>
+            <div>
+              <div style="font-weight:800; color:#92400e; font-size:1.05rem; margin-bottom:4px;">
+                أكمل الملف الشخصي بتاعك علشان المرضى يقدروا يتعرفوا على خبراتك وخدماتك.
+              </div>
+              <div style="font-size:0.875rem; color:#b45309;" id="missing-fields-text">
+                جاري فحص اكتمال البيانات المهنية...
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="text-align:right;">
+              <div style="font-size:0.85rem; font-weight:800; color:#92400e; margin-bottom:4px;" id="completion-percentage-label">0% مكتمل</div>
+              <div style="width:130px; height:9px; background:#fef3c7; border-radius:5px; overflow:hidden;">
+                <div id="completion-progress-bar" style="height:100%; width:0%; background:#f59e0b; transition:width 0.4s ease;"></div>
+              </div>
+            </div>
+            <a href="#profile-section" id="complete-profile-btn" class="btn btn-primary btn-sm" style="white-space:nowrap; background:#f59e0b; border-color:#d97706; color:white; font-weight:700; padding:8px 16px;">
+              استكمال الملف الشخصي
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon warning">🔔</div>
+          <div>
+            <div class="stat-value" id="stat-pending">0</div>
+            <div class="stat-label">طلبات بانتظار التأكيد</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon info">📅</div>
+          <div>
+            <div class="stat-value" id="stat-accepted">0</div>
+            <div class="stat-label">جلسات مؤكدة قادمة</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon success">✅</div>
+          <div>
+            <div class="stat-value" id="stat-completed">0</div>
+            <div class="stat-label">جلسات منجزة</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon primary">💰</div>
+          <div>
+            <div class="stat-value" id="stat-rate">200</div>
+            <div class="stat-label">سعر الجلسة (جنيه مصري)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bookings Table Section -->
+      <section id="requests-section" style="margin-bottom:40px;">
+        <div class="table-container">
+          <div class="table-header">
+            <h3>طلبات جلسات العلاج الطبيعي المنزلية في مصر</h3>
+            <span style="font-size:0.875rem; color:var(--gray-500);" id="bookings-count-label">0 طلب مسجل</span>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th style="min-width:190px;">المريض والتواصل</th>
+                  <th style="min-width:160px;">الخدمة والتكلفة</th>
+                  <th style="min-width:130px;">الموعد والمدة</th>
+                  <th style="min-width:270px;">العنوان وموقع الزيارة</th>
+                  <th>الحالة</th>
+                  <th style="min-width:120px;">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="bookings-table-body">
+                <tr>
+                  <td colspan="6" style="text-align:center; padding:40px; color:var(--gray-500);">
+                    <div style="font-size:2rem; margin-bottom:8px;">⏳</div>
+                    جاري تحميل الطلبات من قاعدة البيانات...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Physiotherapist Financial Wallet & Commissions Section -->
+      <section id="finances-section" style="display:none; margin-bottom:40px;">
+        <div style="background:white; border-radius:var(--radius-lg); padding:28px; box-shadow:var(--shadow); margin-bottom:24px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:24px;">
+            <div>
+              <h3 style="font-size:1.3rem; font-weight:800; color:var(--gray-900); margin:0;">💰 حساباتي المالية والعمولات</h3>
+              <p style="color:var(--gray-500); font-size:0.9rem; margin-top:4px;">متابعة إيرادات الزيارات، عمولات منصة رعاية، وتسوية المديونيات النقدية والمستحقات.</p>
+            </div>
+            <button type="button" class="btn btn-primary" id="open-settle-modal-btn" style="display:inline-flex; align-items:center; gap:8px;">
+              <span>💸</span> سداد عمولة للمنصة
+            </button>
+          </div>
+
+          <!-- Wallet Stats Grid -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:16px; margin-bottom:28px;">
+            <div style="background:#f8fafc; border:1px solid var(--gray-200); border-radius:var(--radius); padding:16px;">
+              <div style="color:var(--gray-500); font-size:0.85rem; font-weight:600; margin-bottom:4px;">إجمالي دخل الجلسات</div>
+              <div style="font-size:1.35rem; font-weight:800; color:var(--gray-900);" id="wallet-visits-revenue">0 ج.م</div>
+            </div>
+
+            <div style="background:#f8fafc; border:1px solid var(--gray-200); border-radius:var(--radius); padding:16px;">
+              <div style="color:var(--gray-500); font-size:0.85rem; font-weight:600; margin-bottom:4px;">إجمالي عمولات رعاية المستحقة</div>
+              <div style="font-size:1.35rem; font-weight:800; color:#b45309;" id="wallet-commissions-due">0 ج.م</div>
+            </div>
+
+            <div style="background:#fff7ed; border:1px solid #fed7aa; border-radius:var(--radius); padding:16px;">
+              <div style="color:#c2410c; font-size:0.85rem; font-weight:700; margin-bottom:4px;">مديونية العمولات النقدية المطلوبة</div>
+              <div style="font-size:1.45rem; font-weight:800; color:#ea580c;" id="wallet-commission-debt">0 ج.م</div>
+            </div>
+
+            <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:var(--radius); padding:16px;">
+              <div style="color:#15803d; font-size:0.85rem; font-weight:700; margin-bottom:4px;">مستحقات معلقة للتحويل من المنصة</div>
+              <div style="font-size:1.45rem; font-weight:800; color:#16a34a;" id="wallet-pending-payouts">0 ج.م</div>
+            </div>
+
+            <div style="background:#f8fafc; border:1px solid var(--gray-200); border-radius:var(--radius); padding:16px;">
+              <div style="color:var(--gray-500); font-size:0.85rem; font-weight:600; margin-bottom:4px;">إجمالي ما سددته للمنصة</div>
+              <div style="font-size:1.35rem; font-weight:800; color:var(--primary);" id="wallet-settled-commissions">0 ج.م</div>
+            </div>
+
+            <div style="background:#f8fafc; border:1px solid var(--gray-200); border-radius:var(--radius); padding:16px;">
+              <div style="color:var(--gray-500); font-size:0.85rem; font-weight:600; margin-bottom:4px;">إجمالي ما استلمته من المنصة</div>
+              <div style="font-size:1.35rem; font-weight:800; color:#059669;" id="wallet-paid-payouts">0 ج.م</div>
+            </div>
+
+            <div style="background:var(--gray-900); color:white; border-radius:var(--radius); padding:16px; grid-column:1/-1;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                <div>
+                  <div style="opacity:0.8; font-size:0.85rem; font-weight:600;">الرصيد الصافي للمحفظة (مستحقات معلقة - مديونية عمولات)</div>
+                  <div style="font-size:1.6rem; font-weight:800; margin-top:4px;" id="wallet-net-balance">0 ج.م</div>
+                </div>
+                <div style="font-size:0.85rem; opacity:0.85; max-width:500px;">
+                  * الرصيد السالب يعني وجود مديونية عمولة نقدية للمنصة عن زيارات كاش. الرصيد الموجب يعني مستحقات معلقة لك ستقوم الإدارة بتحويلها.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial Transactions Ledger -->
+          <h4 style="font-size:1.1rem; font-weight:700; color:var(--gray-900); margin-bottom:14px;">سجل الحركات المالية والتحويلات</h4>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>التاريخ</th>
+                  <th>نوع العملية</th>
+                  <th>المبلغ</th>
+                  <th>طريقة الدفع</th>
+                  <th>الحالة</th>
+                  <th>الإيصال</th>
+                  <th>الملاحظات / سبب الرفض</th>
+                </tr>
+              </thead>
+              <tbody id="physio-finances-table-body">
+                <tr>
+                  <td colspan="7" style="text-align:center; padding:32px; color:var(--gray-500);">
+                    جاري تحميل الحركات المالية...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Physiotherapist Contract & Platform Commitments Section -->
+      <section id="contracts-section" style="display:none; margin-bottom:40px;">
+        <div style="background:white; border-radius:var(--radius-lg); padding:28px; box-shadow:var(--shadow); margin-bottom:24px;">
+          <div style="margin-bottom:24px;">
+            <h3 style="font-size:1.3rem; font-weight:800; color:var(--gray-900); margin:0;">📄 العقد والالتزامات الخاصة بالمنصة</h3>
+            <p style="color:var(--gray-500); font-size:0.9rem; margin-top:4px;">توقيع العقد الرسمي شرط إلزامي لتفعيل استقبال الحجوزات والعمل الميداني عبر منصة رعاية.</p>
+          </div>
+
+          <!-- Contract Status Badge Card -->
+          <div id="physio-contract-status-card" style="background:#f8fafc; border:1px solid var(--gray-200); border-radius:var(--radius); padding:20px; margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+              <div>
+                <div style="font-size:0.85rem; color:var(--gray-600); font-weight:600; margin-bottom:6px;">حالة العقد الحالية:</div>
+                <div id="physio-contract-badge" style="display:inline-block; font-weight:800; padding:6px 14px; border-radius:99px; font-size:0.9rem; background:var(--gray-100); color:var(--gray-700);">
+                  لم يتم رفع العقد بعد
+                </div>
+                <div id="physio-contract-rejection-msg" class="hidden" style="margin-top:10px; color:#b91c1c; font-size:0.875rem; background:#fee2e2; padding:8px 12px; border-radius:var(--radius);">
+                  <strong>سبب رفض العقد:</strong> <span id="physio-contract-rejection-text"></span>
+                </div>
+              </div>
+
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-outline" id="download-official-contract-btn" style="display:inline-flex; align-items:center; gap:6px;">
+                  <span>📥</span> تنزيل العقد الرسمي للمنصة (PDF)
+                </button>
+                <a id="view-own-signed-contract-btn" href="#" target="_blank" class="btn btn-outline hidden" style="display:inline-flex; align-items:center; gap:6px;">
+                  <span>👁️</span> معاينة نسختي المرفوعة
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload Signed Contract Form -->
+          <div style="border:1px dashed var(--gray-300); border-radius:var(--radius); padding:24px; background:#fcfcfd;">
+            <h4 style="font-size:1.05rem; font-weight:700; color:var(--gray-900); margin-bottom:8px;">رفع النسخة الموقعة من العقد</h4>
+            <p style="color:var(--gray-600); font-size:0.875rem; margin-bottom:18px; line-height:1.6;">
+              الخطوات: قم بتنزيل العقد الرسمي أعلاه، اطبعه ووقع على جميع الصفحات بالاسم والرقم القومي، ثم ارفعه هنا بصيغة PDF أو صورة واضحة (JPG / PNG). ستقوم الإدارة بمراجعته واعتماده.
+            </p>
+
+            <form id="upload-physio-contract-form">
+              <div class="form-group" style="max-width:480px; margin-bottom:16px;">
+                <label class="form-label" for="signed-contract-input" style="font-weight:700;">اختر ملف العقد الموقع (PDF أو صورة) *</label>
+                <input type="file" id="signed-contract-input" class="form-control" accept="application/pdf,image/jpeg,image/png,image/webp" required>
+              </div>
+
+              <button type="submit" class="btn btn-primary" id="submit-signed-contract-btn">
+                <span>📤</span> إرسال العقد للمراجعة والاعتماد
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Physiotherapist Documents & Professional Certificates Section -->
+      <section id="docs-section" style="display:none; margin-bottom:40px;">
+        <div style="background:white; border-radius:var(--radius-lg); padding:28px; box-shadow:var(--shadow); margin-bottom:24px;">
+          <div style="margin-bottom:20px;">
+            <h3 style="font-size:1.3rem; font-weight:800; color:var(--gray-900); margin:0;">📂 الوثائق والشهادات المهنية</h3>
+            <p style="color:var(--gray-500); font-size:0.9rem; margin-top:4px;">يرجى رفع المستندات الرسمية المعتمدة للتحقق من هويتك ومؤهلاتك الطبية واعتماد حسابك على منصة رعاية.</p>
+          </div>
+
+          <!-- Alert / Disclaimer Notice Banner -->
+          <div style="background:#fffbeb; border:1px solid #fde68a; border-right:5px solid #f59e0b; border-radius:var(--radius); padding:16px 20px; margin-bottom:24px;">
+            <div style="display:flex; align-items:flex-start; gap:12px;">
+              <span style="font-size:1.5rem; line-height:1; margin-top:2px;">⚠️</span>
+              <div>
+                <strong style="color:#92400e; font-size:0.95rem; display:block; margin-bottom:4px;">تنبيه هام بشأن اعتماد وتفعيل الحساب:</strong>
+                <p style="margin:0; color:#b45309; font-size:0.875rem; line-height:1.6;">
+                  رفع المستندات والشهادات شرط أساسي لمراجعة وتفعيل الحساب، <strong>ولا يعني الاعتماد التلقائي</strong>. تخضع جميع الوثائق للتدقيق والمطابقة الدقيقة من قِبل إدارة المنصة قبل تفعيل إمكانية استقبال طلبات المرضى.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Documents Cards Grid -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;" id="physio-docs-container">
+            
+            <!-- Document 1: National ID -->
+            <div class="doc-card" id="doc-card-national_id" style="border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:20px; background:#fcfcfd; display:flex; flex-direction:column; justify-content:space-between; transition:all 0.2s ease;">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.6rem;">🪪</span>
+                    <div>
+                      <h4 style="font-size:1rem; font-weight:700; margin:0; color:var(--gray-900);">بطاقة الرقم القومي</h4>
+                      <span style="font-size:0.75rem; color:var(--gray-500);">الوجهان بملف واحد أو صورة واضحة</span>
+                    </div>
+                  </div>
+                  <span id="badge-national_id" style="font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:99px; background:var(--gray-100); color:var(--gray-600);">
+                    لم يُرفع بعد
+                  </span>
+                </div>
+
+                <!-- Rejection message box -->
+                <div id="rejection-box-national_id" class="hidden" style="margin-bottom:14px; color:#b91c1c; font-size:0.8rem; background:#fee2e2; border-right:3px solid #dc2626; padding:8px 12px; border-radius:var(--radius);">
+                  <strong>سبب الرفض:</strong> <span id="rejection-reason-national_id"></span>
+                </div>
+
+                <!-- Existing file details and preview -->
+                <div id="file-info-national_id" class="hidden" style="margin-bottom:14px; font-size:0.85rem; background:white; border:1px solid var(--gray-200); padding:10px 12px; border-radius:var(--radius); display:flex; justify-content:space-between; align-items:center;">
+                  <span id="file-name-national_id" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px; color:var(--gray-700); font-weight:600;"></span>
+                  <a id="file-preview-national_id" href="#" target="_blank" class="btn btn-outline btn-sm" style="font-size:0.75rem; padding:3px 8px;">معاينة 👁️</a>
+                </div>
+              </div>
+
+              <!-- Upload form / controls -->
+              <div style="margin-top:12px; border-top:1px dashed var(--gray-200); padding-top:12px;">
+                <label style="font-size:0.8rem; font-weight:600; color:var(--gray-700); display:block; margin-bottom:4px;">اختر ملف البطاقة (PDF أو صورة):</label>
+                <input type="file" id="input-national_id" class="form-control" accept="image/jpeg,image/png,image/webp,application/pdf" style="font-size:0.8rem; padding:6px; margin-bottom:8px;">
+                <button type="button" class="btn btn-primary btn-sm" id="btn-upload-national_id" onclick="handlePhysioDocUpload('national_id')" style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px;">
+                  <span>📤</span> <span id="btn-text-national_id">رفع الملف</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Document 2: Qualification Certificate -->
+            <div class="doc-card" id="doc-card-qualification_cert" style="border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:20px; background:#fcfcfd; display:flex; flex-direction:column; justify-content:space-between; transition:all 0.2s ease;">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.6rem;">🎓</span>
+                    <div>
+                      <h4 style="font-size:1rem; font-weight:700; margin:0; color:var(--gray-900);">شهادة التخرج / المؤهل الدراسي</h4>
+                      <span style="font-size:0.75rem; color:var(--gray-500);">شهادة البكالوريوس أو الليسانس</span>
+                    </div>
+                  </div>
+                  <span id="badge-qualification_cert" style="font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:99px; background:var(--gray-100); color:var(--gray-600);">
+                    لم يُرفع بعد
+                  </span>
+                </div>
+
+                <!-- Rejection message box -->
+                <div id="rejection-box-qualification_cert" class="hidden" style="margin-bottom:14px; color:#b91c1c; font-size:0.8rem; background:#fee2e2; border-right:3px solid #dc2626; padding:8px 12px; border-radius:var(--radius);">
+                  <strong>سبب الرفض:</strong> <span id="rejection-reason-qualification_cert"></span>
+                </div>
+
+                <!-- Existing file details and preview -->
+                <div id="file-info-qualification_cert" class="hidden" style="margin-bottom:14px; font-size:0.85rem; background:white; border:1px solid var(--gray-200); padding:10px 12px; border-radius:var(--radius); display:flex; justify-content:space-between; align-items:center;">
+                  <span id="file-name-qualification_cert" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px; color:var(--gray-700); font-weight:600;"></span>
+                  <a id="file-preview-qualification_cert" href="#" target="_blank" class="btn btn-outline btn-sm" style="font-size:0.75rem; padding:3px 8px;">معاينة 👁️</a>
+                </div>
+              </div>
+
+              <!-- Upload form / controls -->
+              <div style="margin-top:12px; border-top:1px dashed var(--gray-200); padding-top:12px;">
+                <label style="font-size:0.8rem; font-weight:600; color:var(--gray-700); display:block; margin-bottom:4px;">اختر ملف الشهادة (PDF أو صورة):</label>
+                <input type="file" id="input-qualification_cert" class="form-control" accept="image/jpeg,image/png,image/webp,application/pdf" style="font-size:0.8rem; padding:6px; margin-bottom:8px;">
+                <button type="button" class="btn btn-primary btn-sm" id="btn-upload-qualification_cert" onclick="handlePhysioDocUpload('qualification_cert')" style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px;">
+                  <span>📤</span> <span id="btn-text-qualification_cert">رفع الملف</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Document 3: Practice License -->
+            <div class="doc-card" id="doc-card-practice_license" style="border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:20px; background:#fcfcfd; display:flex; flex-direction:column; justify-content:space-between; transition:all 0.2s ease;">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.6rem;">📜</span>
+                    <div>
+                      <h4 style="font-size:1rem; font-weight:700; margin:0; color:var(--gray-900);">ترخيص مزاولة المهنة</h4>
+                      <span style="font-size:0.75rem; color:var(--gray-500);">صادر من وزارة الصحة والسكان</span>
+                    </div>
+                  </div>
+                  <span id="badge-practice_license" style="font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:99px; background:var(--gray-100); color:var(--gray-600);">
+                    لم يُرفع بعد
+                  </span>
+                </div>
+
+                <!-- Rejection message box -->
+                <div id="rejection-box-practice_license" class="hidden" style="margin-bottom:14px; color:#b91c1c; font-size:0.8rem; background:#fee2e2; border-right:3px solid #dc2626; padding:8px 12px; border-radius:var(--radius);">
+                  <strong>سبب الرفض:</strong> <span id="rejection-reason-practice_license"></span>
+                </div>
+
+                <!-- Existing file details and preview -->
+                <div id="file-info-practice_license" class="hidden" style="margin-bottom:14px; font-size:0.85rem; background:white; border:1px solid var(--gray-200); padding:10px 12px; border-radius:var(--radius); display:flex; justify-content:space-between; align-items:center;">
+                  <span id="file-name-practice_license" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px; color:var(--gray-700); font-weight:600;"></span>
+                  <a id="file-preview-practice_license" href="#" target="_blank" class="btn btn-outline btn-sm" style="font-size:0.75rem; padding:3px 8px;">معاينة 👁️</a>
+                </div>
+              </div>
+
+              <!-- Upload form / controls -->
+              <div style="margin-top:12px; border-top:1px dashed var(--gray-200); padding-top:12px;">
+                <label style="font-size:0.8rem; font-weight:600; color:var(--gray-700); display:block; margin-bottom:4px;">اختر ملف الترخيص (PDF أو صورة):</label>
+                <input type="file" id="input-practice_license" class="form-control" accept="image/jpeg,image/png,image/webp,application/pdf" style="font-size:0.8rem; padding:6px; margin-bottom:8px;">
+                <button type="button" class="btn btn-primary btn-sm" id="btn-upload-practice_license" onclick="handlePhysioDocUpload('practice_license')" style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px;">
+                  <span>📤</span> <span id="btn-text-practice_license">رفع الملف</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Document 4: Syndicate Card -->
+            <div class="doc-card" id="doc-card-syndicate_card" style="border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:20px; background:#fcfcfd; display:flex; flex-direction:column; justify-content:space-between; transition:all 0.2s ease;">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.6rem;">🏛️</span>
+                    <div>
+                      <h4 style="font-size:1rem; font-weight:700; margin:0; color:var(--gray-900);">كارنيه نقابة العلاج الطبيعي</h4>
+                      <span style="font-size:0.75rem; color:var(--gray-500);">كارنيه النقابة العامة أو الفرعية ساري</span>
+                    </div>
+                  </div>
+                  <span id="badge-syndicate_card" style="font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:99px; background:var(--gray-100); color:var(--gray-600);">
+                    لم يُرفع بعد
+                  </span>
+                </div>
+
+                <!-- Rejection message box -->
+                <div id="rejection-box-syndicate_card" class="hidden" style="margin-bottom:14px; color:#b91c1c; font-size:0.8rem; background:#fee2e2; border-right:3px solid #dc2626; padding:8px 12px; border-radius:var(--radius);">
+                  <strong>سبب الرفض:</strong> <span id="rejection-reason-syndicate_card"></span>
+                </div>
+
+                <!-- Existing file details and preview -->
+                <div id="file-info-syndicate_card" class="hidden" style="margin-bottom:14px; font-size:0.85rem; background:white; border:1px solid var(--gray-200); padding:10px 12px; border-radius:var(--radius); display:flex; justify-content:space-between; align-items:center;">
+                  <span id="file-name-syndicate_card" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px; color:var(--gray-700); font-weight:600;"></span>
+                  <a id="file-preview-syndicate_card" href="#" target="_blank" class="btn btn-outline btn-sm" style="font-size:0.75rem; padding:3px 8px;">معاينة 👁️</a>
+                </div>
+              </div>
+
+              <!-- Upload form / controls -->
+              <div style="margin-top:12px; border-top:1px dashed var(--gray-200); padding-top:12px;">
+                <label style="font-size:0.8rem; font-weight:600; color:var(--gray-700); display:block; margin-bottom:4px;">اختر ملف الكارنيه (PDF أو صورة):</label>
+                <input type="file" id="input-syndicate_card" class="form-control" accept="image/jpeg,image/png,image/webp,application/pdf" style="font-size:0.8rem; padding:6px; margin-bottom:8px;">
+                <button type="button" class="btn btn-primary btn-sm" id="btn-upload-syndicate_card" onclick="handlePhysioDocUpload('syndicate_card')" style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px;">
+                  <span>📤</span> <span id="btn-text-syndicate_card">رفع الملف</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- Physiotherapist Profile & Professional Settings -->
+      <section id="profile-section" style="background:white; border-radius:var(--radius-lg); padding:32px; box-shadow:var(--shadow); margin-bottom:40px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h3 style="font-size:1.25rem; font-weight:700; color:var(--gray-800); margin:0;">الملف المهني والخبرات (مصر)</h3>
+            <p style="color:var(--gray-500); font-size:0.875rem; margin-top:4px;">احرص على اكتمال كافة البيانات المهنية لتظهر للمرضى وتزيد فرص قبول طلباتك.</p>
+          </div>
+          <a href="profile.html" class="btn btn-outline btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+            <span>📸</span> تعديل الصورة الشخصية والرقم القومي
+          </a>
+        </div>
+        
+        <form id="physio-profile-form">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px; margin-bottom:20px;">
+            <div class="form-group">
+              <label class="form-label" for="physio-name" data-i18n="auth_full_name">الاسم الكامل <span style="color:var(--error);">*</span></label>
+              <input type="text" id="physio-name" class="form-control" required placeholder="مثال: أحمد محمد إبراهيم">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="physio-phone">رقم الهاتف (مصر +20) <span style="color:var(--error);">*</span></label>
+              <input type="tel" id="physio-phone" class="form-control" placeholder="010xxxxxxxx" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="physio-rate">سعر الجلسة (جنيه مصري) <span style="color:var(--error);">*</span></label>
+              <input type="number" id="physio-rate" class="form-control" min="50" step="10" value="200" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="physio-exp">سنوات الخبرة السريرية <span style="color:var(--error);">*</span></label>
+              <input type="number" id="physio-exp" class="form-control" min="0" value="3" required>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px; margin-bottom:20px;">
+            <div class="form-group">
+              <label class="form-label" for="physio-governorate">المحافظة (من المحافظات المتاحة) <span style="color:var(--error);">*</span></label>
+              <select id="physio-governorate" class="form-control" required>
+                <option value="">-- اختر المحافظة --</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="physio-city">المدينة أو المركز <span style="color:var(--error);">*</span></label>
+              <select id="physio-city" class="form-control" required disabled>
+                <option value="">اختر المحافظة أولاً</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:20px;">
+            <label class="form-label" for="physio-address">العنوان بالتفصيل <span style="color:var(--error);">*</span></label>
+            <input type="text" id="physio-address" class="form-control" placeholder="مثال: شارع الجمهورية، بجوار مستشفى الجامعة" required>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px; margin-bottom:20px;">
+            <div class="form-group">
+              <label class="form-label" for="physio-specialties">تخصص العلاج الطبيعي <span style="color:var(--error);">*</span></label>
+              <input type="text" id="physio-specialties" class="form-control" placeholder="مثال: إصابات ملاعب، تأهيل عظام ومفاصل، تأهيل أطفال وأعصاب" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="physio-qualifications">المؤهلات والشهادات الأكاديمية <span style="color:var(--error);">*</span></label>
+              <input type="text" id="physio-qualifications" class="form-control" placeholder="مثال: بكالوريوس علاج طبيعي - جامعة القاهرة، ترخيص مزاولة مهنة" required>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:24px;">
+            <label class="form-label" for="physio-bio">نبذة مهنية عنك <span style="color:var(--error);">*</span></label>
+            <textarea id="physio-bio" class="form-control" rows="4" placeholder="اكتب نبذة عن خبراتك ومؤهلاتك في مراكز ومستشفيات العلاج الطبيعي والتأهيل لمساعدة المرضى على التعرف عليك..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="save-physio-profile-btn">
+            حفظ البيانات المهنية
+          </button>
+        </form>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- Visit Code Modal (M2 - Code-based Visit Confirmation) -->
+<div id="visit-code-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center; padding:16px;">
+  <div style="background:white; border-radius:var(--radius-xl); padding:26px; max-width:440px; width:100%; box-shadow:var(--shadow-xl); position:relative;" role="dialog" aria-modal="true" aria-labelledby="modal-code-title">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+      <h3 id="modal-code-title" style="margin:0; font-weight:700; color:var(--gray-900); font-size:1.2rem;">تأكيد الجلسة</h3>
+      <button type="button" id="close-modal-x-btn" style="background:none; border:none; font-size:1.4rem; color:var(--gray-400); cursor:pointer; line-height:1;" aria-label="إغلاق">&times;</button>
+    </div>
+    <p id="modal-code-desc" style="font-size:0.875rem; color:var(--gray-600); margin-bottom:18px; line-height:1.5;">
+      اطلب من المريض كود التحقق المكون من 6 أرقام الظاهر في حسابه، ثم أدخله هنا:
+    </p>
+
+    <div class="form-group" style="margin-bottom:18px;">
+      <label class="form-label" for="visit-code-input" style="font-weight:700; color:var(--gray-700);">كود التحقق (6 أرقام):</label>
+      <input
+        type="text"
+        id="visit-code-input"
+        class="form-control"
+        maxlength="6"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        placeholder="000000"
+        style="font-size:1.75rem; text-align:center; letter-spacing:8px; font-weight:800; font-family:monospace; padding:10px;"
+        autocomplete="off"
+      >
+      <div id="modal-code-error" style="color:var(--error); font-size:0.82rem; margin-top:8px; display:none; font-weight:600;"></div>
+    </div>
+
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button type="button" class="btn btn-outline btn-sm" id="cancel-visit-code-btn">إلغاء</button>
+      <button type="button" class="btn btn-primary btn-sm" id="submit-visit-code-btn" style="min-width:130px;">
+        <span id="submit-code-spinner" class="spinner hidden" style="width:14px; height:14px; margin-inline-end:6px; display:inline-block; vertical-align:middle;"></span>
+        <span id="submit-code-btn-text">تأكيد الكود</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Settle Commission Modal -->
+<div id="settle-commission-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center; padding:16px;">
+  <div style="background:white; border-radius:var(--radius-xl); padding:28px; max-width:480px; width:100%; box-shadow:var(--shadow-xl); position:relative;" role="dialog" aria-modal="true">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+      <div>
+        <h3 style="margin:0; font-weight:800; color:var(--gray-900); font-size:1.2rem;">💸 سداد عمولة منصة رعاية</h3>
+        <p style="margin:4px 0 0 0; color:var(--gray-500); font-size:0.85rem;">تسوية مديونية العمولات النقدية المستحقة عليك.</p>
+      </div>
+      <button type="button" id="close-settle-modal-x" style="background:none; border:none; font-size:1.4rem; color:var(--gray-400); cursor:pointer; line-height:1;">&times;</button>
+    </div>
+
+    <!-- Debt Summary -->
+    <div style="background:#fff7ed; border:1px solid #fed7aa; border-radius:var(--radius); padding:14px; margin-bottom:18px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="color:#c2410c; font-weight:600; font-size:0.9rem;">إجمالي المديونية المستحقة:</span>
+        <span style="color:#ea580c; font-weight:800; font-size:1.25rem;" id="modal-settle-debt-val">0 ج.م</span>
+      </div>
+    </div>
+
+    <form id="settle-commission-form">
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label" for="settle-amount">مبلغ السداد (ج.م) <span class="required">*</span></label>
+        <input type="number" id="settle-amount" class="form-control" min="1" step="0.5" required placeholder="أدخل المبلغ المراد سداده">
+      </div>
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label">طريقة التحويل <span class="required">*</span></label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <label style="border:1px solid var(--gray-200); border-radius:var(--radius); padding:10px; cursor:pointer; display:flex; align-items:center; gap:8px;">
+            <input type="radio" name="settle_method" value="vodafone_cash" checked style="accent-color:var(--primary);">
+            <span style="font-size:0.88rem; font-weight:700;">فودافون كاش</span>
+          </label>
+          <label style="border:1px solid var(--gray-200); border-radius:var(--radius); padding:10px; cursor:pointer; display:flex; align-items:center; gap:8px;">
+            <input type="radio" name="settle_method" value="instapay" style="accent-color:var(--primary);">
+            <span style="font-size:0.88rem; font-weight:700;">إنستاباي InstaPay</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Payment Transfer Instructions -->
+      <div id="settle-instructions" style="background:#f8fafc; border:1px dashed var(--gray-300); border-radius:var(--radius); padding:12px; font-size:0.85rem; margin-bottom:16px; color:var(--gray-800);">
+        جاري تحميل بيانات السداد...
+      </div>
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label" for="settle-receipt-file">صورة إيصال التحويل <span class="required">*</span></label>
+        <input type="file" id="settle-receipt-file" class="form-control" accept="image/jpeg,image/png,image/webp,application/pdf" required>
+        <small style="color:var(--gray-500); font-size:0.78rem;">صورة أو PDF واضح يظهر رقم العملية والمبلغ.</small>
+      </div>
+
+      <div class="form-group" style="margin-bottom:20px;">
+        <label class="form-label" for="settle-notes">ملاحظات إضافية (اختياري)</label>
+        <input type="text" id="settle-notes" class="form-control" placeholder="أي تفاصيل تود إبلاغ الإدارة بها...">
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button type="button" class="btn btn-outline" id="cancel-settle-btn">إلغاء</button>
+        <button type="submit" class="btn btn-primary" id="submit-settle-btn">
+          <span>📤</span> إرسال طلب السداد
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Booking Chat Modal -->
+<div id="booking-chat-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center; padding:16px;">
+  <div style="background:white; border-radius:var(--radius-xl); padding:24px; max-width:540px; width:100%; height:600px; max-height:90vh; display:flex; flex-direction:column; box-shadow:var(--shadow-xl); position:relative;" role="dialog" aria-modal="true">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--gray-200); padding-bottom:12px; margin-bottom:14px;">
+      <div>
+        <h3 style="margin:0; font-weight:800; color:var(--gray-900); font-size:1.15rem;">💬 محادثة الحجز</h3>
+        <p style="margin:2px 0 0 0; color:var(--gray-500); font-size:0.82rem;" id="chat-patient-title">المريض: جاري التحميل...</p>
+      </div>
+      <button type="button" id="close-chat-modal-x" style="background:none; border:none; font-size:1.4rem; color:var(--gray-400); cursor:pointer; line-height:1;">&times;</button>
+    </div>
+
+    <!-- Messages Container -->
+    <div id="chat-messages-container" style="flex:1; overflow-y:auto; padding:12px; background:#f8fafc; border-radius:var(--radius); margin-bottom:14px; display:flex; flex-direction:column; gap:10px;">
+      <div style="text-align:center; color:var(--gray-400); padding:20px;">جاري تحميل الرسائل...</div>
+    </div>
+
+    <!-- Send Input -->
+    <form id="chat-send-form" style="display:flex; gap:10px;">
+      <input type="text" id="chat-message-input" class="form-control" placeholder="اكتب رسالتك للمريض هنا..." required style="flex:1;">
+      <button type="submit" class="btn btn-primary" id="chat-send-btn" style="white-space:nowrap; padding:0 20px;">
+        إرسال ↵
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script src="../js/egypt-locations.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/i18n.js"></script>
+<script src="../js/utils.js"></script>
+<script>
+  const Auth = window.Auth;
+  const DB = window.DB;
+  let currentProfile = null;
+  let currentPhysioProfile = null;
+
+  // فحص نسبة اكتمال البيانات المهنية لأخصائي العلاج الطبيعي وفق الـ 11 حقلاً المحددة
+  function updateProfileCompletionUI(profile, physioProfile) {
+    const p = profile || {};
+    const np = physioProfile || {};
+
+    const items = [
+      { name: 'الاسم الكامل', valid: !!(p.full_name && p.full_name.trim().length >= 3) },
+      { name: 'رقم الهاتف', valid: !!(p.phone && p.phone.trim().length >= 10) },
+      { name: 'الصورة الشخصية', valid: !!(p.avatar_url && p.avatar_url.trim()) },
+      { name: 'التخصص', valid: !!(np.specialization && String(np.specialization).trim().length >= 2) },
+      { name: 'سنوات الخبرة', valid: (np.experience_years != null || np.years_experience != null) && !isNaN(Number(np.experience_years ?? np.years_experience)) },
+      { name: 'المؤهلات والشهادات', valid: !!(np.qualifications && String(np.qualifications).trim().length >= 2) },
+      { name: 'النبذة المهنية', valid: !!(np.bio && String(np.bio).trim().length >= 10) },
+      { name: 'المحافظة', valid: !!(np.governorate || p.governorate) },
+      { name: 'المدينة أو المركز', valid: !!(np.city || p.city) },
+      { name: 'العنوان بالتفصيل', valid: !!(p.address && String(p.address).trim().length >= 5) },
+      { name: 'سعر الجلسة', valid: (np.session_price != null || np.visit_price != null || np.hourly_rate != null) && Number(np.session_price ?? np.visit_price ?? np.hourly_rate) >= 50 }
+    ];
+
+    const completed = items.filter(i => i.valid).length;
+    const total = items.length;
+    const percentage = Math.round((completed / total) * 100);
+    const missing = items.filter(i => !i.valid).map(i => i.name);
+
+    const alertBox = document.getElementById('profile-completion-alert');
+    const pctLabel = document.getElementById('completion-percentage-label');
+    const progressBar = document.getElementById('completion-progress-bar');
+    const missingText = document.getElementById('missing-fields-text');
+
+    if (alertBox) {
+      if (completed === total) {
+        alertBox.style.display = 'none';
+      } else {
+        alertBox.style.display = 'block';
+        if (pctLabel) pctLabel.textContent = `${percentage}% مكتمل`;
+        if (progressBar) progressBar.style.width = `${percentage}%`;
+        if (missingText) {
+          missingText.textContent = `بيانات ناقصة يجب استكمالها: ${missing.join('، ')}.`;
+        }
+      }
+    }
+  }
+
+  async function initDashboard() {
+    // 1. Guard authentication (physiotherapist or admin)
+    currentProfile = await Auth.requireAuth(['physiotherapist', 'admin']);
+    if (!currentProfile) return;
+
+    // 2. Fetch extended physiotherapist profile
+    currentPhysioProfile = await DB.getPhysiotherapistProfile(currentProfile.id);
+
+    // 3. Populate info
+    const displayName = currentProfile.full_name || 'أخصائي علاج طبيعي';
+    document.getElementById('physio-display-name').textContent = displayName;
+    document.getElementById('welcome-title').textContent = `مرحباً بك، د. / م. ${displayName}! 👋`;
+    document.getElementById('physio-avatar-box').textContent = getAvatarInitial(displayName);
+
+    // Form inputs
+    document.getElementById('physio-name').value = displayName;
+    document.getElementById('physio-phone').value = currentProfile.phone || '';
+    document.getElementById('physio-address').value = currentProfile.address || '';
+    
+    let govVal = currentProfile.governorate || 'الفيوم';
+    let cityVal = currentProfile.city || '';
+
+    if (currentPhysioProfile) {
+      const priceVal = currentPhysioProfile.session_price ?? currentPhysioProfile.visit_price ?? currentPhysioProfile.hourly_rate;
+      const expVal = currentPhysioProfile.experience_years ?? currentPhysioProfile.years_experience;
+      const specVal = currentPhysioProfile.specialization || (Array.isArray(currentPhysioProfile.specialties) ? currentPhysioProfile.specialties.join(', ') : '');
+      const qualVal = currentPhysioProfile.qualifications || '';
+      govVal = currentPhysioProfile.governorate || currentProfile.governorate || 'الفيوم';
+      cityVal = currentPhysioProfile.city || currentProfile.city || '';
+      
+      document.getElementById('physio-rate').value = (priceVal !== undefined && priceVal !== null && priceVal > 0) ? priceVal : '';
+      document.getElementById('physio-exp').value = (expVal !== undefined && expVal !== null && expVal >= 0) ? expVal : 0;
+      document.getElementById('stat-rate').textContent = (priceVal !== undefined && priceVal !== null && priceVal > 0) ? `${priceVal} ج.م` : 'غير محدد';
+      document.getElementById('physio-bio').value = currentPhysioProfile.bio || '';
+      document.getElementById('physio-specialties').value = specVal;
+      document.getElementById('physio-qualifications').value = qualVal;
+      
+      const isAccepting = currentPhysioProfile.is_active !== false && currentPhysioProfile.accepting_bookings !== false;
+      document.getElementById('accepting-toggle').checked = isAccepting;
+      updateAvailabilityUI(isAccepting);
+    }
+
+    // ربط المحافظة والمدينة بالقوائم المحددة للمحافظات الخمس المستهدفة
+    if (window.EgyptLocations && typeof window.EgyptLocations.bindGovernorateAndCity === 'function') {
+      window.EgyptLocations.bindGovernorateAndCity(
+        document.getElementById('physio-governorate'),
+        document.getElementById('physio-city'),
+        {
+          initialGovernorate: govVal,
+          initialCity: cityVal,
+          govPlaceholder: 'اختر المحافظة',
+          cityPlaceholder: 'اختر المدينة أو المركز'
+        }
+      );
+    }
+
+    // فحص وعرض حالة اكتمال الملف المهني
+    updateProfileCompletionUI(currentProfile, currentPhysioProfile);
+
+    // زر استكمال الملف ينقل المستخدم بنعومة إلى النموذج
+    document.getElementById('complete-profile-btn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('profile-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Toggle switch listener (updates is_active and accepting_bookings) (M1)
+    document.getElementById('accepting-toggle').addEventListener('change', async (e) => {
+      const isChecked = e.target.checked;
+      try {
+        if (typeof DB.setPhysiotherapistAvailability === 'function') {
+          await DB.setPhysiotherapistAvailability(currentProfile.id, isChecked);
+        } else {
+          await DB.upsertPhysiotherapistProfile(currentProfile.id, { is_active: isChecked });
+        }
+        updateAvailabilityUI(isChecked);
+        Toast.success(isChecked ? 'أصبحت متاحاً لاستقبال الحجوزات' : 'تم تعطيل استقبال الحجوزات مؤقتاً');
+      } catch (err) {
+        // Revert switch on failure
+        e.target.checked = !isChecked;
+        updateAvailabilityUI(!isChecked);
+        Toast.error('فشل تحديث الحالة: ' + (err.message || 'خطأ في الاتصال'));
+      }
+    });
+
+    // 4. Load bookings
+    await loadPhysioBookings();
+  }
+
+  function updateAvailabilityUI(isAccepting) {
+    const badge = document.getElementById('availability-badge');
+    if (isAccepting) {
+      badge.textContent = 'متاح للجلسات في مصر';
+      badge.className = 'badge badge-success';
+    } else {
+      badge.textContent = 'غير متاح حالياً';
+      badge.className = 'badge badge-danger';
+    }
+  }
+
+  async function loadPhysioBookings() {
+    const tbody = document.getElementById('bookings-table-body');
+    try {
+      const bookings = await DB.getPhysiotherapistBookings(currentProfile.id);
+
+      // Stats
+      document.getElementById('stat-pending').textContent = bookings.filter(b => b.status === 'pending').length;
+      document.getElementById('stat-accepted').textContent = bookings.filter(b => ['accepted', 'in_progress'].includes(b.status)).length;
+      document.getElementById('stat-completed').textContent = bookings.filter(b => b.status === 'completed').length;
+      document.getElementById('bookings-count-label').textContent = `${bookings.length} طلب مسجل`;
+
+      if (bookings.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center; padding:40px; color:var(--gray-500);">
+              <div style="font-size:2.5rem; margin-bottom:8px;">📬</div>
+              <p style="font-weight:600;">لا توجد أي طلبات زيارة موجهة إليك حالياً</p>
+              <p style="font-size:0.875rem;">تأكد من تفعيل خيار "متاح لاستقبال الحجوزات" وتحديد المحافظات لتظهر للمرضى في مصر</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const statusMap = {
+        pending: { text: 'قيد الانتظار', class: 'status-pending' },
+        accepted: { text: 'مقبول', class: 'status-accepted' },
+        in_progress: { text: 'جارية', class: 'status-in_progress' },
+        completed: { text: 'مكتملة', class: 'status-completed' },
+        cancelled: { text: 'ملغاة', class: 'status-cancelled' },
+        rejected: { text: 'مرفوضة', class: 'status-rejected' }
+      };
+
+      tbody.innerHTML = bookings.map(b => {
+        const st = statusMap[b.status] || { text: b.status, class: 'status-pending' };
+        const pName = escapeHtml(b.patient_name || 'مريض مسجل');
+        const isMasked = b.is_patient_masked || b.status === 'pending';
+        const rawPhone = (b.patient_phone || '').trim();
+
+        // طرق الدفع وحالتها
+        const payMethodLabels = {
+          cash: '💵 كاش للأخصائي',
+          vodafone_cash: '📱 فودافون كاش للمنصة',
+          instapay: '⚡ إنستاباي للمنصة'
+        };
+        const payMethodText = payMethodLabels[b.payment_method] || '💵 كاش';
+        
+        let payStatusBadge = '';
+        if (b.payment_method === 'vodafone_cash' || b.payment_method === 'instapay') {
+          if (b.payment_status === 'approved') {
+            payStatusBadge = '<span style="display:inline-block; font-size:0.72rem; background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:4px; font-weight:700; margin-top:4px;">✅ تم استلام الدفع بالإدارة</span>';
+          } else if (b.payment_status === 'rejected') {
+            payStatusBadge = '<span style="display:inline-block; font-size:0.72rem; background:#fee2e2; color:#b91c1c; padding:2px 6px; border-radius:4px; font-weight:700; margin-top:4px;">❌ إيصال دفع مرفوض</span>';
+          } else {
+            payStatusBadge = '<span style="display:inline-block; font-size:0.72rem; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px; font-weight:700; margin-top:4px;">⏳ قيد مراجعة الدفع</span>';
+          }
+        }
+
+        // 1. كتلة بيانات المريض والتواصل (هاتف، اتصال مباشر، واتساب) - مع الحماية H3
+        let contactHtml = '';
+        if (isMasked) {
+          contactHtml = `
+            <div style="font-size:0.75rem; color:#b45309; background:#fef3c7; border:1px solid #fde68a; padding:4px 8px; border-radius:4px; margin-top:5px;">
+              🔒 يظهر الهاتف والواتساب بعد قبول الطلب
+            </div>
+          `;
+        } else if (rawPhone) {
+          const digits = rawPhone.replace(/\D/g, '');
+          const waPhone = digits.startsWith('0') ? '2' + digits : (digits.startsWith('20') ? digits : '20' + digits);
+          const safePhone = escapeHtml(rawPhone);
+          contactHtml = `
+            <div style="font-size:0.85rem; color:var(--gray-700); margin:4px 0;">
+              <span dir="ltr" style="font-family:monospace; font-weight:600;">📱 ${safePhone}</span>
+            </div>
+            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:6px;">
+              <a href="tel:${safePhone}" class="btn btn-outline btn-sm" style="padding:3px 8px; font-size:0.75rem; text-decoration:none; border-color:#0284c7; color:#0284c7; display:inline-flex; align-items:center; gap:4px;" title="اتصال هاتفي مباشر">
+                <span>📞</span> اتصل
+              </a>
+              <a href="https://wa.me/${waPhone}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="padding:3px 8px; font-size:0.75rem; text-decoration:none; border-color:#16a34a; color:#16a34a; display:inline-flex; align-items:center; gap:4px;" title="محادثة واتساب">
+                <span>💬</span> واتساب
+              </a>
+            </div>
+          `;
+        } else {
+          contactHtml = `
+            <div style="font-size:0.8rem; color:var(--gray-500); font-style:italic; margin-top:4px;">
+              رقم الهاتف غير متوفر
+            </div>
+          `;
+        }
+
+        // 2. موقع المريض على الخريطة والاتجاهات - مع الحماية H3
+        let mapLocationHtml = '';
+        if (isMasked) {
+          mapLocationHtml = `
+            <div style="margin-top:4px; font-size:0.75rem; color:#b45309;">
+              🔒 تظهر الإحداثيات وموقع الخريطة بعد قبول الطلب
+            </div>
+          `;
+        } else if (b.latitude != null && b.longitude != null && !isNaN(Number(b.latitude)) && !isNaN(Number(b.longitude)) && Number(b.latitude) !== 0) {
+          const lat = Number(b.latitude);
+          const lng = Number(b.longitude);
+          const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+          const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+          mapLocationHtml = `
+            <div style="margin-top:8px; display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+              <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="padding:3px 8px; font-size:0.75rem; text-decoration:none; border-color:#2563eb; color:#2563eb; display:inline-flex; align-items:center; gap:4px;" title="فتح موقع المريض على خرائط Google">
+                <span>🗺️</span> فتح موقع المريض على الخريطة
+              </a>
+              <a href="${directionsUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="padding:3px 8px; font-size:0.75rem; text-decoration:none; border-color:#0f766e; color:#0f766e; display:inline-flex; align-items:center; gap:4px;" title="مسار السير والاتجاهات">
+                <span>🧭</span> الاتجاهات
+              </a>
+            </div>
+          `;
+        } else {
+          const safeAddrSearch = encodeURIComponent(`${(b.patient_address || '').replace(/\[GPS:[^\]]+\]/gi, '').trim()} ${b.city || ''} ${b.governorate || ''} مصر`);
+          const textMapsUrl = `https://www.google.com/maps/search/?api=1&query=${safeAddrSearch}`;
+          mapLocationHtml = `
+            <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
+              <div style="font-size:0.75rem; color:var(--gray-600); background:#f8fafc; padding:3px 7px; border-radius:4px; border:1px solid #e2e8f0;">
+                ℹ️ لم تتوفر إحداثيات GPS دقيقة (يُعتمد العنوان النصي الموضح أعلاه)
+              </div>
+              <div>
+                <a href="${textMapsUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="padding:2px 7px; font-size:0.72rem; text-decoration:none; border-color:var(--gray-300); color:var(--gray-700); display:inline-flex; align-items:center; gap:4px;" title="فتح البحث بالعنوان النصي في خرائط Google">
+                  <span>🗺️</span> فتح موقع المريض على الخريطة (بالعنوان)
+                </a>
+              </div>
+            </div>
+          `;
+        }
+
+        // 3. تنظيف العنوان وإظهار المحافظة والمدينة
+        const cleanAddress = escapeHtml((b.patient_address || '').replace(/\[GPS:[^\]]+\]/gi, '').trim() || 'لم يحدد بالتفصيل');
+        const govText = escapeHtml(b.governorate || 'مصر');
+        const cityText = b.city ? ` - ${escapeHtml(b.city)}` : '';
+
+        // 4. ملاحظات المريض (مع حماية XSS)
+        const notesHtml = b.notes ? `
+          <div style="margin-top:6px; padding:4px 8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; font-size:0.78rem; color:var(--gray-700);">
+            <strong>📝 ملاحظات:</strong> ${escapeHtml(b.notes)}
+          </div>
+        ` : '';
+
+        // 5. أزرار الإجراءات حسب الحالة (M2)
+        let actionsHtml = '';
+        if (b.status === 'pending') {
+          actionsHtml = `
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm action-btn" data-id="${b.id}" data-action="accepted" style="padding:4px 8px; font-size:0.75rem;">قبول</button>
+              <button class="btn btn-outline btn-sm action-btn" data-id="${b.id}" data-action="rejected" style="color:var(--error); border-color:var(--error); padding:4px 8px; font-size:0.75rem;">رفض</button>
+            </div>
+          `;
+        } else if (b.status === 'accepted') {
+          actionsHtml = `
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <button class="btn btn-primary btn-sm code-action-btn" data-id="${b.id}" data-type="start" style="padding:4px 8px; font-size:0.75rem;">وصلت للمريض</button>
+              <button class="btn btn-outline btn-sm chat-btn" data-id="${b.id}" data-name="${pName}" style="padding:3px 6px; font-size:0.72rem;">💬 دردشة الحجز</button>
+              <button class="btn btn-outline btn-sm action-btn" data-id="${b.id}" data-action="cancelled" style="color:var(--error); border-color:var(--error); padding:3px 6px; font-size:0.72rem;">اعتذار وإلغاء</button>
+            </div>
+          `;
+        } else if (b.status === 'in_progress') {
+          actionsHtml = `
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <button class="btn btn-secondary btn-sm code-action-btn" data-id="${b.id}" data-type="end" style="padding:4px 8px; font-size:0.75rem;">طلب إنهاء الجلسة</button>
+              <button class="btn btn-outline btn-sm chat-btn" data-id="${b.id}" data-name="${pName}" style="padding:3px 6px; font-size:0.72rem;">💬 دردشة الحجز</button>
+            </div>
+          `;
+        } else {
+          actionsHtml = `
+            <button class="btn btn-outline btn-sm chat-btn" data-id="${b.id}" data-name="${pName}" style="padding:3px 6px; font-size:0.72rem;">💬 الدردشة</button>
+          `;
+        }
+
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:700; font-size:0.95rem; color:var(--gray-900);">${pName}</div>
+              ${contactHtml}
+            </td>
+            <td>
+              <div style="font-weight:700; color:var(--gray-900);">${escapeHtml(b.service_name || 'زيارة تمريضية')}</div>
+              <div style="font-size:0.85rem; color:var(--primary); font-weight:700; margin-top:4px;">
+                💰 ${escapeHtml(b.total_price || 0)} ج.م
+              </div>
+              <div style="font-size:0.78rem; color:var(--gray-600); margin-top:2px;">
+                ${payMethodText}
+              </div>
+              ${payStatusBadge}
+            </td>
+            <td>
+              <div>📅 ${escapeHtml(b.visit_date || 'غير محدد')}</div>
+              <div style="font-size:0.8rem; color:var(--gray-500); margin-top:2px;">⏰ ${escapeHtml(b.visit_time || '10:00 صباحاً')}</div>
+              <div style="font-size:0.8rem; color:var(--gray-600); margin-top:2px;">⏱️ المدة: ${escapeHtml(b.duration_hours || 1)} ساعة</div>
+            </td>
+            <td style="max-width:270px; font-size:0.85rem;">
+              <div>📍 <strong>${govText}${cityText}</strong></div>
+              <div style="margin-top:3px; color:var(--gray-800);">🏠 ${cleanAddress}</div>
+              ${mapLocationHtml}
+              ${notesHtml}
+            </td>
+            <td><span class="badge-status ${st.class}">${st.text}</span></td>
+            <td>${actionsHtml}</td>
+          </tr>
+        `;
+      }).join('');
+
+      // Status action listeners
+      tbody.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const targetBtn = e.currentTarget;
+          const bookingId = targetBtn.getAttribute('data-id');
+          const nextStatus = targetBtn.getAttribute('data-action');
+          if (!bookingId || !nextStatus) return;
+
+          if (nextStatus === 'cancelled') {
+            if (!confirm('هل أنت متأكد من رغبتك في الاعتذار عن هذه الزيارة المقبولة وإلغائها؟')) return;
+          }
+
+          const originalText = targetBtn.textContent;
+          targetBtn.disabled = true;
+          targetBtn.textContent = 'جاري التحديث...';
+
+          try {
+            await DB.updateBookingStatus(bookingId, nextStatus);
+            Toast.success('تم تحديث حالة الزيارة بنجاح');
+            await loadPhysioBookings();
+            loadPhysioFinances();
+          } catch (err) {
+            Toast.error('فشل تحديث الحالة: ' + err.message);
+            targetBtn.disabled = false;
+            targetBtn.textContent = originalText;
+          }
+        });
+      });
+
+      // Visit code action listeners (وصلت للمريض / طلب إنهاء الجلسة)
+      tbody.querySelectorAll('.code-action-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const targetBtn = e.currentTarget;
+          const bookingId = targetBtn.getAttribute('data-id');
+          const codeType = targetBtn.getAttribute('data-type');
+          if (!bookingId || !codeType) return;
+          openVisitCodeModal(bookingId, codeType);
+        });
+      });
+
+      // Chat action listeners
+      tbody.querySelectorAll('.chat-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const targetBtn = e.currentTarget;
+          const bookingId = targetBtn.getAttribute('data-id');
+          const patientName = targetBtn.getAttribute('data-name');
+          if (!bookingId) return;
+          openBookingChat(bookingId, patientName);
+        });
+      });
+
+    } catch (err) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center; padding:32px; color:var(--error);">
+            حدث خطأ أثناء تحميل الطلبات: ${err.message}
+          </td>
+        </tr>
+      `;
+    }
+  }
+
+  // ==========================================================
+  // Visit Code Modal Handling (Start & End Visit Codes)
+  // ==========================================================
+  let activeCodeBookingId = null;
+  let activeCodeType = null;
+  let isSubmittingVisitCode = false;
+
+  function openVisitCodeModal(bookingId, codeType) {
+    activeCodeBookingId = bookingId;
+    activeCodeType = codeType;
+    isSubmittingVisitCode = false;
+
+    const modal = document.getElementById('visit-code-modal');
+    const titleEl = document.getElementById('modal-code-title');
+    const descEl = document.getElementById('modal-code-desc');
+    const inputEl = document.getElementById('visit-code-input');
+    const submitBtn = document.getElementById('submit-visit-code-btn');
+    const btnText = document.getElementById('submit-code-btn-text');
+    const spinner = document.getElementById('submit-code-spinner');
+    const errorEl = document.getElementById('modal-code-error');
+
+    if (errorEl) {
+      errorEl.textContent = '';
+      errorEl.style.display = 'none';
+    }
+
+    if (codeType === 'start') {
+      titleEl.textContent = 'تأكيد بدء الجلسة';
+      descEl.textContent = 'اطلب من المريض كود تأكيد وصول الأخصائي (6 أرقام) الظاهر في حسابه، ثم أدخله هنا لبدء الجلسة:';
+      btnText.textContent = 'تأكيد بدء الجلسة';
+    } else {
+      titleEl.textContent = 'تأكيد إنهاء الجلسة';
+      descEl.textContent = 'اطلب من المريض كود تأكيد انتهاء الجلسة (6 أرقام) الظاهر في حسابه، ثم أدخله هنا لإنهاء الجلسة:';
+      btnText.textContent = 'تأكيد إنهاء الجلسة';
+    }
+
+    inputEl.value = '';
+    submitBtn.disabled = false;
+    spinner.classList.add('hidden');
+    modal.style.display = 'flex';
+    setTimeout(() => inputEl.focus(), 60);
+  }
+
+  function closeVisitCodeModal() {
+    const modal = document.getElementById('visit-code-modal');
+    if (modal) modal.style.display = 'none';
+    activeCodeBookingId = null;
+    activeCodeType = null;
+    isSubmittingVisitCode = false;
+  }
+
+  async function submitVisitCode() {
+    if (isSubmittingVisitCode || !activeCodeBookingId || !activeCodeType) return;
+
+    const inputEl = document.getElementById('visit-code-input');
+    const submitBtn = document.getElementById('submit-visit-code-btn');
+    const spinner = document.getElementById('submit-code-spinner');
+    const errorEl = document.getElementById('modal-code-error');
+
+    const rawVal = inputEl.value || '';
+    const cleanCode = rawVal
+      .replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 0x0660))
+      .replace(/[۰-۹]/g, d => String(d.charCodeAt(0) - 0x06F0))
+      .replace(/\D/g, '')
+      .trim();
+
+    if (!/^\d{6}$/.test(cleanCode)) {
+      if (errorEl) {
+        errorEl.textContent = 'يجب إدخال كود صحيح مكوّن من 6 أرقام.';
+        errorEl.style.display = 'block';
+      }
+      inputEl.focus();
+      return;
+    }
+
+    if (errorEl) errorEl.style.display = 'none';
+
+    isSubmittingVisitCode = true;
+    submitBtn.disabled = true;
+    spinner.classList.remove('hidden');
+
+    try {
+      await DB.verifyVisitCode(activeCodeBookingId, cleanCode, activeCodeType);
+
+      // احتساب وتسجيل عمولة المنصة آلياً عند إنهاء الجلسة
+      if (activeCodeType === 'end') {
+        try {
+          await DB.recordVisitCommission(activeCodeBookingId);
+        } catch (commErr) {
+          console.warn('Auto commission recording notice:', commErr);
+        }
+      }
+
+      const successMsg = activeCodeType === 'start'
+        ? 'تم التحقق من الكود بنجاح وبدء الجلسة! الحالة الآن (جارية).'
+        : 'تم إنهاء الجلسة بنجاح واحتساب المعاملة المالية!';
+
+      Toast.success(successMsg);
+      closeVisitCodeModal();
+      await loadPhysioBookings();
+      loadPhysioFinances();
+    } catch (err) {
+      const msg = err.message || 'فشل التحقق من كود الزيارة.';
+      if (errorEl) {
+        errorEl.textContent = msg;
+        errorEl.style.display = 'block';
+      }
+      Toast.error(msg);
+    } finally {
+      isSubmittingVisitCode = false;
+      submitBtn.disabled = false;
+      spinner.classList.add('hidden');
+    }
+  }
+
+  document.getElementById('cancel-visit-code-btn')?.addEventListener('click', closeVisitCodeModal);
+  document.getElementById('close-modal-x-btn')?.addEventListener('click', closeVisitCodeModal);
+  document.getElementById('submit-visit-code-btn')?.addEventListener('click', submitVisitCode);
+  document.getElementById('visit-code-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submitVisitCode();
+    }
+  });
+
+  // ==========================================================
+  // Tab Switching & Navigation
+  // ==========================================================
+  window.switchPhysioTab = function(sectionId) {
+    const tabs = [
+      { id: 'requests-section', link: 'tab-requests-link' },
+      { id: 'finances-section', link: 'tab-finances-link' },
+      { id: 'contracts-section', link: 'tab-contracts-link' },
+      { id: 'docs-section', link: 'tab-docs-link' },
+      { id: 'profile-section', link: 'tab-profile-link' }
+    ];
+
+    tabs.forEach(t => {
+      const sec = document.getElementById(t.id);
+      const lnk = document.getElementById(t.link);
+      if (sec) sec.style.display = (t.id === sectionId) ? 'block' : 'none';
+      if (lnk) {
+        if (t.id === sectionId) {
+          lnk.classList.add('active');
+        } else {
+          lnk.classList.remove('active');
+        }
+      }
+    });
+
+    if (sectionId === 'finances-section') {
+      loadPhysioFinances();
+    } else if (sectionId === 'contracts-section') {
+      loadPhysioContract();
+    } else if (sectionId === 'docs-section') {
+      loadPhysioDocuments();
+    } else if (sectionId === 'requests-section') {
+      loadPhysioBookings();
+    }
+  };
+
+  // ==========================================================
+  // Nurse Finances & Wallet Management
+  // ==========================================================
+  let currentWalletData = null;
+
+  async function loadPhysioFinances() {
+    if (!currentProfile) return;
+    try {
+      const wallet = await DB.getPhysiotherapistWallet(currentProfile.id);
+      currentWalletData = wallet;
+
+      const rev = Number(wallet?.total_visits_revenue || 0);
+      const commDue = Number(wallet?.total_commissions_due || 0);
+      const debt = Number(wallet?.commission_debt || 0);
+      const pendingPayouts = Number(wallet?.pending_payouts || 0);
+      const settled = Number(wallet?.total_settled_commissions || 0);
+      const paid = Number(wallet?.total_paid_payouts || 0);
+      const net = Number(wallet?.balance || 0);
+
+      document.getElementById('wallet-visits-revenue').textContent = `${rev.toLocaleString('ar-EG')} ج.م`;
+      document.getElementById('wallet-commissions-due').textContent = `${commDue.toLocaleString('ar-EG')} ج.م`;
+      document.getElementById('wallet-commission-debt').textContent = `${debt.toLocaleString('ar-EG')} ج.م`;
+      document.getElementById('wallet-pending-payouts').textContent = `${pendingPayouts.toLocaleString('ar-EG')} ج.م`;
+      document.getElementById('wallet-settled-commissions').textContent = `${settled.toLocaleString('ar-EG')} ج.م`;
+      document.getElementById('wallet-paid-payouts').textContent = `${paid.toLocaleString('ar-EG')} ج.م`;
+
+      const netEl = document.getElementById('wallet-net-balance');
+      netEl.textContent = `${net >= 0 ? '+' : ''}${net.toLocaleString('ar-EG')} ج.م`;
+      netEl.style.color = net < 0 ? '#ef4444' : '#10b981';
+
+      // Load Transactions Ledger
+      const txs = await DB.getPhysiotherapistFinancialTransactions(currentProfile.id);
+      const tbody = document.getElementById('physio-finances-table-body');
+
+      if (!txs || txs.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align:center; padding:32px; color:var(--gray-500);">
+              لا توجد حركات مالية مسجلة في محفظتك حتى الآن.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const typeLabels = {
+        patient_payment: 'دفع إلكتروني من مريض',
+        platform_commission: 'عمولة رعاية مستحقة',
+        commission_settlement: 'سداد عمولة للإدارة',
+        nurse_payout: 'تحويل مستحقات من المنصة'
+      };
+
+      const statusBadges = {
+        pending_review: '<span class="badge" style="background:#fef3c7; color:#b45309; font-weight:700;">⏳ قيد المراجعة</span>',
+        approved: '<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:700;">✅ معتمد</span>',
+        rejected: '<span class="badge" style="background:#fee2e2; color:#b91c1c; font-weight:700;">❌ مرفوض</span>'
+      };
+
+      const methodLabels = {
+        cash: '💵 كاش',
+        vodafone_cash: '📱 فودافون كاش',
+        instapay: '⚡ إنستاباي'
+      };
+
+      tbody.innerHTML = txs.map(t => {
+        const dateStr = t.created_at ? new Date(t.created_at).toLocaleDateString('ar-EG', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+        const typeStr = typeLabels[t.type] || t.type;
+        const methodStr = methodLabels[t.payment_method] || t.payment_method || '—';
+        const stBadge = statusBadges[t.status] || t.status;
+        const amtStr = `${Number(t.amount || 0).toLocaleString('ar-EG')} ج.م`;
+        
+        let receiptHtml = '—';
+        if (t.receipt_path) {
+          receiptHtml = `<button class="btn btn-outline btn-sm view-tx-receipt-btn" data-path="${escapeHtml(t.receipt_path)}" style="padding:2px 8px; font-size:0.75rem;">👁️ الإيصال</button>`;
+        }
+
+        const noteText = escapeHtml(t.notes || t.rejection_reason || '—');
+
+        return `
+          <tr>
+            <td style="font-size:0.8rem; color:var(--gray-600);">${dateStr}</td>
+            <td style="font-weight:700; color:var(--gray-900);">${typeStr}</td>
+            <td style="font-weight:800; color:var(--primary);">${amtStr}</td>
+            <td style="font-size:0.85rem;">${methodStr}</td>
+            <td>${stBadge}</td>
+            <td>${receiptHtml}</td>
+            <td style="font-size:0.8rem; max-width:200px; color:var(--gray-700);">${noteText}</td>
+          </tr>
+        `;
+      }).join('');
+
+      // Wire receipt view buttons
+      tbody.querySelectorAll('.view-tx-receipt-btn').forEach(b => {
+        b.addEventListener('click', async (e) => {
+          const path = e.currentTarget.getAttribute('data-path');
+          if (!path) return;
+          try {
+            const { data, error } = await DB.supabase.storage.from('private-docs').createSignedUrl(path, 300);
+            if (error || !data?.signedUrl) throw (error || new Error('تعذر توليد رابط المعاينة'));
+            window.open(data.signedUrl, '_blank');
+          } catch (err) {
+            Toast.error('فشل عرض الإيصال: ' + err.message);
+          }
+        });
+      });
+
+    } catch (err) {
+      console.error('Error loading nurse finances:', err);
+      Toast.error('فشل تحميل البيانات المالية: ' + err.message);
+    }
+  }
+
+  // Settle Commission Modal Logic
+  const settleModal = document.getElementById('settle-commission-modal');
+  const openSettleBtn = document.getElementById('open-settle-modal-btn');
+  const closeSettleX = document.getElementById('close-settle-modal-x');
+  const cancelSettleBtn = document.getElementById('cancel-settle-btn');
+  const settleForm = document.getElementById('settle-commission-form');
+
+  async function openSettleCommissionModal() {
+    if (!currentWalletData) {
+      await loadPhysioFinances();
+    }
+    const debt = Number(currentWalletData?.commission_debt || 0);
+    document.getElementById('modal-settle-debt-val').textContent = `${debt.toLocaleString('ar-EG')} ج.م`;
+    const amtInput = document.getElementById('settle-amount');
+    amtInput.value = debt > 0 ? debt : '';
+    amtInput.max = debt > 0 ? debt : '';
+
+    // Load platform payment settings
+    const instructDiv = document.getElementById('settle-instructions');
+    instructDiv.innerHTML = 'جاري تحميل تفاصيل حسابات المنصة...';
+
+    try {
+      const pubSettings = await DB.getPublicPlatformSettings();
+      const methods = pubSettings.payment_methods || {};
+      const vfNum = (methods.vodafone_cash && methods.vodafone_cash.phone) ? methods.vodafone_cash.phone : '';
+      const ipNum = (methods.instapay && methods.instapay.handle) ? methods.instapay.handle : '';
+
+      if (!vfNum && !ipNum) {
+        instructDiv.innerHTML = `
+          <div style="color:#b91c1c; font-weight:700;">
+            ⚠️ لم تقم إدارة المنصة بضبط أرقام فودافون كاش أو إنستاباي بعد. يرجى التواصل مع الإدارة.
+          </div>
+        `;
+      } else {
+        instructDiv.innerHTML = `
+          <div style="font-weight:700; margin-bottom:6px;">حسابات الاستلام الرسمية لمنصة رعاية:</div>
+          ${vfNum ? `<div>📱 <strong>فودافون كاش:</strong> <span dir="ltr" style="font-family:monospace; font-weight:800; color:var(--primary);">${escapeHtml(vfNum)}</span></div>` : ''}
+          ${ipNum ? `<div style="margin-top:4px;">⚡ <strong>إنستاباي:</strong> <span dir="ltr" style="font-family:monospace; font-weight:800; color:var(--primary);">${escapeHtml(ipNum)}</span></div>` : ''}
+          <div style="margin-top:6px; font-size:0.78rem; color:var(--gray-600);">بعد إتمام التحويل، يرجى إرفاق صورة واضحة لإشعار التحويل لتأكيد السداد.</div>
+        `;
+      }
+    } catch (e) {
+      instructDiv.innerHTML = '<span style="color:#b91c1c;">تعذر تحميل أرقام التحويل حالياً.</span>';
+    }
+
+    settleModal.style.display = 'flex';
+  }
+
+  function closeSettleCommissionModal() {
+    settleModal.style.display = 'none';
+    settleForm.reset();
+  }
+
+  openSettleBtn?.addEventListener('click', openSettleCommissionModal);
+  closeSettleX?.addEventListener('click', closeSettleCommissionModal);
+  cancelSettleBtn?.addEventListener('click', closeSettleCommissionModal);
+
+  settleForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = document.getElementById('submit-settle-btn');
+    const amount = parseFloat(document.getElementById('settle-amount').value);
+    const method = document.querySelector('input[name="settle_method"]:checked')?.value || 'vodafone_cash';
+    const fileInput = document.getElementById('settle-receipt-file');
+    const notes = document.getElementById('settle-notes').value.trim();
+
+    if (isNaN(amount) || amount <= 0) {
+      Toast.warning('يرجى إدخال مبلغ سداد صحيح.');
+      return;
+    }
+
+    const currentDebt = Number(currentWalletData?.commission_debt || 0);
+    if (amount > currentDebt) {
+      Toast.warning(`المبلغ المطلوب سداده (${amount} ج.م) أكبر من إجمالي المديونية المستحقة عليك (${currentDebt} ج.م).`);
+      return;
+    }
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+      Toast.warning('يرجى إرفاق صورة إيصال التحويل.');
+      return;
+    }
+
+    const file = fileInput.files[0];
+    setButtonLoading(submitBtn, true);
+
+    try {
+      const ext = file.name.split('.').pop().toLowerCase();
+      const filePath = `${currentProfile.id}/commission-settlements/settle_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+
+      const { error: upErr } = await DB.supabase.storage.from('private-docs').upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+      if (upErr) throw upErr;
+
+      await DB.submitCommissionSettlement(amount, method, filePath, notes);
+
+      Toast.success('تم إرسال طلب سداد العمولة بنجاح! سيتم اعتماده وتحديث رصيدك فور مراجعة الإدارة.');
+      closeSettleCommissionModal();
+      await loadPhysioFinances();
+    } catch (err) {
+      console.error('Error submitting commission settlement:', err);
+      Toast.error('فشل تقديم طلب السداد: ' + (err.message || 'خطأ غير متوقع'));
+    } finally {
+      setButtonLoading(submitBtn, false);
+    }
+  });
+
+  // ==========================================================
+  // Nurse Contract Management & Gating
+  // ==========================================================
+  let currentContractData = null;
+
+  async function loadPhysioContract() {
+    if (!currentProfile) return;
+    try {
+      const contractInfo = await DB.getPhysiotherapistContractInfo(currentProfile.id);
+      currentContractData = contractInfo;
+
+      const badge = document.getElementById('physio-contract-badge');
+      const rejectionBox = document.getElementById('physio-contract-rejection-msg');
+      const rejectionText = document.getElementById('physio-contract-rejection-text');
+      const viewOwnBtn = document.getElementById('view-own-signed-contract-btn');
+      const warningBanner = document.getElementById('contract-warning-banner');
+      const acceptToggle = document.getElementById('accepting-toggle');
+
+      const st = contractInfo?.status || 'not_submitted';
+
+      if (st === 'approved') {
+        badge.textContent = '✅ معتمد رسمياً من الإدارة';
+        badge.style.background = '#dcfce7';
+        badge.style.color = '#15803d';
+        rejectionBox.classList.add('hidden');
+        if (warningBanner) warningBanner.style.display = 'none';
+        if (acceptToggle) {
+          acceptToggle.disabled = false;
+          acceptToggle.parentElement.title = '';
+        }
+      } else if (st === 'pending_review') {
+        badge.textContent = '⏳ قيد مراجعة واعتماد الإدارة';
+        badge.style.background = '#fef3c7';
+        badge.style.color = '#b45309';
+        rejectionBox.classList.add('hidden');
+        if (warningBanner) warningBanner.style.display = 'block';
+        if (acceptToggle) {
+          acceptToggle.disabled = true;
+          acceptToggle.checked = false;
+          acceptToggle.parentElement.title = 'يجب اعتماد العقد من الإدارة أولاً لتفعيل استقبال الحجوزات';
+          updateAvailabilityUI(false);
+        }
+      } else if (st === 'rejected') {
+        badge.textContent = '❌ العقد مرفوض ويحتاج إعادة رفع';
+        badge.style.background = '#fee2e2';
+        badge.style.color = '#b91c1c';
+        rejectionBox.classList.remove('hidden');
+        rejectionText.textContent = contractInfo?.rejection_reason || 'يرجى مراجعة الإدارة وتعديل العقد.';
+        if (warningBanner) warningBanner.style.display = 'block';
+        if (acceptToggle) {
+          acceptToggle.disabled = true;
+          acceptToggle.checked = false;
+          acceptToggle.parentElement.title = 'العقد مرفوض. يرجى توقيع نسخة جديدة ورفعها';
+          updateAvailabilityUI(false);
+        }
+      } else {
+        badge.textContent = '⚠️ لم يتم رفع العقد الموقع بعد';
+        badge.style.background = '#f1f5f9';
+        badge.style.color = '#475569';
+        rejectionBox.classList.add('hidden');
+        if (warningBanner) warningBanner.style.display = 'block';
+        if (acceptToggle) {
+          acceptToggle.disabled = true;
+          acceptToggle.checked = false;
+          acceptToggle.parentElement.title = 'توقيع العقد شرط إلزامي لتفعيل استقبال الحجوزات';
+          updateAvailabilityUI(false);
+        }
+      }
+
+      // Signed contract preview link
+      if (contractInfo?.file_path) {
+        viewOwnBtn.classList.remove('hidden');
+        viewOwnBtn.onclick = async (e) => {
+          e.preventDefault();
+          try {
+            const { data, error } = await DB.supabase.storage.from('private-docs').createSignedUrl(contractInfo.file_path, 300);
+            if (error || !data?.signedUrl) throw (error || new Error('تعذر إنشاء رابط المعاينة'));
+            window.open(data.signedUrl, '_blank');
+          } catch (err) {
+            Toast.error('فشل معاينة العقد: ' + err.message);
+          }
+        };
+      } else {
+        viewOwnBtn.classList.add('hidden');
+      }
+
+    } catch (err) {
+      console.error('Error loading nurse contract:', err);
+    }
+  }
+
+  // Download official contract
+  document.getElementById('download-official-contract-btn')?.addEventListener('click', async () => {
+    try {
+      let urlData = await DB.getPlatformDocumentSignedUrl('official_physio_contract');
+      if (!urlData?.signedUrl) {
+        urlData = await DB.getPlatformDocumentSignedUrl('official_nurse_contract');
+      }
+      if (!urlData?.signedUrl) {
+        Toast.warning('لم تقم إدارة المنصة برفع نموذج العقد الرسمي بعد. يرجى التواصل مع الإدارة.');
+        return;
+      }
+      window.open(urlData.signedUrl, '_blank');
+    } catch (err) {
+      Toast.error('تعذر تنزيل العقد: ' + err.message);
+    }
+  });
+
+  // Download platform guidelines
+  document.getElementById('download-guidelines-btn')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    try {
+      const urlData = await DB.getPlatformDocumentSignedUrl('platform_guidelines');
+      if (!urlData?.signedUrl) {
+        Toast.warning('دليل سياسات المنصة قيد الإعداد.');
+        return;
+      }
+      window.open(urlData.signedUrl, '_blank');
+    } catch (err) {
+      Toast.error('تعذر فتح الدليل: ' + err.message);
+    }
+  });
+
+  // Upload signed contract form
+  document.getElementById('upload-physio-contract-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submit-signed-contract-btn');
+    const fileInput = document.getElementById('signed-contract-input');
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+      Toast.warning('يرجى اختيار ملف العقد الموقع.');
+      return;
+    }
+
+    const file = fileInput.files[0];
+    setButtonLoading(btn, true);
+
+    try {
+      await DB.submitPhysiotherapistContract(file);
+
+      Toast.success('تم رفع العقد بنجاح! سيتم مراجعته واعتماده من قبل الإدارة.');
+      fileInput.value = '';
+      await loadPhysioContract();
+    } catch (err) {
+      console.error('Error uploading contract:', err);
+      Toast.error('فشل رفع العقد: ' + (err.message || 'خطأ غير متوقع'));
+    } finally {
+      setButtonLoading(btn, false);
+    }
+  });
+
+  // ==========================================================
+  // Physiotherapist Documents & Verification System
+  // ==========================================================
+  let currentDocsData = null;
+
+  async function loadPhysioDocuments() {
+    if (!currentProfile) return;
+    try {
+      const result = await DB.getPhysiotherapistDocuments(currentProfile.id);
+      currentDocsData = result?.documents || [];
+
+      const docTypes = ['national_id', 'qualification_cert', 'practice_license', 'syndicate_card'];
+
+      docTypes.forEach(type => {
+        const doc = currentDocsData.find(d => d.document_type === type);
+        const badge = document.getElementById(`badge-${type}`);
+        const rejBox = document.getElementById(`rejection-box-${type}`);
+        const rejText = document.getElementById(`rejection-reason-${type}`);
+        const fileInfo = document.getElementById(`file-info-${type}`);
+        const fileNameEl = document.getElementById(`file-name-${type}`);
+        const filePreviewBtn = document.getElementById(`file-preview-${type}`);
+        const btnText = document.getElementById(`btn-text-${type}`);
+
+        if (!badge) return;
+
+        const status = doc?.review_status || 'not_uploaded';
+
+        if (status === 'approved') {
+          badge.textContent = 'معتمد ومقبول ✅';
+          badge.style.background = '#dcfce7';
+          badge.style.color = '#15803d';
+          if (rejBox) rejBox.classList.add('hidden');
+          if (btnText) btnText.textContent = 'إعادة الرفع للتحديث';
+        } else if (status === 'pending') {
+          badge.textContent = 'قيد المراجعة ⏳';
+          badge.style.background = '#fef3c7';
+          badge.style.color = '#b45309';
+          if (rejBox) rejBox.classList.add('hidden');
+          if (btnText) btnText.textContent = 'إعادة رفع مستند بديل';
+        } else if (status === 'rejected') {
+          badge.textContent = 'مرفوض ❌';
+          badge.style.background = '#fee2e2';
+          badge.style.color = '#b91c1c';
+          if (rejBox) {
+            rejBox.classList.remove('hidden');
+            if (rejText) rejText.textContent = doc?.rejection_reason || 'المستند غير واضح أو غير مطابق.';
+          }
+          if (btnText) btnText.textContent = 'إعادة رفع المستند الآن';
+        } else {
+          badge.textContent = 'لم يُرفع بعد';
+          badge.style.background = 'var(--gray-100)';
+          badge.style.color = 'var(--gray-600)';
+          if (rejBox) rejBox.classList.add('hidden');
+          if (btnText) btnText.textContent = 'رفع الملف';
+        }
+
+        if (doc && doc.review_status !== 'not_uploaded' && doc.file_name) {
+          if (fileInfo) fileInfo.classList.remove('hidden');
+          if (fileNameEl) {
+            fileNameEl.textContent = doc.file_name;
+            fileNameEl.title = doc.file_name;
+          }
+          if (filePreviewBtn) {
+            if (doc.signed_url) {
+              filePreviewBtn.href = doc.signed_url;
+              filePreviewBtn.style.display = 'inline-flex';
+            } else {
+              filePreviewBtn.style.display = 'none';
+            }
+          }
+        } else {
+          if (fileInfo) fileInfo.classList.add('hidden');
+        }
+      });
+    } catch (err) {
+      console.warn('⚠️ Error loading physiotherapist documents:', err);
+    }
+  }
+
+  window.handlePhysioDocUpload = async function(docType) {
+    if (!currentProfile) {
+      Toast.error('يجب تسجيل الدخول أولاً.');
+      return;
+    }
+
+    const fileInput = document.getElementById(`input-${docType}`);
+    const btn = document.getElementById(`btn-upload-${docType}`);
+
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+      Toast.warning('يرجى اختيار ملف المستند أولاً قبل الضغط على رفع.');
+      return;
+    }
+
+    const file = fileInput.files[0];
+
+    // Client-side MIME validation
+    const allowedMimes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedMimes.includes(file.type)) {
+      Toast.error('نوع الملف غير مدعوم. يرجى اختيار ملف PDF أو صورة (JPG, PNG, WEBP).');
+      return;
+    }
+
+    // Client-side size validation (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      Toast.error('حجم الملف يتجاوز الحد الأقصى المسموح (5 ميجابايت).');
+      return;
+    }
+
+    setButtonLoading(btn, true);
+
+    try {
+      await DB.uploadPhysiotherapistDocument(currentProfile.id, file, docType);
+
+      Toast.success('تم رفع المستند بنجاح! سيتم مراجعته والتحقق منه من قِبل إدارة المنصة.');
+      fileInput.value = '';
+      await loadPhysioDocuments();
+    } catch (err) {
+      console.error('Error uploading document:', err);
+      Toast.error('فشل رفع المستند: ' + (err.message || 'خطأ غير متوقع'));
+    } finally {
+      setButtonLoading(btn, false);
+    }
+  };
+
+  // ==========================================================
+  // Booking Chat Modal
+  // ==========================================================
+  let activeChatBookingId = null;
+  const chatModal = document.getElementById('booking-chat-modal');
+  const closeChatX = document.getElementById('close-chat-modal-x');
+  const chatContainer = document.getElementById('chat-messages-container');
+  const chatForm = document.getElementById('chat-send-form');
+  const chatInput = document.getElementById('chat-message-input');
+  let chatPollTimer = null;
+
+  async function openBookingChat(bookingId, patientName) {
+    activeChatBookingId = bookingId;
+    document.getElementById('chat-patient-title').textContent = `المريض: ${patientName || 'مريض مسجل'}`;
+    chatContainer.innerHTML = '<div style="text-align:center; color:var(--gray-400); padding:20px;">جاري تحميل الرسائل...</div>';
+    chatModal.style.display = 'flex';
+    chatInput.focus();
+
+    await loadChatMessages();
+
+    // تحديد إشعارات هذا الحجز كمقروءة
+    markBookingNotificationsRead(bookingId);
+
+    // Auto-refresh chat every 6 seconds while open
+    clearInterval(chatPollTimer);
+    chatPollTimer = setInterval(loadChatMessages, 6000);
+  }
+
+  function closeBookingChat() {
+    chatModal.style.display = 'none';
+    activeChatBookingId = null;
+    clearInterval(chatPollTimer);
+  }
+
+  closeChatX?.addEventListener('click', closeBookingChat);
+
+  async function loadChatMessages() {
+    if (!activeChatBookingId) return;
+    try {
+      const msgs = await DB.getBookingMessages(activeChatBookingId);
+      if (!msgs || msgs.length === 0) {
+        chatContainer.innerHTML = '<div style="text-align:center; color:var(--gray-400); padding:20px;">لا توجد رسائل سابقة. ابدأ المحادثة الآن.</div>';
+        return;
+      }
+
+      // منع إعادة رسم الرسائل إذا لم يتغير شيء
+      const lastId = msgs[msgs.length - 1]?.id;
+      if (chatContainer.dataset.lastMsgId === lastId) return;
+      chatContainer.dataset.lastMsgId = lastId;
+
+      chatContainer.innerHTML = msgs.map(m => {
+        const isMe = m.sender_id === currentProfile.id;
+        const align = isMe ? 'flex-end' : 'flex-start';
+        const bg = isMe ? 'var(--primary)' : '#e2e8f0';
+        const color = isMe ? '#ffffff' : 'var(--gray-900)';
+        const timeStr = m.created_at ? new Date(m.created_at).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }) : '';
+        // إصلاح: استخدم _senderName أو sender.full_name
+        const senderLabel = isMe ? 'أنت' : escapeHtml(m._senderName || (m.sender && m.sender.full_name) || 'المريض');
+
+        return `
+          <div style="align-self:${align}; max-width:75%; margin-bottom:4px;">
+            <div style="font-size:0.72rem; color:var(--gray-500); margin-bottom:2px; text-align:${isMe ? 'left' : 'right'};">${senderLabel} - ${timeStr}</div>
+            <div style="background:${bg}; color:${color}; padding:8px 12px; border-radius:var(--radius); font-size:0.88rem; word-break:break-word; line-height:1.4;">
+              ${escapeHtml(m.message)}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    } catch (err) {
+      console.warn('Error loading chat messages:', err);
+    }
+  }
+
+  chatForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = chatInput.value.trim();
+    if (!text || !activeChatBookingId) return;
+
+    chatInput.value = '';
+    try {
+      await DB.sendBookingMessage(activeChatBookingId, text);
+      await loadChatMessages();
+    } catch (err) {
+      Toast.error('فشل إرسال الرسالة: ' + err.message);
+    }
+  });
+
+  // Profile Form Submit
+  document.getElementById('physio-profile-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const saveBtn = document.getElementById('save-physio-profile-btn');
+    setButtonLoading(saveBtn, true);
+
+    try {
+      const name = document.getElementById('physio-name').value.trim();
+      const phone = document.getElementById('physio-phone').value.trim();
+      const visitPrice = parseFloat(document.getElementById('physio-rate').value);
+      const experienceYears = parseInt(document.getElementById('physio-exp').value, 10);
+      const bio = document.getElementById('physio-bio').value.trim();
+      const specialization = document.getElementById('physio-specialties').value.trim();
+      const qualifications = document.getElementById('physio-qualifications').value.trim();
+      const address = document.getElementById('physio-address').value.trim();
+      const governorate = document.getElementById('physio-governorate').value.trim() || 'الفيوم';
+      const city = document.getElementById('physio-city').value.trim() || '';
+
+      // 1. Validation
+      if (!name) {
+        Toast.warning('يرجى إدخال الاسم الكامل.');
+        document.getElementById('physio-name').focus();
+        setButtonLoading(saveBtn, false);
+        return;
+      }
+
+      if (phone && window.EgyptLocations && !window.EgyptLocations.validateEgyptianPhone(phone)) {
+        Toast.warning('يرجى إدخال رقم هاتف مصري صحيح يبدأ بـ 010 أو 011 أو 012 أو 015.');
+        document.getElementById('physio-phone').focus();
+        setButtonLoading(saveBtn, false);
+        return;
+      }
+
+      if (isNaN(visitPrice) || visitPrice < 50) {
+        Toast.warning('يرجى تحديد سعر زيارة صالح (50 جنيه على الأقل).');
+        document.getElementById('physio-rate').focus();
+        setButtonLoading(saveBtn, false);
+        return;
+      }
+
+      if (isNaN(experienceYears) || experienceYears < 0) {
+        Toast.warning('يرجى إدخال عدد سنوات خبرة صحيح.');
+        document.getElementById('physio-exp').focus();
+        setButtonLoading(saveBtn, false);
+        return;
+      }
+
+      if (!specialization) {
+        Toast.warning('يرجى تحديد تخصص العلاج الطبيعي.');
+        document.getElementById('physio-specialties').focus();
+        setButtonLoading(saveBtn, false);
+        return;
+      }
+
+      // 2. Update base user profile (profiles table)
+      await DB.updateProfile(currentProfile.id, {
+        full_name: name,
+        phone: phone,
+        address: address,
+        governorate: governorate,
+        city: city
+      });
+      
+      // 3. Update physiotherapist profile (physiotherapist_profiles table)
+      const isActive = document.getElementById('accepting-toggle').checked;
+      await DB.upsertPhysiotherapistProfile(currentProfile.id, {
+        session_price: visitPrice,
+        visit_price: visitPrice,
+        experience_years: experienceYears,
+        specialization: specialization,
+        qualifications: qualifications,
+        bio: bio,
+        governorate: governorate,
+        city: city,
+        is_active: isActive
+      });
+
+      // إعادة تحميل الملف المحدث لتحديث مؤشر الاكتمال
+      currentProfile = await Auth.getUserProfile();
+      currentPhysioProfile = await DB.getPhysiotherapistProfile(currentProfile.id);
+      updateProfileCompletionUI(currentProfile, currentPhysioProfile);
+
+      Toast.success('تم حفظ وتحديث بياناتك المهنية بنجاح في قاعدة البيانات!');
+      document.getElementById('physio-display-name').textContent = name;
+      document.getElementById('welcome-title').textContent = `مرحباً بك، د. / م. ${name}! 👋`;
+      document.getElementById('stat-rate').textContent = `${visitPrice} ج.م`;
+
+    } catch (err) {
+      console.error('Error saving nurse profile:', err);
+      Toast.error('فشل حفظ البيانات: ' + (err.message || 'خطأ غير متوقع'));
+    } finally {
+      setButtonLoading(saveBtn, false);
+    }
+  });
+
+  // Logout Handlers
+  async function handleLogout() {
+    await Auth.signOut();
+    Toast.info('تم تسجيل الخروج بنجاح');
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 600);
+  }
+
+  document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
+  document.getElementById('logout-btn-top')?.addEventListener('click', handleLogout);
+
+  // ==========================================================
+  // نظام الإشعارات الداخلية — Nurse Dashboard
+  // ==========================================================
+  let _notifOpen = false;
+  let _notifPollTimer = null;
+
+  async function loadNotifications() {
+    const list = document.getElementById('notif-list');
+    const badge = document.getElementById('notif-badge');
+    if (!list || !badge) return;
+
+    try {
+      const notifs = await DB.getNotifications(25);
+      const unread = notifs.filter(n => !n.is_read);
+
+      if (unread.length > 0) {
+        badge.style.display = 'inline-block';
+        badge.textContent = unread.length > 9 ? '9+' : unread.length;
+      } else {
+        badge.style.display = 'none';
+      }
+
+      if (notifs.length === 0) {
+        list.innerHTML = '<div style="padding:24px 16px; text-align:center; color:var(--gray-400); font-size:0.88rem;">لا توجد إشعارات حتى الآن</div>';
+        return;
+      }
+
+      list.innerHTML = notifs.map(n => {
+        const isUnread = !n.is_read;
+        const timeStr = n.created_at ? new Date(n.created_at).toLocaleString('ar-EG', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '';
+        const icon = n.type === 'message' ? '💬' : n.type === 'booking' ? '📋' : '🔔';
+        const bookingId = n.link && n.link.startsWith('booking:') ? n.link.replace('booking:', '') : null;
+
+        return `
+          <div class="notif-item" data-id="${n.id}" data-booking="${bookingId || ''}"
+               style="padding:12px 16px; border-bottom:1px solid var(--gray-100); cursor:pointer;
+                      background:${isUnread ? '#f0f9ff' : 'white'};
+                      transition:background 0.2s;"
+               onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='${isUnread ? '#f0f9ff' : 'white'}'">
+            <div style="display:flex; gap:10px; align-items:flex-start;">
+              <span style="font-size:1.2rem; flex-shrink:0;">${icon}</span>
+              <div style="flex:1; min-width:0;">
+                <div style="font-weight:${isUnread ? '700' : '500'}; font-size:0.88rem; color:var(--gray-900); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(n.title)}</div>
+                <div style="font-size:0.8rem; color:var(--gray-600); margin-top:2px; word-break:break-word;">${escapeHtml(n.message)}</div>
+                <div style="font-size:0.72rem; color:var(--gray-400); margin-top:4px;">${timeStr}</div>
+              </div>
+              ${isUnread ? '<span style="width:8px; height:8px; border-radius:50%; background:#3b82f6; flex-shrink:0; margin-top:4px;"></span>' : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // ربط النقر على الإشعار
+      list.querySelectorAll('.notif-item').forEach(item => {
+        item.addEventListener('click', async () => {
+          const notifId = item.dataset.id;
+          const bookingId = item.dataset.booking;
+
+          if (notifId) {
+            try { await DB.markNotificationRead(notifId); } catch (_) {}
+            item.style.background = 'white';
+            item.querySelector('span[style*="border-radius:50%"]')?.remove();
+          }
+
+          closeNotifDropdown();
+
+          if (bookingId) {
+            // فتح المحادثة المرتبطة بالحجز
+            const chatBtn = document.querySelector(`.chat-btn[data-id="${bookingId}"]`);
+            if (chatBtn) {
+              chatBtn.click();
+            } else {
+              // ننتقل لتبويب الطلبات ونعيد التحميل
+              switchPhysioTab('requests-section');
+              await loadPhysioBookings();
+              setTimeout(() => {
+                const btn = document.querySelector(`.chat-btn[data-id="${bookingId}"]`);
+                if (btn) btn.click();
+              }, 500);
+            }
+          }
+
+          await loadNotifications();
+        });
+      });
+
+    } catch (err) {
+      console.warn('⚠️ Error loading notifications:', err);
+    }
+  }
+
+  function markBookingNotificationsRead(bookingId) {
+    DB.getNotifications(50).then(notifs => {
+      notifs.filter(n => n.link === 'booking:' + bookingId && !n.is_read)
+        .forEach(n => DB.markNotificationRead(n.id).catch(() => {}));
+    }).catch(() => {});
+  }
+
+  function openNotifDropdown() {
+    const dd = document.getElementById('notif-dropdown');
+    if (dd) { dd.style.display = 'block'; _notifOpen = true; }
+    loadNotifications();
+  }
+
+  function closeNotifDropdown() {
+    const dd = document.getElementById('notif-dropdown');
+    if (dd) { dd.style.display = 'none'; _notifOpen = false; }
+  }
+
+  document.getElementById('notif-bell-btn')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (_notifOpen) closeNotifDropdown(); else openNotifDropdown();
+  });
+
+  document.getElementById('mark-all-read-btn')?.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    try {
+      await DB.markAllNotificationsRead();
+      await loadNotifications();
+    } catch (err) {
+      console.warn('Error marking all read:', err);
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    const bell = document.getElementById('notif-bell-btn');
+    const dd = document.getElementById('notif-dropdown');
+    if (dd && !dd.contains(e.target) && !bell?.contains(e.target)) {
+      closeNotifDropdown();
+    }
+  });
+
+  // تحديث الإشعارات كل 30 ثانية
+  async function startNotifPolling() {
+    await loadNotifications();
+    clearInterval(_notifPollTimer);
+    _notifPollTimer = setInterval(loadNotifications, 30000);
+  }
+
+  async function startPhysioDashboard() {
+    await initDashboard();
+    await loadPhysioContract();
+    await loadPhysioFinances();
+    await loadPhysioDocuments();
+    await startNotifPolling();
+  }
+
+  startPhysioDashboard();
+</script>
+<script src="../js/whatsapp.js"></script>
+</body>
+</html>

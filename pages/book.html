@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="حجز زيارة تمريضية منزلية داخل مصر - رعايه CareNest">
+  <title>حجز زيارة تمريضية في مصر | رعايه CareNest</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .booking-wrapper {
+      max-width: 860px;
+      margin: 40px auto;
+      background: white;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+      border: 1px solid var(--gray-100);
+    }
+    .booking-header {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--secondary));
+      color: white;
+      padding: 36px;
+      text-align: center;
+    }
+    .booking-body {
+      padding: 36px;
+    }
+    .service-card-select {
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .service-card-select.selected {
+      border-color: var(--primary);
+      background: var(--primary-glow);
+    }
+    .service-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+    .summary-box {
+      background: var(--off-white);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 24px;
+      border: 1px solid var(--gray-200);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar" role="navigation">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="../index.html" class="navbar-brand">
+        <div class="logo-icon">🏥</div>
+        <div class="brand-text">
+          <span class="brand-ar">رعايه</span>
+          <span class="brand-en">CareNest</span>
+        </div>
+      </a>
+      <div class="navbar-actions">
+        <button class="lang-toggle" id="lang-toggle-btn" aria-label="تغيير اللغة / Change language" data-i18n="lang_toggle">English</button>
+        <a href="nurses.html" class="btn btn-ghost btn-sm" data-i18n="nav_nurses">الممرضون</a>
+        <a href="patient-dashboard.html" class="btn btn-outline btn-sm" data-i18n="nav_dashboard">لوحة التحكم</a>
+        <a href="../index.html" class="btn btn-ghost btn-sm" data-i18n="nav_home">الرئيسية</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="booking-wrapper">
+    <div class="booking-header">
+      <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.18); padding:5px 14px; border-radius:var(--radius-full); margin-bottom:12px; font-size:0.85rem;">
+        <span>🇪🇬</span> الرعاية التمريضية المنزلية في جمهورية مصر العربية
+      </div>
+      <h1 style="font-size:1.85rem; font-weight:800; margin-bottom:8px;">حجز زيارة تمريضية منزلية</h1>
+      <p style="opacity:0.9; font-size:1rem;">اختر الخدمة والممرض وعنوانك داخل مصر لتلقي الرعاية في منزلك بكل راحة وأمان</p>
+    </div>
+
+    <div class="booking-body">
+      <form id="booking-form" novalidate>
+        
+        <!-- تنبيه عند عدم اكتمال تسجيل المحافظة في ملف المريض -->
+        <div id="missing-gov-alert" class="hidden" style="background:#fef2f2; border:1px solid #fecaca; border-radius:var(--radius-lg); padding:16px 20px; margin-bottom:24px; color:#991b1b;">
+          <div style="font-weight:800; font-size:1.05rem; margin-bottom:6px; display:flex; align-items:center; gap:8px;">
+            <span>⚠️</span> لم يتم تسجيل المحافظة في ملفك الشخصي
+          </div>
+          <p style="font-size:0.9rem; margin:0 0 12px 0; line-height:1.6;">
+            وفقاً لقواعد منصة رعاية، لا يجوز حجز زيارة تمريضية إلا مع ممرض مسجل في نفس محافظتك. يرجى استكمال بيانات المحافظة والمدينة في ملفك الشخصي لتتمكن من إتمام الحجز.
+          </p>
+          <a href="profile.html" class="btn btn-primary btn-sm" style="display:inline-block; text-decoration:none;">
+            ✏️ استكمال المحافظة في الملف الشخصي الآن
+          </a>
+        </div>
+
+        <!-- Step 1: Service Selection -->
+        <div style="margin-bottom:32px;">
+          <h3 style="font-size:1.15rem; font-weight:700; color:var(--gray-800); margin-bottom:16px;">
+            1. اختر نوع الخدمة المطلوبة <span class="required">*</span>
+          </h3>
+          <div id="services-container" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px;">
+            <div style="padding:20px; text-align:center; color:var(--gray-500); grid-column:1/-1;">
+              جاري تحميل قائمة الخدمات...
+            </div>
+          </div>
+          <input type="hidden" id="selected-service-id" required>
+          <input type="hidden" id="selected-service-name" required>
+          <input type="hidden" id="selected-service-price" value="200">
+        </div>
+
+        <!-- Step 2: Nurse Selection -->
+        <div style="margin-bottom:32px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+            <h3 style="font-size:1.15rem; font-weight:700; color:var(--gray-800); margin:0;">
+              2. اختر الممرض المفضل <span class="required">*</span>
+            </h3>
+            <span id="nurse-gov-scope-badge" style="font-size:0.82rem; font-weight:700; color:var(--primary); background:var(--primary-50, #eff6ff); padding:4px 10px; border-radius:var(--radius-full); border:1px solid #bfdbfe;">
+              🇪🇬 ممرضو محافظتك فقط
+            </span>
+          </div>
+          <div class="form-group">
+            <select id="nurse-select" class="form-control" required style="font-size:1rem; padding:12px 16px;">
+              <option value="">-- جاري تحميل الممرضين المتاحين في مصر... --</option>
+            </select>
+          </div>
+          <div id="nurse-preview" class="hidden" style="display:flex; align-items:center; gap:16px; background:var(--off-white); padding:16px; border-radius:var(--radius); margin-top:12px; border:1px solid var(--gray-200);">
+            <div class="sidebar-avatar" id="selected-nurse-avatar" style="width:50px; height:50px; font-size:1.5rem;">👩‍⚕️</div>
+            <div>
+              <h4 id="selected-nurse-name" style="font-weight:700; font-size:1rem; margin-bottom:2px;">اسم الممرض</h4>
+              <p style="font-size:0.85rem; color:var(--gray-500); margin:0;" id="selected-nurse-info">ممرض معتمد في مصر</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Date & Time -->
+        <div style="margin-bottom:32px;">
+          <h3 style="font-size:1.15rem; font-weight:700; color:var(--gray-800); margin-bottom:16px;">
+            3. تفاصيل الموعد والمدة <span class="required">*</span>
+          </h3>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
+            <div class="form-group">
+              <label class="form-label" for="visit-date">تاريخ الزيارة <span class="required">*</span></label>
+              <input type="date" id="visit-date" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="visit-time">وقت بدء الزيارة <span class="required">*</span></label>
+              <input type="time" id="visit-time" class="form-control" value="10:00" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="duration-hours">مدة الزيارة (بالساعات) <span class="required">*</span></label>
+              <select id="duration-hours" class="form-control" required>
+                <option value="">-- اختر مدة الزيارة بالساعات --</option>
+                <option value="1">ساعة واحدة (1)</option>
+                <option value="2" selected>ساعتان (2)</option>
+                <option value="3">3 ساعات</option>
+                <option value="4">4 ساعات</option>
+                <option value="5">5 ساعات</option>
+                <option value="6">6 ساعات</option>
+                <option value="8">8 ساعات (دوام كامل)</option>
+                <option value="12">12 ساعة (نصف يوم / رعاية مكثفة)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- نافذة عرض التوقيت المحسوب آلياً للزيارة -->
+          <div id="visit-window-box" style="margin-top:14px; background:var(--off-white); border:1px solid var(--gray-200); border-radius:var(--radius); padding:12px 18px; font-size:0.9rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+              <span style="color:var(--gray-600);">🕒 نطاق وقت الزيارة: </span>
+              <strong id="visit-window-display" style="color:var(--primary); font-weight:800;">من 10:00 ص إلى 12:00 م (ساعتان)</strong>
+            </div>
+            <div id="visit-window-warning" class="hidden" style="color:var(--error); font-weight:700; font-size:0.85rem;">
+              ⚠️ وقت انتهاء الزيارة يتجاوز منتصف الليل. يرجى اختيار موعد أبكر.
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Patient Info & Egyptian Location -->
+        <div style="margin-bottom:32px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+            <h3 style="font-size:1.15rem; font-weight:700; color:var(--gray-800); margin:0;">
+              4. بيانات المريض وموقع الزيارة في مصر <span class="required">*</span>
+            </h3>
+            <button type="button" id="geo-btn" class="btn btn-outline btn-sm" style="display:inline-flex; align-items:center; gap:6px; font-weight:600; border-color:var(--primary); color:var(--primary);">
+              <span id="geo-btn-icon">📍</span> <span id="geo-btn-text">تحديد موقعي تلقائيًا</span>
+            </button>
+          </div>
+
+          <!-- Geolocation Live Feedback Box -->
+          <div id="geo-feedback-box" style="display:none; margin-bottom:16px; padding:12px 16px; border-radius:var(--radius); font-size:0.875rem;"></div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px; margin-bottom:16px;">
+            <div class="form-group">
+              <label class="form-label" for="patient-name">اسم المريض الكامل</label>
+              <input type="text" id="patient-name" class="form-control" required placeholder="مثال: محمود علي حسن">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="patient-phone">رقم الهاتف للتواصل (مصر +20)</label>
+              <input type="tel" id="patient-phone" class="form-control" required placeholder="مثال: 01012345678 أو 011...">
+            </div>
+          </div>
+
+          <!-- Egyptian Governorate & City Selectors -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px; margin-bottom:16px;">
+            <div class="form-group">
+              <label class="form-label" for="booking-governorate" data-i18n="filter_gov_label">المحافظة (مطابقة لملفك الشخصي)</label>
+              <select id="booking-governorate" class="form-control" required>
+                <option value="">-- اختر المحافظة --</option>
+              </select>
+              <div id="gov-lock-hint" style="font-size:0.78rem; color:var(--gray-500); margin-top:4px;">
+                يتم ربط الحجز بمحافظتك المسجلة لمنع الحجز بين محافظات مختلفة.
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="booking-city" data-i18n="filter_city_label">المدينة / المنطقة</label>
+              <select id="booking-city" class="form-control" required disabled>
+                <option value="" data-i18n="filter_city_placeholder">اختر المحافظة أولاً</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:16px;">
+            <label class="form-label" for="patient-address">العنوان بالتفصيل (اسم الشارع، رقم العمارة، رقم الشقة)</label>
+            <input type="text" id="patient-address" class="form-control" required placeholder="مثال: شارع مصطفى النحاس، عمارة 15، الدور الثالث، شقة 6">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="booking-notes">ملاحظات طبية خاصة للممرض (اختياري)</label>
+            <textarea id="booking-notes" class="form-control" rows="3" placeholder="اذكر أي تفاصيل صحية عن المريض أو متطلبات خاصة بالزيارة..."></textarea>
+          </div>
+        </div>
+
+        <!-- Step 5: Payment Method -->
+        <div class="booking-section" style="margin-top:24px;">
+          <h3 class="section-title">
+            <span class="step-num">5</span> طريقة الدفع <span class="required">*</span>
+          </h3>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:14px; margin-bottom:16px;">
+            <!-- 1. Cash -->
+            <label class="payment-method-card" id="card-cash" style="border:2px solid var(--primary); background:var(--primary-50, #eff6ff); border-radius:var(--radius-lg); padding:16px; cursor:pointer; display:flex; align-items:flex-start; gap:12px; transition:all 0.25s ease; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+              <input type="radio" name="payment_method" value="cash" checked style="accent-color:var(--primary); transform:scale(1.25); margin-top:4px;">
+              <div style="flex:1;">
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                  <span style="font-size:1.25rem;">💵</span>
+                  <strong style="font-size:0.98rem; color:var(--gray-900);">الدفع نقداً (كاش)</strong>
+                </div>
+                <div style="font-size:0.82rem; color:var(--gray-600); line-height:1.4;">سداد مباشر للممرض عند وصوله للمنزل بعد الزيارة</div>
+              </div>
+            </label>
+
+            <!-- 2. Vodafone Cash -->
+            <label class="payment-method-card" id="card-vodafone-cash" style="border:1px solid var(--gray-200); background:white; border-radius:var(--radius-lg); padding:16px; cursor:pointer; display:flex; align-items:flex-start; gap:12px; transition:all 0.25s ease; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+              <input type="radio" name="payment_method" value="vodafone_cash" style="accent-color:var(--primary); transform:scale(1.25); margin-top:4px;">
+              <div style="flex:1;">
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                  <span style="font-size:1.25rem;">📱</span>
+                  <strong style="font-size:0.98rem; color:var(--gray-900);">فودافون كاش</strong>
+                </div>
+                <div style="font-size:0.82rem; color:var(--gray-600); line-height:1.4;">محفظة إلكترونية مع رفع إشعار التحويل</div>
+              </div>
+            </label>
+
+            <!-- 3. InstaPay -->
+            <label class="payment-method-card" id="card-instapay" style="border:1px solid var(--gray-200); background:white; border-radius:var(--radius-lg); padding:16px; cursor:pointer; display:flex; align-items:flex-start; gap:12px; transition:all 0.25s ease; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+              <input type="radio" name="payment_method" value="instapay" style="accent-color:var(--primary); transform:scale(1.25); margin-top:4px;">
+              <div style="flex:1;">
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                  <span style="font-size:1.25rem;">⚡</span>
+                  <strong style="font-size:0.98rem; color:var(--gray-900);">إنستاباي InstaPay</strong>
+                </div>
+                <div style="font-size:0.82rem; color:var(--gray-600); line-height:1.4;">تحويل بنكي ولحظي مع رفع إشعار التحويل</div>
+              </div>
+            </label>
+          </div>
+
+          <!-- Dynamic Payment Details Box -->
+          <div id="epay-details-box" style="border-radius:var(--radius-lg); padding:16px 20px; margin-top:12px; font-size:0.9rem; transition:all 0.3s ease;">
+            <!-- Content will be rendered dynamically by JS -->
+          </div>
+        </div>
+
+        <!-- Price Summary in Egyptian Pounds -->
+        <div class="summary-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="color:var(--gray-600); font-size:0.95rem;">الخدمة المحددة:</span>
+            <span style="font-weight:700;" id="summary-service-text">—</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="color:var(--gray-600); font-size:0.95rem;">طريقة التسعير / سعر الساعة:</span>
+            <span style="font-weight:700; color:var(--gray-700);" id="summary-pricing-rate-text">—</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="color:var(--gray-600); font-size:0.95rem;">مدة الزيارة المحددة:</span>
+            <span style="font-weight:700;" id="summary-duration-text">ساعتان</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="color:var(--gray-600); font-size:0.95rem;">وقت البداية والانتهاء:</span>
+            <span style="font-weight:700; color:var(--gray-800);" id="summary-time-range-text">من 10:00 ص إلى 12:00 م</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--gray-200); padding-top:12px; margin-top:12px;">
+            <span style="font-weight:800; font-size:1.15rem; color:var(--gray-900);">المبلغ الإجمالي المتوقع:</span>
+            <span style="font-weight:800; font-size:1.35rem; color:var(--primary);" id="summary-total-price">0 جنيه مصري</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary btn-lg w-full" id="confirm-booking-btn" style="margin-top:24px;">
+          <span>✅</span> تأكيد وحفظ الحجز بالجنيه المصري
+        </button>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Booking Confirmation & Post-Booking Payment Modal -->
+<div id="booking-success-modal" class="hidden" style="position:fixed; inset:0; background:rgba(15,23,42,0.65); display:none; align-items:center; justify-content:center; z-index:1000; padding:20px; backdrop-filter:blur(4px); overflow-y:auto;">
+  <div style="background:#fff; border-radius:20px; padding:28px; max-width:520px; width:100%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); text-align:center; margin:auto;">
+    <div style="width:60px; height:60px; background:var(--primary-50, #eff6ff); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px auto; font-size:1.8rem;">
+      🎉
+    </div>
+    <h3 style="font-size:1.35rem; font-weight:800; color:var(--gray-900); margin-bottom:4px;">تم تسجيل وحفظ الحجز بنجاح!</h3>
+    <p style="color:var(--gray-600); margin-bottom:16px; font-size:0.88rem;">تم حجز موعد الزيارة وتثبيته في النظام برقم مرجعي معتمد.</p>
+    
+    <div style="background:var(--off-white); border:1px solid var(--gray-200); border-radius:14px; padding:16px; margin-bottom:18px; text-align:right; font-size:0.9rem;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px; align-items:center;">
+        <span style="color:var(--gray-500);">الرقم المرجعي:</span>
+        <span id="modal-ref-id" style="font-family:monospace; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:6px; font-weight:700;">#CN-000000</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span style="color:var(--gray-500);">الخدمة:</span>
+        <strong id="modal-service-name" style="color:var(--gray-800);">—</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span style="color:var(--gray-500);">الممرض المعتمد:</span>
+        <strong id="modal-nurse-name" style="color:var(--gray-800);">—</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span style="color:var(--gray-500);">تاريخ ووقت الزيارة:</span>
+        <strong id="modal-datetime" style="color:var(--gray-800);">—</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--gray-300); padding-top:8px; margin-top:8px;">
+        <span style="color:var(--gray-800); font-weight:700;">المبلغ الإجمالي المطلوب:</span>
+        <strong id="modal-total-price" style="color:var(--primary); font-size:1.15rem; font-weight:800;">0 ج.م</strong>
+      </div>
+    </div>
+
+    <!-- Cash Payment Confirmation Box -->
+    <div id="modal-cash-box" class="hidden" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:14px; margin-bottom:18px; text-align:right; font-size:0.88rem; color:#166534;">
+      <div style="font-weight:700; margin-bottom:4px;">💵 طريقة الدفع: نقداً (كاش) عند وصول الممرض</div>
+      <div>تم تأكيد حجزك. يرجى سداد المبلغ الإجمالي للممرض يداً بيد عند وصوله لمنزلك وتقديم كود الزيارة له.</div>
+    </div>
+
+    <!-- Electronic Payment (Vodafone Cash / InstaPay) Post-Booking Box -->
+    <div id="modal-epay-box" class="hidden" style="background:#f8fafc; border:1px solid var(--gray-300); border-radius:14px; padding:18px; margin-bottom:18px; text-align:right;">
+      <div style="font-weight:800; color:var(--gray-900); margin-bottom:6px; font-size:0.98rem; display:flex; align-items:center; gap:6px;">
+        <span>💳</span> إتمام الدفع الإلكتروني ورفع إشعار التحويل
+      </div>
+      <p style="font-size:0.82rem; color:var(--gray-600); margin-bottom:12px;">يرجى تحويل المبلغ الإجمالي إلى الحساب الرسمي أدناه ثم رفع صورة الإيصال لمراجعته من الإدارة.</p>
+
+      <div id="modal-epay-details" style="background:white; border:1px dashed var(--gray-300); border-radius:10px; padding:12px; font-size:0.88rem; margin-bottom:12px;">
+        جاري تحميل بيانات الدفع الرسمية...
+      </div>
+
+      <div id="modal-upload-receipt-area">
+        <div class="form-group" style="margin-bottom:10px;">
+          <label class="form-label" for="modal-receipt-file" style="font-size:0.84rem; font-weight:700;">
+            📸 صورة أو ملف إيصال التحويل (JPG, PNG, PDF) <span class="required">*</span>
+          </label>
+          <input type="file" id="modal-receipt-file" class="form-control" accept="image/jpeg,image/png,image/webp,application/pdf" style="font-size:0.84rem;">
+        </div>
+
+        <button type="button" id="modal-upload-receipt-btn" class="btn btn-primary btn-sm w-full" style="justify-content:center; padding:9px;">
+          <span>📤</span> تأكيد التحويل ورفع الإيصال
+        </button>
+      </div>
+
+      <div id="modal-receipt-success-msg" class="hidden" style="background:#dcfce7; border:1px solid #86efac; border-radius:8px; padding:12px; color:#15803d; font-size:0.86rem; font-weight:700; text-align:center; margin-top:10px;">
+        ✅ تم رفع إيصال التحويل بنجاح! حالة الدفع الآن: <strong>قيد مراجعة الإدارة</strong>.
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <a href="patient-dashboard.html" class="btn btn-primary" id="modal-primary-btn" style="justify-content:center; text-decoration:none;">
+        متابعة الحجز في لوحة تحكمي
+      </a>
+      <button type="button" onclick="window.location.reload();" class="btn btn-outline btn-sm" style="justify-content:center;">
+        حجز موعد جديد
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script src="../js/egypt-locations.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/i18n.js"></script>
+<script src="../js/utils.js"></script>
+<script>
+  const Auth = window.Auth;
+  const DB = window.DB;
+  const EgyptLoc = window.EgyptLocations;
+  let currentProfile = null;
+  let nursesList = [];
+  let servicesList = [];
+  let isSubmitting = false;
+
+  // Minimum date is today
+  const today = new Date().toISOString().split('T')[0];
+  const dateInput = document.getElementById('visit-date');
+  if (dateInput) {
+    dateInput.min = today;
+    dateInput.value = today;
+  }
+
+  // Populate Egyptian Governorates
+  const govSelect = document.getElementById('booking-governorate');
+  const citySelect = document.getElementById('booking-city');
+
+  if (EgyptLoc && govSelect && citySelect) {
+    EgyptLoc.populateGovernorateSelect(govSelect, '', 'اختر المحافظة');
+    citySelect.innerHTML = '<option value="">اختر المحافظة أولاً</option>';
+    citySelect.disabled = true;
+  }
+
+  if (govSelect && citySelect) {
+    govSelect.addEventListener('change', () => {
+      const selectedGov = govSelect.value;
+      if (selectedGov && EgyptLoc) {
+        EgyptLoc.populateCitySelect(citySelect, selectedGov, '', 'اختر المدينة أو المركز');
+      } else {
+        citySelect.innerHTML = '<option value="">اختر المحافظة أولاً</option>';
+        citySelect.disabled = true;
+      }
+      // Re-populate nurses filter prioritizing governorate
+      renderNursesDropdown(selectedGov);
+    });
+  }
+
+  // Geolocation handling (Interactive, Auto-detect, Reverse Geocoding & Map link)
+  let userGeoCoordinates = null;
+  let isAutoGeoAttempted = false;
+
+  async function performGeolocation(options = {}) {
+    const isAuto = Boolean(options?.isAuto);
+    const permState = options?.permissionState || 'unknown';
+
+    const geoBtn = document.getElementById('geo-btn');
+    const geoIcon = document.getElementById('geo-btn-icon');
+    const geoText = document.getElementById('geo-btn-text');
+    const feedbackBox = document.getElementById('geo-feedback-box');
+
+    if (!navigator.geolocation) {
+      if (!isAuto && feedbackBox) {
+        feedbackBox.style.display = 'block';
+        feedbackBox.style.background = '#fef2f2';
+        feedbackBox.style.color = '#991b1b';
+        feedbackBox.style.border = '1px solid #fecaca';
+        feedbackBox.textContent = 'تحديد الموقع الجغرافي غير مدعوم في متصفحك، يمكنك إدخال العنوان يدويًا.';
+      }
+      if (!isAuto) Toast.info('تحديد الموقع الجغرافي غير مدعوم في متصفحك.');
+      return;
+    }
+
+    // الحالة 1: أثناء تحديد الموقع
+    if (geoIcon) geoIcon.textContent = '⏳';
+    if (geoText) geoText.textContent = isAuto ? 'جاري تحديد موقعك تلقائيًا...' : 'جاري تحديد موقعك...';
+    if (geoBtn) geoBtn.disabled = true;
+
+    if (feedbackBox) {
+      feedbackBox.style.display = 'block';
+      if (permState === 'prompt') {
+        // توضيح واضح للمريض عند طلب إذن المتصفح لأول مرة
+        feedbackBox.style.background = '#eff6ff';
+        feedbackBox.style.color = '#1e40af';
+        feedbackBox.style.border = '1px solid #bfdbfe';
+        feedbackBox.innerHTML = `
+          <div style="display:flex; align-items:flex-start; gap:8px;">
+            <span style="font-size:1.15rem; line-height:1.2;">📍</span>
+            <div>
+              <div style="font-weight:700;">طلب إذن الوصول إلى موقعك الجغرافي:</div>
+              <div style="font-size:0.82rem; margin-top:2px; line-height:1.5;">
+                لتسهيل وصول الممرض بدقة وسرعة لمنزلك، يرجى الموافقة على طلب المتصفح لمشاركة الموقع، أو يمكنك تخطي ذلك وإدخال العنوان بالتفصيل يدويًا في الحقول أدناه.
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        feedbackBox.style.background = '#eff6ff';
+        feedbackBox.style.color = '#1e40af';
+        feedbackBox.style.border = '1px solid #bfdbfe';
+        feedbackBox.innerHTML = '<span>⏳ جاري تحديد إحداثيات موقعك الجغرافي بدقة عبر GPS...</span>';
+      }
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        userGeoCoordinates = { lat, lng };
+
+        // الحالة 2: عند النجاح
+        if (geoIcon) geoIcon.textContent = '✅';
+        if (geoText) geoText.textContent = 'تم تحديد موقعك بنجاح';
+        if (geoBtn) geoBtn.disabled = false;
+
+        const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+        if (feedbackBox) {
+          feedbackBox.style.display = 'block';
+          feedbackBox.style.background = '#f0fdf4';
+          feedbackBox.style.color = '#166534';
+          feedbackBox.style.border = '1px solid #bbf7d0';
+          feedbackBox.innerHTML = `
+            <div style="font-weight:700; margin-bottom:4px;">
+              ✅ ${isAuto ? 'تم تحديد موقعك الجغرافي تلقائيًا بنجاح' : 'تم تحديد موقعك بنجاح'} (${lat.toFixed(5)}, ${lng.toFixed(5)})
+            </div>
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:6px;">
+              <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" style="color:#0284c7; font-weight:600; text-decoration:underline;">
+                🗺️ عرض موقعك على Google Maps
+              </a>
+              <button type="button" id="geo-retry-action" style="background:none; border:none; color:var(--gray-600); text-decoration:underline; cursor:pointer; font-size:0.8rem;">
+                🔄 إعادة التحديد
+              </button>
+            </div>
+            <div id="geo-reverse-status" style="font-size:0.8rem; color:#15803d; margin-top:6px;">جاري مطابقة العنوان والمنطقة تلقائياً...</div>
+          `;
+          document.getElementById('geo-retry-action')?.addEventListener('click', () => performGeolocation({ isAuto: false }));
+        }
+
+        // Reverse Geocoding
+        try {
+          const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=ar`);
+          if (revRes.ok) {
+            const revData = await revRes.json();
+            const addr = revData.address || {};
+            const state = addr.state || addr.province || addr.governorate || '';
+            const city = addr.city || addr.town || addr.village || addr.suburb || addr.municipality || '';
+            const road = addr.road || addr.neighbourhood || addr.quarter || '';
+
+            // المطابقة مع إحدى المحافظات الـ 5 المستهدفة
+            if (state && govSelect) {
+              const targetGovs = ['الفيوم', 'الدقهلية', 'البحيرة', 'بني سويف', 'الغربية'];
+              const matchedGov = targetGovs.find(g => state.includes(g) || g.includes(state));
+              if (matchedGov) {
+                govSelect.value = matchedGov;
+                if (EgyptLoc && citySelect) {
+                  EgyptLoc.populateCitySelect(citySelect, matchedGov, '', 'اختر المدينة / المنطقة');
+                  if (city) {
+                    const cities = EgyptLoc.getCities(matchedGov);
+                    const matchedCity = cities.find(c => city.includes(c) || c.includes(city));
+                    if (matchedCity) citySelect.value = matchedCity;
+                  }
+                }
+                renderNursesDropdown(matchedGov);
+              }
+            }
+
+            const currentAddrInput = document.getElementById('patient-address');
+            if (currentAddrInput && (!currentAddrInput.value || currentAddrInput.value.length < 5)) {
+              const roadParts = [road, city].filter(Boolean);
+              if (roadParts.length > 0) {
+                currentAddrInput.value = roadParts.join('، ');
+              }
+            }
+
+            const revStatusEl = document.getElementById('geo-reverse-status');
+            if (revStatusEl) {
+              revStatusEl.textContent = 'تم التعرف على المنطقة التقريبية. يمكنك مراجعة وتعديل العنوان يدويًا قبل التأكيد.';
+            }
+          }
+        } catch (revErr) {
+          console.warn('Reverse geocode note:', revErr);
+          const revStatusEl = document.getElementById('geo-reverse-status');
+          if (revStatusEl) {
+            revStatusEl.textContent = 'تم حفظ الإحداثيات بنجاح. يرجى إدخال اسم الشارع وتفاصيل العنوان يدويًا.';
+          }
+        }
+
+        Toast.success(isAuto ? 'تم تحديد موقعك الجغرافي تلقائيًا بنجاح!' : 'تم تحديد موقعك بنجاح!');
+      },
+      (err) => {
+        if (geoIcon) geoIcon.textContent = '📍';
+        if (geoText) geoText.textContent = 'تحديد موقعي يدويًا';
+        if (geoBtn) geoBtn.disabled = false;
+
+        let msg = '';
+        if (err.code === 1) { // PERMISSION_DENIED
+          // الحالة 3: عند رفض الإذن — عدم إجبار المريض والسماح بالإدخال اليدوي فوراً
+          msg = 'لم يتم منح إذن الوصول إلى الموقع. يمكنك إدخال العنوان والمحافظة يدويًا بالأسفل.';
+          if (!isAuto) Toast.info(msg);
+          if (feedbackBox) {
+            feedbackBox.style.display = 'block';
+            feedbackBox.style.background = '#fffbeb';
+            feedbackBox.style.color = '#92400e';
+            feedbackBox.style.border = '1px solid #fde68a';
+            feedbackBox.innerHTML = `
+              <div style="display:flex; align-items:flex-start; gap:8px;">
+                <span style="font-size:1.15rem; line-height:1.2;">ℹ️</span>
+                <div>
+                  <div style="font-weight:700;">تم تخطي تحديد الموقع التلقائي</div>
+                  <div style="font-size:0.82rem; margin-top:2px; line-height:1.5;">
+                    يمكنك إدخال المحافظة والمدينة وتفاصيل العنوان يدويًا في الحقول أدناه وإكمال الحجز بصورة طبيعية.
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+        } else {
+          // الحالة 4: عند فشل التحديد الفني
+          msg = 'تعذّر تحديد موقعك بدقة، يمكنك إدخال العنوان يدويًا أو إعادة المحاولة.';
+          if (!isAuto) Toast.warning(msg);
+          if (feedbackBox) {
+            feedbackBox.style.display = 'block';
+            feedbackBox.style.background = '#fef2f2';
+            feedbackBox.style.color = '#991b1b';
+            feedbackBox.style.border = '1px solid #fecaca';
+            feedbackBox.innerHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <span>❌ ${msg}</span>
+                <button type="button" id="geo-retry-action-fail" class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:0.75rem; border-color:#991b1b; color:#991b1b;">
+                  🔄 إعادة المحاولة
+                </button>
+              </div>
+            `;
+            document.getElementById('geo-retry-action-fail')?.addEventListener('click', () => performGeolocation({ isAuto: false }));
+          }
+        }
+      },
+      { timeout: 12000, enableHighAccuracy: true }
+    );
+  }
+
+  async function tryAutoGeolocation() {
+    if (isAutoGeoAttempted) return;
+    isAutoGeoAttempted = true;
+
+    if (!navigator.geolocation) return;
+
+    if (navigator.permissions && navigator.permissions.query) {
+      try {
+        const perm = await navigator.permissions.query({ name: 'geolocation' });
+        if (perm.state === 'granted') {
+          // الصلاحية ممنوحة سابقاً: احصل على الإحداثيات تلقائياً
+          performGeolocation({ isAuto: true, permissionState: 'granted' });
+        } else if (perm.state === 'prompt') {
+          // الصلاحية لم تمنح بعد: اطلب الإذن بوضوح مع إمكانية التخطي
+          performGeolocation({ isAuto: true, permissionState: 'prompt' });
+        } else if (perm.state === 'denied') {
+          // المستخدم رفضها سابقاً في المتصفح: لا نزعجه ولا نحاول تجاوزه
+          console.log('Location permission was denied by user.');
+        }
+        return;
+      } catch (_) {}
+    }
+
+    // متصفحات لا تدعم navigator.permissions
+    performGeolocation({ isAuto: true, permissionState: 'unknown' });
+  }
+
+  document.getElementById('geo-btn')?.addEventListener('click', () => performGeolocation({ isAuto: false }));
+
+  // دالة مساعدة لحساب وتنسيق نافذة وقت الزيارة
+  function calculateVisitWindow(startTimeStr, durationHours) {
+    if (!startTimeStr || !durationHours || durationHours <= 0) return null;
+    const parts = startTimeStr.split(':').map(Number);
+    const h = parts[0] || 0;
+    const m = parts[1] || 0;
+    const startMins = h * 60 + m;
+    const durationMins = Math.round(durationHours * 60);
+    const endMins = startMins + durationMins;
+
+    const formatTime12h = (totalMins) => {
+      const normalizedMins = totalMins % 1440;
+      let hr = Math.floor(normalizedMins / 60);
+      const min = normalizedMins % 60;
+      const period = hr >= 12 ? 'م' : 'ص';
+      if (hr === 0) hr = 12;
+      else if (hr > 12) hr -= 12;
+      return `${hr}:${String(min).padStart(2, '0')} ${period}`;
+    };
+
+    return {
+      startMins,
+      endMins,
+      startTimeFormatted: formatTime12h(startMins),
+      endTimeFormatted: formatTime12h(endMins),
+      exceedsMidnight: endMins > 1440,
+      endTime24: [
+        String(Math.floor((endMins % 1440) / 60)).padStart(2, '0'),
+        String((endMins % 1440) % 60).padStart(2, '0')
+      ].join(':')
+    };
+  }
+
+  async function initBookingPage() {
+    // التحقق من حساب المريض والمحافظة المسجلة
+    try {
+      currentProfile = await Auth.getUserProfile();
+      if (currentProfile) {
+        if (currentProfile.full_name) document.getElementById('patient-name').value = currentProfile.full_name;
+        if (currentProfile.phone) document.getElementById('patient-phone').value = currentProfile.phone;
+        if (currentProfile.address) document.getElementById('patient-address').value = currentProfile.address;
+
+        const missingGovAlert = document.getElementById('missing-gov-alert');
+        const confirmBtn = document.getElementById('confirm-booking-btn');
+        const govBadge = document.getElementById('nurse-gov-scope-badge');
+
+        if (currentProfile.governorate && currentProfile.governorate.trim()) {
+          const patientGov = currentProfile.governorate.trim();
+          if (govSelect) {
+            govSelect.value = patientGov;
+            govSelect.disabled = true; // تثبيت المحافظة لمنع التحايل
+          }
+          if (EgyptLoc && citySelect) {
+            EgyptLoc.populateCitySelect(citySelect, patientGov, currentProfile.city || '', 'اختر المدينة / المنطقة');
+            citySelect.disabled = false;
+          }
+          if (missingGovAlert) missingGovAlert.classList.add('hidden');
+          if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.title = '';
+          }
+          if (govBadge) {
+            govBadge.textContent = `📍 ممرضو محافظة ${patientGov} فقط`;
+          }
+        } else {
+          // المريض لم يسجل المحافظة في ملفه الشخصي: حظر الحجز وإظهار تنبيه
+          if (missingGovAlert) missingGovAlert.classList.remove('hidden');
+          if (confirmBtn) {
+            confirmBtn.disabled = true;
+            confirmBtn.title = 'يرجى تسجيل المحافظة في ملفك الشخصي أولاً لإتمام الحجز';
+          }
+          if (govBadge) {
+            govBadge.textContent = '⚠️ يرجى استكمال المحافظة في حسابك';
+            govBadge.style.background = '#fef2f2';
+            govBadge.style.color = '#991b1b';
+            govBadge.style.borderColor = '#fecaca';
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Auth check in book page:', e);
+    }
+
+    // Load Services, Nurses & Payment Configuration concurrently
+    await Promise.all([
+      loadServices(),
+      loadNurses(),
+      loadPaymentConfig()
+    ]);
+
+    // Restore draft if any saved
+    restoreDraft();
+
+    updateSummary();
+
+    // تشغيل محاولة تحديد الموقع الجغرافي تلقائياً عند فتح الصفحة
+    tryAutoGeolocation();
+  }
+
+  async function loadServices() {
+    const container = document.getElementById('services-container');
+    container.innerHTML = `
+      <div style="grid-column:1/-1; display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+        <div style="background:#f1f5f9; height:80px; border-radius:12px; animation:pulse 1.5s infinite;"></div>
+        <div style="background:#f1f5f9; height:80px; border-radius:12px; animation:pulse 1.5s infinite;"></div>
+        <div style="background:#f1f5f9; height:80px; border-radius:12px; animation:pulse 1.5s infinite;"></div>
+      </div>
+    `;
+
+    try {
+      servicesList = await DB.getServices();
+
+      if (!servicesList || servicesList.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column:1/-1; padding:24px; text-align:center; background:var(--off-white); border-radius:12px; border:1px solid var(--gray-200);">
+            <p style="color:var(--gray-600); margin-bottom:8px; font-weight:700;">لا توجد خدمات متاحة حالياً في قاعدة البيانات.</p>
+            <p style="font-size:0.85rem; color:var(--gray-500);">يرجى التأكد من تشغيل جدول الخدمات في Supabase.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = servicesList.map((s, idx) => `
+        <div class="service-card-select ${idx === 0 ? 'selected' : ''}" data-id="${s.id}" data-name="${s.name_ar}" data-price="${s.base_price}">
+          <div class="service-icon">${s.icon || '🩺'}</div>
+          <div>
+            <h4 style="font-weight:700; font-size:0.95rem; margin-bottom:2px;">${s.name_ar}</h4>
+            <div style="font-size:0.82rem; color:var(--primary); font-weight:700;">
+              ${EgyptLoc ? EgyptLoc.formatPrice(s.base_price) : s.base_price + ' ج.م'} / زيارة
+            </div>
+            ${s.duration_minutes ? `<div style="font-size:0.75rem; color:var(--gray-500);">${s.duration_minutes} دقيقة تقريباً</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      // Preselect first service
+      if (servicesList.length > 0) {
+        selectService(servicesList[0].id, servicesList[0].name_ar, servicesList[0].base_price);
+      }
+
+      // Add click listeners
+      container.querySelectorAll('.service-card-select').forEach(card => {
+        card.addEventListener('click', () => {
+          container.querySelectorAll('.service-card-select').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          selectService(
+            card.getAttribute('data-id'),
+            card.getAttribute('data-name'),
+            card.getAttribute('data-price')
+          );
+        });
+      });
+
+    } catch (err) {
+      console.error('loadServices error:', err);
+      container.innerHTML = `
+        <div style="grid-column:1/-1; padding:20px; background:#fef2f2; border:1px solid #fecaca; border-radius:12px; text-align:center; color:#991b1b;">
+          <p style="font-weight:700; margin-bottom:8px;">⚠️ تعذّر الاتصال بقاعدة البيانات لتحميل الخدمات</p>
+          <p style="font-size:0.85rem; margin-bottom:12px;">${err.message || 'يرجى التحقق من اتصال الإنترنت وخادم Supabase.'}</p>
+          <button type="button" class="btn btn-outline btn-sm" onclick="loadServices()" style="background:#fff;">إعادة المحاولة 🔄</button>
+        </div>
+      `;
+    }
+  }
+
+  function selectService(id, name, price) {
+    document.getElementById('selected-service-id').value = id;
+    document.getElementById('selected-service-name').value = name;
+    document.getElementById('selected-service-price').value = price;
+    document.getElementById('summary-service-text').textContent = name;
+    updateSummary();
+  }
+
+  async function loadNurses() {
+    const select = document.getElementById('nurse-select');
+    select.innerHTML = '<option value="">⏳ جاري تحميل الكوادر التمريضية المعتمدة في مصر...</option>';
+
+    try {
+      nursesList = await DB.getVerifiedNurses();
+      renderNursesDropdown(govSelect?.value || '');
+      select.addEventListener('change', onNurseChanged);
+    } catch (err) {
+      console.error('loadNurses error:', err);
+      select.innerHTML = `
+        <option value="">⚠️ تعذّر تحميل قائمة الممرضين: ${err.message}</option>
+      `;
+    }
+  }
+
+  function renderNursesDropdown(filterGov = '') {
+    const select = document.getElementById('nurse-select');
+    if (!select) return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const preselectedNurseId = urlParams.get('nurse');
+
+    if (!nursesList || nursesList.length === 0) {
+      select.innerHTML = '<option value="">لا يوجد ممرضون معتمدون متاحون حالياً - يرجى المحاولة لاحقاً</option>';
+      document.getElementById('nurse-preview')?.classList.add('hidden');
+      return;
+    }
+
+    // المحافظة الإلزامية: إذا كان المريض مسجلاً، تُعتمد محافظته حصراً
+    const patientGov = (currentProfile?.governorate || filterGov || '').trim();
+
+    // تصفية الكوادر التمريضية المعتمدة والنشطة
+    let filtered = nursesList.filter(n => n.verified === true && n.is_active !== false);
+
+    // تطبيق شرط منع الحجز بين محافظات مختلفة: عرض ممرضي نفس المحافظة فقط
+    if (patientGov) {
+      filtered = filtered.filter(n => {
+        const nGov = (n.governorate || n.profiles?.governorate || '').trim();
+        return nGov === patientGov;
+      });
+    }
+
+    if (filtered.length === 0) {
+      select.innerHTML = `<option value="">لا يوجد ممرضون معتمدون متاحون حالياً في محافظة ${patientGov || 'المحددة'}</option>`;
+      document.getElementById('nurse-preview')?.classList.add('hidden');
+      return;
+    }
+
+    select.innerHTML = `
+      <option value="">-- اختر الممرض المطلوب للزيارة (${filtered.length} ممرض معتمد في ${patientGov || 'مصر'}) --</option>
+      ${filtered.map(n => {
+        const name = n.full_name || n.profiles?.full_name || 'ممرض معتمد';
+        const rateNum = Number(n.visit_price);
+        const hasRate = !isNaN(rateNum) && rateNum > 0;
+        const rateText = hasRate ? (EgyptLoc ? EgyptLoc.formatPrice(rateNum) : `${rateNum} ج.م`) + ' / ساعة' : 'السعر الأساسي للخدمة';
+
+        const expNum = Number(n.experience_years);
+        const expText = (!isNaN(expNum) && expNum > 0) ? `${expNum} سنوات خبرة` : 'مرخص ومعتمد';
+
+        const gov = n.governorate || 'مصر';
+        const city = n.city ? ` - ${n.city}` : '';
+        const locText = `${gov}${city}`;
+
+        // nurse_profiles.id is the primary key and the foreign key expected by bookings_before_insert trigger
+        const nurseRecordId = n.id;
+        const nurseUserId = n.user_id || n.id;
+        const isSelected = preselectedNurseId && (n.id === preselectedNurseId || n.user_id === preselectedNurseId);
+
+        return `<option value="${nurseRecordId}" data-profile-id="${nurseRecordId}" data-user-id="${nurseUserId}" data-rate="${hasRate ? rateNum : 0}" data-name="${name}" data-gov="${locText}" data-avatar="${n.avatar_url || ''}" ${isSelected ? 'selected' : ''}>
+          ${name} (${locText}) | ${expText} | [${rateText}]
+        </option>`;
+      }).join('')}
+    `;
+
+    // التحقق الصارم من محاولة الوصول المباشر عبر رابط ?nurse= لممرض من محافظة أخرى
+    if (preselectedNurseId) {
+      const targetNurse = nursesList.find(n => n.id === preselectedNurseId || n.user_id === preselectedNurseId);
+      if (targetNurse && patientGov) {
+        const targetGov = (targetNurse.governorate || targetNurse.profiles?.governorate || '').trim();
+        if (targetGov && targetGov !== patientGov) {
+          Toast.error(`عفواً، لا يجوز حجز الممرض (${targetNurse.full_name || 'المحدد'}) لأنه مسجل في محافظة (${targetGov}) بينما محافظتك هي (${patientGov}).`);
+          const preview = document.getElementById('nurse-preview');
+          if (preview) {
+            preview.classList.remove('hidden');
+            preview.innerHTML = `
+              <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:var(--radius); padding:12px; color:#991b1b; width:100%; text-align:center; font-weight:700; font-size:0.9rem;">
+                ❌ تم حظر الحجز: الممرض مسجل في محافظة (${targetGov}) ومحافظتك هي (${patientGov}). يمنع النظام الحجز بين محافظات مختلفة.
+              </div>
+            `;
+          }
+          select.value = '';
+          return;
+        }
+      }
+
+      const matched = filtered.find(n => n.id === preselectedNurseId || n.user_id === preselectedNurseId);
+      if (matched) {
+        select.value = matched.id;
+      }
+      onNurseChanged();
+    } else {
+      onNurseChanged();
+    }
+  }
+
+  function onNurseChanged() {
+    const select = document.getElementById('nurse-select');
+    const selectedOption = select.options[select.selectedIndex];
+    const preview = document.getElementById('nurse-preview');
+
+    if (select.value && selectedOption && selectedOption.getAttribute('data-name')) {
+      const nurseName = selectedOption.getAttribute('data-name');
+      const nurseRate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
+      const nurseGov = selectedOption.getAttribute('data-gov') || 'مصر';
+      const avatarUrl = selectedOption.getAttribute('data-avatar');
+
+      const avatarEl = document.getElementById('selected-nurse-avatar');
+      if (avatarEl) {
+        avatarEl.textContent = '';
+        if (avatarUrl && (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://') || avatarUrl.startsWith('data:image/'))) {
+          const img = document.createElement('img');
+          img.src = avatarUrl;
+          img.alt = nurseName || 'صورة الممرض';
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.objectFit = 'cover';
+          img.style.borderRadius = '50%';
+          avatarEl.appendChild(img);
+        } else {
+          avatarEl.textContent = '👩‍⚕️';
+        }
+      }
+
+      const rateText = nurseRate > 0 ? (EgyptLoc ? EgyptLoc.formatPrice(nurseRate) : `${nurseRate} ج.م`) + ' / ساعة' : 'تسعيرة الخدمة الأساسية';
+      
+      document.getElementById('selected-nurse-name').textContent = nurseName || '';
+      
+      const nurseInfoEl = document.getElementById('selected-nurse-info');
+      nurseInfoEl.textContent = '';
+      const verifiedBadge = document.createElement('span');
+      verifiedBadge.style.color = 'var(--success)';
+      verifiedBadge.style.fontWeight = '700';
+      verifiedBadge.textContent = '✓ معتمد وموثق';
+      nurseInfoEl.appendChild(verifiedBadge);
+      nurseInfoEl.appendChild(document.createTextNode(` (${nurseGov}) | ${rateText}`));
+
+      preview.classList.remove('hidden');
+    } else {
+      preview.classList.add('hidden');
+    }
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const durationInput = document.getElementById('duration-hours');
+    const hours = durationInput && durationInput.value ? parseFloat(durationInput.value) : 0;
+    const baseServicePrice = parseFloat(document.getElementById('selected-service-price')?.value) || 0;
+    
+    const select = document.getElementById('nurse-select');
+    const selectedOption = select?.options[select.selectedIndex];
+    const nurseHourlyRate = selectedOption?.getAttribute('data-rate')
+      ? parseFloat(selectedOption.getAttribute('data-rate'))
+      : 0;
+
+    const visitTime = document.getElementById('visit-time')?.value || '10:00';
+    const windowInfo = hours > 0 ? calculateVisitWindow(visitTime, hours) : null;
+
+    // 1. طريقة التسعير وسعر الساعة
+    const rateTextEl = document.getElementById('summary-pricing-rate-text');
+    let rateExplanation = 'لم يتم تحديد الممرض بعد';
+    if (nurseHourlyRate > 0) {
+      rateExplanation = `${nurseHourlyRate} ج.م / ساعة${baseServicePrice > 0 ? ` (الحد الأدنى للخدمة: ${baseServicePrice} ج.م)` : ''}`;
+    } else if (baseServicePrice > 0) {
+      rateExplanation = `${baseServicePrice} ج.م (تسعيرة الخدمة الأساسية)`;
+    }
+    if (rateTextEl) rateTextEl.textContent = rateExplanation;
+
+    // 2. المدة ووقت البداية والنهاية
+    const durationEl = document.getElementById('summary-duration-text');
+    const timeRangeEl = document.getElementById('summary-time-range-text');
+    const windowDisplayEl = document.getElementById('visit-window-display');
+    const windowWarningEl = document.getElementById('visit-window-warning');
+
+    if (hours > 0 && windowInfo) {
+      const hoursText = hours === 1 ? 'ساعة واحدة' : hours === 2 ? 'ساعتان' : `${hours} ساعات`;
+      if (durationEl) durationEl.textContent = hoursText;
+      
+      const rangeText = `من ${windowInfo.startTimeFormatted} إلى ${windowInfo.endTimeFormatted}`;
+      if (timeRangeEl) timeRangeEl.textContent = rangeText;
+      if (windowDisplayEl) windowDisplayEl.textContent = `${rangeText} (${hoursText})`;
+
+      if (windowInfo.exceedsMidnight) {
+        if (windowWarningEl) {
+          windowWarningEl.classList.remove('hidden');
+          windowWarningEl.textContent = '⚠️ وقت انتهاء الزيارة يتجاوز منتصف الليل. يرجى اختيار موعد أبكر أو تقليل الساعات.';
+        }
+      } else {
+        if (windowWarningEl) windowWarningEl.classList.add('hidden');
+      }
+    } else {
+      if (durationEl) durationEl.textContent = 'لم تحدد المدة بعد';
+      if (timeRangeEl) timeRangeEl.textContent = '—';
+      if (windowDisplayEl) windowDisplayEl.textContent = 'يرجى اختيار مدة الزيارة بالساعات';
+      if (windowWarningEl) windowWarningEl.classList.add('hidden');
+    }
+
+    // 3. إجمالي السعر
+    let total = 0;
+    let totalText = '0 جنيه مصري';
+    if (hours > 0) {
+      if (nurseHourlyRate > 0) {
+        total = Math.max(baseServicePrice, hours * nurseHourlyRate);
+      } else if (baseServicePrice > 0) {
+        total = baseServicePrice;
+      }
+      totalText = EgyptLoc ? EgyptLoc.formatCurrencyFull(total) : `${total} جنيه مصري`;
+    } else {
+      totalText = '— (يرجى تحديد المدة)';
+    }
+
+    const totalEl = document.getElementById('summary-total-price');
+    if (totalEl) totalEl.textContent = totalText;
+  }
+
+  document.getElementById('duration-hours')?.addEventListener('change', updateSummary);
+  document.getElementById('visit-time')?.addEventListener('change', updateSummary);
+
+  // ------------------------------------------------------------
+  // Payment Methods Handling
+  // ------------------------------------------------------------
+  let platformPaymentConfig = null;
+
+  async function loadPaymentConfig() {
+    try {
+      const settings = await DB.getPublicPlatformSettings();
+      platformPaymentConfig = settings.payment_methods || null;
+    } catch (_) {
+      platformPaymentConfig = null;
+    }
+    setupPaymentMethodListeners();
+    const currentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'cash';
+    renderPaymentMethodDetails(currentMethod);
+  }
+
+  function renderPaymentMethodDetails(method) {
+    const boxEl = document.getElementById('epay-details-box');
+    if (!boxEl) return;
+
+    const methods = platformPaymentConfig || {};
+    const vfPhone = methods.vodafone_cash?.phone || methods.vodafone_cash?.number || '';
+    const vfName = methods.vodafone_cash?.name || 'منصة CareNest';
+    const vfEnabled = methods.vodafone_cash?.enabled !== false;
+
+    const ipHandle = methods.instapay?.handle || methods.instapay?.account || '';
+    const ipName = methods.instapay?.name || 'منصة CareNest';
+    const ipEnabled = methods.instapay?.enabled !== false;
+
+    if (method === 'cash') {
+      boxEl.style.background = '#f0fdf4';
+      boxEl.style.border = '1px solid #bbf7d0';
+      boxEl.style.color = '#166534';
+      boxEl.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px; font-weight:700; margin-bottom:6px; font-size:0.95rem;">
+          <span style="font-size:1.2rem;">💵</span>
+          <span>تعليمات الدفع نقداً (كاش):</span>
+        </div>
+        <div style="font-size:0.86rem; line-height:1.6; color:#14532d;">
+          يتم سداد المبلغ الإجمالي للممرض يداً بيد عند وصوله لمنزلك بعد الانتهاء من تقديم الرعاية الصحية، وتقديم كود الزيارة الخاص بك له لتأكيد إتمام الزيارة بنجاح. لا يلزم أي تحويل مسبق.
+        </div>
+      `;
+      return;
+    }
+
+    if (method === 'vodafone_cash') {
+      boxEl.style.background = '#fef2f2';
+      boxEl.style.border = '1px solid #fecaca';
+      boxEl.style.color = '#991b1b';
+
+      if (!vfPhone || !vfEnabled) {
+        boxEl.innerHTML = `
+          <div style="display:flex; align-items:center; gap:8px; font-weight:700; margin-bottom:4px; font-size:0.95rem;">
+            <span>⚠️</span> <span>بيانات التحويل غير متوفرة حالياً:</span>
+          </div>
+          <div style="font-size:0.86rem; line-height:1.6;">
+            لم يتم تسجيل رقم محفظة فودافون كاش الرسمية للمنصة بعد من الإدارة. يمكنك اختيار الدفع نقداً (كاش) للممرض عند وصوله.
+          </div>
+        `;
+      } else {
+        boxEl.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; border-bottom:1px solid #fee2e2; padding-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.3rem;">📱</span>
+              <div>
+                <strong style="font-size:0.95rem; color:#991b1b;">محفظة فودافون كاش الرسمية:</strong>
+                <div style="font-size:0.8rem; color:#7f1d1d;">اسم صاحب الحساب: <strong>${escapeHtml(vfName)}</strong></div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; background:white; padding:6px 12px; border-radius:var(--radius-md); border:1px solid #fca5a5;">
+              <span id="vf-phone-display" dir="ltr" style="font-family:monospace; font-weight:800; font-size:1.1rem; color:#b91c1c; letter-spacing:1px;">${escapeHtml(vfPhone)}</span>
+              <button type="button" class="btn btn-outline btn-sm copy-btn" data-target="vf-phone-display" style="padding:3px 8px; font-size:0.75rem; border-color:#f87171; color:#991b1b;">
+                📋 نسخ الرقم
+              </button>
+            </div>
+          </div>
+          <div style="font-size:0.84rem; line-height:1.6; color:#7f1d1d;">
+            <strong>📌 خطوات التحويل:</strong><br>
+            1. افتح تطبيق «أنا فودافون» أو اطلب كود المحفظة <code>*9*7*الرقم*المبلغ#</code>.<br>
+            2. حوّل المبلغ الإجمالي المطلوب للزيارة إلى الرقم أعلاه وتأكد من اسم المستلم (<strong>${escapeHtml(vfName)}</strong>).<br>
+            3. بعد الضغط على «تأكيد وحفظ الحجز»، ستظهر لك نافذة إرفاق صورة إشعار التحويل لتأكيده من الإدارة فوراً.
+          </div>
+        `;
+      }
+      setupCopyButtons(boxEl);
+      return;
+    }
+
+    if (method === 'instapay') {
+      boxEl.style.background = '#faf5ff';
+      boxEl.style.border = '1px solid #e9d5ff';
+      boxEl.style.color = '#581c87';
+
+      if (!ipHandle || !ipEnabled) {
+        boxEl.innerHTML = `
+          <div style="display:flex; align-items:center; gap:8px; font-weight:700; margin-bottom:4px; font-size:0.95rem;">
+            <span>⚠️</span> <span>بيانات التحويل غير متوفرة حالياً:</span>
+          </div>
+          <div style="font-size:0.86rem; line-height:1.6;">
+            لم يتم تسجيل معرف إنستاباي InstaPay الرسمي للمنصة بعد من الإدارة. يمكنك اختيار الدفع نقداً (كاش) للممرض عند وصوله.
+          </div>
+        `;
+      } else {
+        boxEl.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; border-bottom:1px solid #f3e8ff; padding-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.3rem;">⚡</span>
+              <div>
+                <strong style="font-size:0.95rem; color:#581c87;">حساب إنستاباي InstaPay الرسمي:</strong>
+                <div style="font-size:0.8rem; color:#6b21a8;">اسم المستلم: <strong>${escapeHtml(ipName)}</strong></div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; background:white; padding:6px 12px; border-radius:var(--radius-md); border:1px solid #d8b4fe;">
+              <span id="ip-handle-display" dir="ltr" style="font-family:monospace; font-weight:800; font-size:1.1rem; color:#7e22ce; letter-spacing:0.5px;">${escapeHtml(ipHandle)}</span>
+              <button type="button" class="btn btn-outline btn-sm copy-btn" data-target="ip-handle-display" style="padding:3px 8px; font-size:0.75rem; border-color:#c084fc; color:#6b21a8;">
+                📋 نسخ المعرف
+              </button>
+            </div>
+          </div>
+          <div style="font-size:0.84rem; line-height:1.6; color:#6b21a8;">
+            <strong>📌 خطوات التحويل:</strong><br>
+            1. افتح تطبيق InstaPay واختر «تحويل إلى عنوان دفع لحظي IPA».<br>
+            2. أدخل معرف الدفع أعلاه وتأكد من مطابقة اسم المستلم (<strong>${escapeHtml(ipName)}</strong>).<br>
+            3. بعد الضغط على «تأكيد وحفظ الحجز»، ستتمكن من رفع صورة إشعار التحويل لتأكيده من الإدارة فوراً.
+          </div>
+        `;
+      }
+      setupCopyButtons(boxEl);
+      return;
+    }
+  }
+
+  function setupCopyButtons(container) {
+    if (!container) return;
+    container.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const targetId = e.currentTarget.getAttribute('data-target');
+        const textEl = document.getElementById(targetId);
+        const textToCopy = textEl ? textEl.textContent.trim() : '';
+        if (!textToCopy) return;
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          const originalText = btn.innerHTML;
+          btn.innerHTML = '✅ تم النسخ!';
+          btn.style.background = '#dcfce7';
+          btn.style.color = '#15803d';
+          btn.style.borderColor = '#86efac';
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = '';
+            btn.style.color = '';
+            btn.style.borderColor = '';
+          }, 2000);
+          Toast.success('تم نسخ بيانات الدفع إلى الحافظة بنجاح!');
+        }).catch(() => {
+          Toast.info(`يمكنك نسخ الرقم يدوياً: ${textToCopy}`);
+        });
+      });
+    });
+  }
+
+  function setupPaymentMethodListeners() {
+    const radios = document.querySelectorAll('input[name="payment_method"]');
+    radios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        const val = document.querySelector('input[name="payment_method"]:checked')?.value || 'cash';
+        
+        // Reset card borders
+        ['card-cash', 'card-vodafone-cash', 'card-instapay'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.style.border = '1px solid var(--gray-200)';
+            el.style.background = 'white';
+          }
+        });
+
+        const activeCard = document.getElementById(`card-${val.replace('_', '-')}`);
+        if (activeCard) {
+          activeCard.style.border = '2px solid var(--primary)';
+          activeCard.style.background = 'var(--primary-50, #eff6ff)';
+        }
+
+        renderPaymentMethodDetails(val);
+      });
+    });
+  }
+
+  function saveDraft() {
+    try {
+      const draft = {
+        service_id: document.getElementById('selected-service-id').value,
+        nurse_id: document.getElementById('nurse-select').value,
+        visit_date: document.getElementById('visit-date').value,
+        visit_time: document.getElementById('visit-time').value,
+        duration_hours: document.getElementById('duration-hours').value,
+        patient_name: document.getElementById('patient-name').value,
+        patient_phone: document.getElementById('patient-phone').value,
+        governorate: govSelect?.value,
+        city: citySelect?.value,
+        address: document.getElementById('patient-address').value,
+        notes: document.getElementById('booking-notes').value,
+        userGeoCoordinates: userGeoCoordinates || null
+      };
+      sessionStorage.setItem('pending_booking', JSON.stringify(draft));
+    } catch (_) {}
+  }
+
+  function restoreDraft() {
+    try {
+      const raw = sessionStorage.getItem('pending_booking');
+      if (!raw) return;
+      const draft = JSON.parse(raw);
+      if (draft.patient_name && !document.getElementById('patient-name').value) {
+        document.getElementById('patient-name').value = draft.patient_name;
+      }
+      if (draft.patient_phone && !document.getElementById('patient-phone').value) {
+        document.getElementById('patient-phone').value = draft.patient_phone;
+      }
+      if (draft.address && !document.getElementById('patient-address').value) {
+        document.getElementById('patient-address').value = draft.address;
+      }
+      if (draft.notes) document.getElementById('booking-notes').value = draft.notes;
+      if (draft.visit_date && draft.visit_date >= today) document.getElementById('visit-date').value = draft.visit_date;
+      if (draft.visit_time) document.getElementById('visit-time').value = draft.visit_time;
+      if (draft.duration_hours) document.getElementById('duration-hours').value = draft.duration_hours;
+      if (draft.userGeoCoordinates && draft.userGeoCoordinates.lat && draft.userGeoCoordinates.lng) {
+        userGeoCoordinates = draft.userGeoCoordinates;
+        const geoIcon = document.getElementById('geo-btn-icon');
+        const geoText = document.getElementById('geo-btn-text');
+        if (geoIcon) geoIcon.textContent = '✅';
+        if (geoText) geoText.textContent = 'تم تحديد موقعك بنجاح';
+      }
+      sessionStorage.removeItem('pending_booking');
+    } catch (_) {}
+  }
+
+  // Form Submission
+  document.getElementById('booking-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (isSubmitting) return;
+
+    // Validate Nurse Selection
+    const nurseSelect = document.getElementById('nurse-select');
+    const nurseId = nurseSelect.value;
+    if (!nurseId) {
+      Toast.warning('يرجى اختيار الممرض المطلوب للزيارة من القائمة.');
+      nurseSelect.focus();
+      return;
+    }
+
+    // Validate Service Selection
+    const serviceName = document.getElementById('selected-service-name').value;
+    const selectedServiceId = document.getElementById('selected-service-id').value;
+    if (!serviceName || !selectedServiceId) {
+      Toast.warning('يرجى اختيار نوع الخدمة المطلوبة.');
+      return;
+    }
+
+    const visitDate = document.getElementById('visit-date').value;
+    const visitTime = document.getElementById('visit-time').value;
+    const durationInput = document.getElementById('duration-hours');
+    const durationHours = durationInput && durationInput.value ? parseFloat(durationInput.value) : 0;
+    const patientName = document.getElementById('patient-name').value.trim();
+    const patientPhone = document.getElementById('patient-phone').value.trim();
+    const selectedCity = citySelect.value;
+    const detailedAddress = document.getElementById('patient-address').value.trim();
+    const notes = document.getElementById('booking-notes').value.trim();
+
+    // 1. التحقق الإلزامي من تحديد مدة الزيارة بالساعات
+    if (!durationHours || durationHours <= 0) {
+      Toast.warning('يرجى تحديد مدة الزيارة بالساعات أولاً لإتمام الحجز.');
+      durationInput?.focus();
+      return;
+    }
+
+    // 2. التحقق من تاريخ الزيارة
+    if (visitDate < today) {
+      Toast.warning('تاريخ الزيارة يجب أن يكون اليوم أو في تاريخ لاحق.');
+      document.getElementById('visit-date').focus();
+      return;
+    }
+
+    if (!visitDate || !visitTime || !patientName || !patientPhone || !detailedAddress) {
+      Toast.warning('يرجى إكمال جميع الحقول الإلزامية وتحديد العنوان بالتفصيل.');
+      return;
+    }
+
+    // 3. التحقق من عدم تجاوز منتصف الليل
+    const windowInfo = calculateVisitWindow(visitTime, durationHours);
+    if (windowInfo && windowInfo.exceedsMidnight) {
+      Toast.warning('وقت انتهاء الزيارة يتجاوز منتصف الليل (12:00 ص). يرجى اختيار موعد أبكر أو تقليل عدد الساعات.');
+      document.getElementById('visit-time').focus();
+      return;
+    }
+
+    // Validate Egyptian Phone
+    if (EgyptLoc && !EgyptLoc.validateEgyptianPhone(patientPhone)) {
+      Toast.warning('يرجى إدخال رقم هاتف محمول مصري صحيح يبدأ بـ 010 أو 011 أو 012 أو 015.');
+      document.getElementById('patient-phone').focus();
+      return;
+    }
+
+    // Check if user is logged in
+    if (!currentProfile) {
+      saveDraft();
+      Toast.info('يرجى تسجيل الدخول أو إنشاء حساب لإتمام الحجز وسنقوم باسترجاع بياناتك تلقائياً.');
+      setTimeout(() => {
+        window.location.href = 'login.html?redirect=book.html';
+      }, 1500);
+      return;
+    }
+
+    // 4. التحقق الصارم من محافظة المريض المسجلة في ملفه الشخصي
+    const patientGov = (currentProfile.governorate || '').trim();
+    if (!patientGov) {
+      Toast.error('لم يتم تسجيل المحافظة في ملفك الشخصي. يرجى استكمال بيانات المحافظة أولاً.');
+      document.getElementById('missing-gov-alert')?.classList.remove('hidden');
+      return;
+    }
+
+    const fullAddress = `${patientGov}، ${selectedCity ? selectedCity + '، ' : ''}${detailedAddress}`;
+
+    // Authoritative Price Calculation
+    const authoritativeService = servicesList.find(s => s.id === selectedServiceId || s.name_ar === serviceName);
+    const authoritativeBasePrice = authoritativeService ? Number(authoritativeService.base_price) : 0;
+
+    const authoritativeNurse = nursesList.find(n => n.user_id === nurseId || n.id === nurseId);
+    const authoritativeNurseRate = Number(authoritativeNurse?.visit_price || 0);
+
+    // 5. التحقق الصارم من محافظة الممرض ومطابقتها لمحافظة المريض
+    const targetNurseGov = (authoritativeNurse?.governorate || authoritativeNurse?.profiles?.governorate || '').trim();
+    if (!targetNurseGov) {
+      Toast.error('بيانات الممرض غير مكتملة: لم يتم تسجيل محافظة الممرض في النظام. يرجى من الممرض استكمال المحافظة والمدينة في ملفه الشخصي.');
+      return;
+    }
+
+    if (patientGov !== targetNurseGov) {
+      Toast.error(`لا يجوز حجز ممرض من محافظة مختلفة. محافظتك المسجلة هي (${patientGov}) بينما الممرض في (${targetNurseGov}).`);
+      return;
+    }
+
+    let validatedPrice = authoritativeBasePrice;
+    if (authoritativeNurseRate > 0) {
+      validatedPrice = Math.max(authoritativeBasePrice, durationHours * authoritativeNurseRate);
+    }
+
+    if (!validatedPrice || isNaN(validatedPrice) || validatedPrice <= 0) {
+      Toast.error('لا يمكن إتمام الحجز بدون تحديد خدمة بسعر صحيح.');
+      return;
+    }
+
+    const selectedOption = nurseSelect.options[nurseSelect.selectedIndex];
+    const targetNurseRecordId = authoritativeNurse?.id || selectedOption?.getAttribute('data-profile-id') || nurseId;
+    const targetNurseUserId = authoritativeNurse?.user_id || selectedOption?.getAttribute('data-user-id') || null;
+    const nurseFullName = selectedOption?.getAttribute('data-name') || authoritativeNurse?.full_name || 'ممرض معتمد';
+
+    // ------------------------------------------------------------
+    // Payment Method Selection & Booking Creation
+    // ------------------------------------------------------------
+    const selectedPaymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'cash';
+
+    const btn = document.getElementById('confirm-booking-btn');
+    isSubmitting = true;
+    setButtonLoading(btn, true);
+
+    try {
+      const bookingData = {
+        // nurse_profiles.id is the key expected by the database trigger bookings_before_insert()
+        nurse_id: targetNurseRecordId,
+        nurse_profile_id: targetNurseRecordId,
+        nurse_user_id: targetNurseUserId,
+        nurse_governorate: targetNurseGov,
+        nurse_city: authoritativeNurse?.city || null,
+        service_name: authoritativeService ? authoritativeService.name_ar : serviceName,
+        service_id: authoritativeService ? authoritativeService.id : null,
+        service_type: authoritativeService ? authoritativeService.name_ar : serviceName,
+        visit_date: visitDate,
+        visit_time: visitTime,
+        start_time: visitTime,
+        duration_hours: durationHours,
+        total_price: validatedPrice,
+        price: validatedPrice,
+        currency: 'EGP',
+        country: 'Egypt',
+        governorate: patientGov,
+        city: selectedCity,
+        patient_name: patientName,
+        patient_phone: patientPhone,
+        patient_address: fullAddress,
+        notes: notes || null,
+        patient_notes: notes || null,
+        latitude: userGeoCoordinates ? userGeoCoordinates.lat : null,
+        longitude: userGeoCoordinates ? userGeoCoordinates.lng : null,
+        payment_method: selectedPaymentMethod,
+        payment_status: 'pending',
+        payment_receipt_path: null,
+        status: 'pending'
+      };
+
+      const createdBooking = await DB.createBooking(bookingData);
+
+      // Display real reference
+      const refId = createdBooking?.id ? `CN-${createdBooking.id.substring(0, 8).toUpperCase()}` : 'CN-PENDING';
+      
+      const modal = document.getElementById('booking-success-modal');
+      if (modal) {
+        document.getElementById('modal-ref-id').textContent = refId;
+        document.getElementById('modal-service-name').textContent = authoritativeService?.name_ar || serviceName;
+        document.getElementById('modal-nurse-name').textContent = nurseFullName;
+        document.getElementById('modal-datetime').textContent = `${visitDate} (من ${windowInfo ? windowInfo.startTimeFormatted : visitTime} إلى ${windowInfo ? windowInfo.endTimeFormatted : ''} - ${durationHours} ساعة)`;
+        document.getElementById('modal-total-price').textContent = EgyptLoc ? EgyptLoc.formatCurrencyFull(validatedPrice) : `${validatedPrice} ج.م`;
+        
+        const cashBox = document.getElementById('modal-cash-box');
+        const epayBox = document.getElementById('modal-epay-box');
+
+        if (selectedPaymentMethod === 'cash') {
+          cashBox.classList.remove('hidden');
+          epayBox.classList.add('hidden');
+        } else {
+          cashBox.classList.add('hidden');
+          epayBox.classList.remove('hidden');
+
+          // تحميل بيانات الدفع الرسمية الخاصة بهذا الحجز
+          const detailsEl = document.getElementById('modal-epay-details');
+          if (detailsEl) {
+            detailsEl.innerHTML = 'جاري جلب تفاصيل الحساب الرسمي للمنصة...';
+            try {
+              let methods = platformPaymentConfig || {};
+              try {
+                const payInfo = await DB.getBookingPaymentDetails(createdBooking.id);
+                if (payInfo?.payment_methods) methods = payInfo.payment_methods;
+              } catch (_) {}
+              const vfPhone = methods.vodafone_cash?.phone || methods.vodafone_cash?.number || '';
+              const vfName = methods.vodafone_cash?.name || 'منصة CareNest';
+              const ipHandle = methods.instapay?.handle || methods.instapay?.account || '';
+              const ipName = methods.instapay?.name || 'منصة CareNest';
+
+              if (selectedPaymentMethod === 'vodafone_cash') {
+                if (vfPhone) {
+                  detailsEl.innerHTML = `
+                    <div style="font-size:0.92rem; line-height:1.6;">
+                      📱 <strong>محفظة فودافون كاش الرسمية:</strong><br>
+                      رقم الهاتف: <span dir="ltr" style="font-family:monospace; font-weight:800; color:var(--primary); font-size:1.05rem;">${escapeHtml(vfPhone)}</span>
+                      <button type="button" class="btn btn-outline btn-sm copy-pay-num-btn" data-copy="${escapeHtml(vfPhone)}" style="padding:1px 6px; font-size:0.75rem; margin-right:6px;">📋 نسخ الرقم</button><br>
+                      اسم الحساب: <strong>${escapeHtml(vfName)}</strong><br>
+                      المبلغ المطلوب تحويله: <strong style="color:var(--primary); font-weight:800;">${EgyptLoc ? EgyptLoc.formatCurrencyFull(validatedPrice) : `${validatedPrice} ج.م`}</strong>
+                    </div>
+                  `;
+                } else {
+                  detailsEl.innerHTML = '<div style="color:#b91c1c;">⚠️ لم يتم ضبط رقم فودافون كاش للمنصة بعد من الإدارة. يمكنك سداد الحجز نقداً للممرض عند وصوله.</div>';
+                }
+              } else if (selectedPaymentMethod === 'instapay') {
+                if (ipHandle) {
+                  detailsEl.innerHTML = `
+                    <div style="font-size:0.92rem; line-height:1.6;">
+                      ⚡ <strong>حساب إنستاباي InstaPay الرسمي:</strong><br>
+                      معرف الدفع (IPA): <span dir="ltr" style="font-family:monospace; font-weight:800; color:var(--primary); font-size:1.05rem;">${escapeHtml(ipHandle)}</span>
+                      <button type="button" class="btn btn-outline btn-sm copy-pay-num-btn" data-copy="${escapeHtml(ipHandle)}" style="padding:1px 6px; font-size:0.75rem; margin-right:6px;">📋 نسخ العنوان</button><br>
+                      اسم صاحب الحساب: <strong>${escapeHtml(ipName)}</strong><br>
+                      المبلغ المطلوب تحويله: <strong style="color:var(--primary); font-weight:800;">${EgyptLoc ? EgyptLoc.formatCurrencyFull(validatedPrice) : `${validatedPrice} ج.م`}</strong>
+                    </div>
+                  `;
+                } else {
+                  detailsEl.innerHTML = '<div style="color:#b91c1c;">⚠️ لم يتم ضبط حساب إنستاباي للمنصة بعد من الإدارة. يمكنك سداد الحجز نقداً للممرض عند وصوله.</div>';
+                }
+              }
+
+              // تفعيل زر النسخ
+              detailsEl.querySelectorAll('.copy-pay-num-btn').forEach(cpBtn => {
+                cpBtn.addEventListener('click', (e) => {
+                  const txt = e.currentTarget.getAttribute('data-copy');
+                  if (txt) {
+                    navigator.clipboard.writeText(txt).then(() => Toast.success('تم نسخ الرقم إلى الحافظة!'));
+                  }
+                });
+              });
+
+            } catch (err) {
+              console.error('Error fetching payment details:', err);
+              detailsEl.innerHTML = '<div style="color:#b91c1c;">تعذر استرجاع بيانات الحساب حالياً. يمكنك إتمام الدفع لاحقاً من لوحة التحكم.</div>';
+            }
+          }
+
+          // تفعيل زر رفع الإيصال داخل الـ Modal
+          const uploadReceiptBtn = document.getElementById('modal-upload-receipt-btn');
+          const receiptFileInput = document.getElementById('modal-receipt-file');
+          const uploadArea = document.getElementById('modal-upload-receipt-area');
+          const successMsg = document.getElementById('modal-receipt-success-msg');
+
+          if (uploadReceiptBtn && receiptFileInput) {
+            // إزالة أي مستمع قديم عبر الاستنساخ
+            const newUploadBtn = uploadReceiptBtn.cloneNode(true);
+            uploadReceiptBtn.parentNode.replaceChild(newUploadBtn, uploadReceiptBtn);
+
+            newUploadBtn.addEventListener('click', async () => {
+              const file = receiptFileInput.files?.[0];
+              if (!file) {
+                Toast.warning('يرجى اختيار صورة أو ملف إيصال التحويل أولاً.');
+                receiptFileInput.focus();
+                return;
+              }
+
+              setButtonLoading(newUploadBtn, true);
+              try {
+                await DB.submitPatientPayment(createdBooking.id, selectedPaymentMethod, file);
+                Toast.success('تم رفع إيصال التحويل بنجاح! سيتم مراجعته وتأكيده من الإدارة.');
+                if (uploadArea) uploadArea.style.display = 'none';
+                if (successMsg) successMsg.classList.remove('hidden');
+              } catch (uErr) {
+                console.error('Modal receipt upload error:', uErr);
+                Toast.error('فشل رفع الإيصال: ' + (uErr.message || 'حدث خطأ غير متوقع'));
+              } finally {
+                setButtonLoading(newUploadBtn, false);
+              }
+            });
+          }
+        }
+
+        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+      } else {
+        Toast.success(`تم تأكيد الحجز بنجاح برقم مرجعي: ${refId}`);
+        setTimeout(() => {
+          window.location.href = 'patient-dashboard.html';
+        }, 1500);
+      }
+
+    } catch (err) {
+      console.error('Booking creation error:', err);
+      let errMsg = err.message || 'حدث خطأ غير متوقع أثناء حفظ الحجز.';
+      if (errMsg.includes('violates foreign key')) {
+        errMsg = 'تعذّر إتمام الحجز بسبب تعارض في السجل المرجعي للممرض. يرجى تطبيق سكريبت التحديث sql/migration_fix_bookings_and_nurses.sql في Supabase.';
+      } else if (errMsg.includes('الممرض غير متاح')) {
+        errMsg = 'الممرض المحدد غير متاح حالياً لاستقبال الزيارات. يرجى اختيار ممرض معتمد آخر.';
+      }
+      Toast.error('فشل إتمام الحجز: ' + errMsg);
+      isSubmitting = false;
+      setButtonLoading(btn, false);
+    }
+  });
+
+  // Start initialization
+  initBookingPage();
+</script>
+<script src="../js/whatsapp.js"></script>
+</body>
+</html>

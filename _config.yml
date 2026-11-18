@@ -1,0 +1,11 @@
+# GitHub Pages / Jekyll: keep server-side and development files out of the public site output.
+exclude:
+  - sql/
+  - supabase/
+  - _archive/
+  - README_REVIEW_AR.md
+  - AUDIT_REPORT_AR.md
+  - scratch_compress.ps1
+  - .gitignore
+  - "*.bak"
+  - "*.bak2"
